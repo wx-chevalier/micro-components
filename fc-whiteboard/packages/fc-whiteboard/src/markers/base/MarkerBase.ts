@@ -1,3 +1,4 @@
+import { PositionType } from 'fc-whiteboard/src/event/Event';
 import { onChangeFunc, EventType } from './../../event/Event';
 import { MarkerType } from './../types';
 import * as uuid from 'uuid/v1';
@@ -32,13 +33,16 @@ export class MarkerBase {
 
   private isDragging: boolean = false;
 
-  public reactToManipulation(type: EventType, { dx, dy }: { dx: number; dy: number }) {
+  public reactToManipulation(
+    type: EventType,
+    { dx, dy, pos }: { dx: number; dy: number; pos: PositionType }
+  ) {
     if (type === 'move') {
       this.move(dx, dy);
     }
 
     if (type === 'resize') {
-      this.resize(dx, dy);
+      this.resizeByEvent(dx, dy, pos);
     }
   }
 
@@ -53,8 +57,9 @@ export class MarkerBase {
     }
 
     if (this.isResizing) {
-      this.onChange({ target: 'marker', id: this.id, event: 'resize', data: { dx, dy } });
-      this.resize(dx, dy);
+      this.resize(dx, dy, (pos: PositionType) => {
+        this.onChange({ target: 'marker', id: this.id, event: 'resize', data: { dx, dy, pos } });
+      });
     }
 
     this.previousMouseX = ev.screenX;
@@ -105,7 +110,10 @@ export class MarkerBase {
     this.renderVisual.appendChild(el);
   };
 
-  protected resize(x: number, y: number) {
+  protected resize(x: number, y: number, cb?: Function) {
+    return;
+  }
+  protected resizeByEvent(x: number, y: number, pos?: PositionType) {
     return;
   }
 

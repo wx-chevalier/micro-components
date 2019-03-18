@@ -49,7 +49,6 @@ export class WhitePage {
 
         if (ev.event === 'move' || ev.event === 'resize') {
           const marker = this.drawboard.markerMap[ev.id];
-
           marker.reactToManipulation(ev.event, ev.data as any);
         }
       });

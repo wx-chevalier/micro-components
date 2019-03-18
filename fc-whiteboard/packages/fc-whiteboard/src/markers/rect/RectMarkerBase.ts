@@ -1,5 +1,6 @@
 import { SvgHelper } from '../../renderer/SvgHelper';
 import { RectangularMarkerBase } from '../base/RectangularMarkerBase';
+import { PositionType } from 'fc-whiteboard/src/event/Event';
 
 export class RectMarkerBase extends RectangularMarkerBase {
   public static createMarker = (): RectMarkerBase => {
@@ -17,8 +18,8 @@ export class RectMarkerBase extends RectangularMarkerBase {
     this.addToRenderVisual(this.markerRect);
   }
 
-  protected resize(x: number, y: number) {
-    super.resize(x, y);
+  protected resize(x: number, y: number, onPosition?: (pos: PositionType) => void) {
+    super.resize(x, y, onPosition);
     this.markerRect.setAttribute('width', this.width.toString());
     this.markerRect.setAttribute('height', this.height.toString());
   }

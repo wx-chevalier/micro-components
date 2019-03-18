@@ -2,6 +2,7 @@ import { SvgHelper } from '../../renderer/SvgHelper';
 import { MarkerBase } from './MarkerBase';
 import { RectangularMarkerGrips } from './RectangularMarkerGrips';
 import { ResizeGrip } from './ResizeGrip';
+import { PositionType } from 'fc-whiteboard/src/event/Event';
 
 export class RectangularMarkerBase extends MarkerBase {
   public static createMarker = (): RectangularMarkerBase => {
@@ -41,7 +42,12 @@ export class RectangularMarkerBase extends MarkerBase {
     this.addControlBox();
   }
 
-  protected resize(x: number, y: number) {
+  protected resizeByEvent(x: number, y: number, pos: PositionType) {
+    this.activeGrip = this.controlGrips[pos];
+    this.resize(x, y);
+  }
+
+  protected resize(x: number, y: number, onPosition?: (pos: PositionType) => void) {
     let translateX = 0;
     let translateY = 0;
 
@@ -51,34 +57,58 @@ export class RectangularMarkerBase extends MarkerBase {
         this.height -= y;
         translateX += x;
         translateY += y;
+        if (onPosition) {
+          onPosition('topLeft');
+        }
         break;
       case this.controlGrips.bottomLeft:
         this.width -= x;
         this.height += y;
         translateX += x;
+        if (onPosition) {
+          onPosition('bottomLeft');
+        }
         break;
       case this.controlGrips.topRight:
         this.width += x;
         this.height -= y;
         translateY += y;
+        if (onPosition) {
+          onPosition('topRight');
+        }
         break;
       case this.controlGrips.bottomRight:
         this.width += x;
         this.height += y;
+        if (onPosition) {
+          onPosition('bottomRight');
+        }
         break;
       case this.controlGrips.centerLeft:
         this.width -= x;
         translateX += x;
+        if (onPosition) {
+          onPosition('centerLeft');
+        }
         break;
       case this.controlGrips.centerRight:
         this.width += x;
+        if (onPosition) {
+          onPosition('centerRight');
+        }
         break;
       case this.controlGrips.topCenter:
         this.height -= y;
         translateY += y;
+        if (onPosition) {
+          onPosition('topCenter');
+        }
         break;
       case this.controlGrips.bottomCenter:
         this.height += y;
+        if (onPosition) {
+          onPosition('bottomCenter');
+        }
         break;
       default:
         break;

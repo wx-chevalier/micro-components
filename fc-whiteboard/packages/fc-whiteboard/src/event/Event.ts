@@ -1,5 +1,14 @@
 export type TargetType = 'page' | 'drawboard' | 'marker';
 export type EventType = 'add' | 'resize' | 'move' | 'remove';
+export type PositionType =
+  | 'topLeft'
+  | 'bottomLeft'
+  | 'topRight'
+  | 'bottomRight'
+  | 'centerLeft'
+  | 'centerRight'
+  | 'topCenter'
+  | 'bottomCenter';
 
 export interface ChangeEvent {
   target: TargetType;
