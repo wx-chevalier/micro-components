@@ -1,11 +1,10 @@
+import { ChangeEvent } from './Event';
 import * as EventEmitter from 'eventemitter3';
 
-import { EventType } from './Event';
-
-export class EventHub extends EventEmitter<EventType> {}
+export class EventHub extends EventEmitter<'change'> {}
 
 export const eventHub = new EventHub();
 
-eventHub.on('add', data => {
-  console.log(data);
+eventHub.on('change', (changeEv: ChangeEvent) => {
+  console.log(changeEv);
 });

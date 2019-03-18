@@ -17,7 +17,7 @@ export class Toolbar {
 
   public getUI = (): HTMLElement => {
     this.toolbarUI = document.createElement('div');
-    this.toolbarUI.className = 'fc-whiteboardtoolbar';
+    this.toolbarUI.className = 'fc-whiteboard-toolbar';
 
     for (const toolbarItem of this.toolbarItems) {
       const toolbarButton = new ToolbarButton(toolbarItem, this.clickHandler);

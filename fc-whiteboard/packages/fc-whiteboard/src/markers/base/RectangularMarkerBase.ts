@@ -80,6 +80,8 @@ export class RectangularMarkerBase extends MarkerBase {
       case this.controlGrips.bottomCenter:
         this.height += y;
         break;
+      default:
+        break;
     }
 
     if (this.width < this.MIN_SIZE) {
@@ -111,7 +113,7 @@ export class RectangularMarkerBase extends MarkerBase {
   }
 
   private addControlBox = () => {
-    this.controlBox = SvgHelper.createGroup([['class', 'fc-whiteboardrect-control-box']]);
+    this.controlBox = SvgHelper.createGroup([['class', 'fc-whiteboard-rect-control-box']]);
     const translate = SvgHelper.createTransform();
     translate.setTranslate(-this.CB_DISTANCE / 2, -this.CB_DISTANCE / 2);
     this.controlBox.transform.baseVal.appendItem(translate);
@@ -121,7 +123,7 @@ export class RectangularMarkerBase extends MarkerBase {
     this.controlRect = SvgHelper.createRect(
       this.width + this.CB_DISTANCE,
       this.height + this.CB_DISTANCE,
-      [['class', 'fc-whiteboardrect-control-rect']]
+      [['class', 'fc-whiteboard-rect-control-rect']]
     );
 
     this.controlBox.appendChild(this.controlRect);

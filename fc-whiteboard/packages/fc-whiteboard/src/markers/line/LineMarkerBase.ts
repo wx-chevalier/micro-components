@@ -92,7 +92,7 @@ export class LineMarkerBase extends MarkerBase {
   };
 
   private addControlBox = () => {
-    this.controlBox = SvgHelper.createGroup([['class', 'fc-whiteboardline-control-box']]);
+    this.controlBox = SvgHelper.createGroup([['class', 'fc-whiteboard-line-control-box']]);
     this.addToVisual(this.controlBox);
 
     this.addControlGrips();

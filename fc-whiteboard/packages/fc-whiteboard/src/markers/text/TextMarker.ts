@@ -100,7 +100,7 @@ export class TextMarker extends RectangularMarkerBase {
 
   private showEditor = () => {
     this.editor = document.createElement('div');
-    this.editor.className = 'fc-whiteboardtext-editor';
+    this.editor.className = 'fc-whiteboard-text-editor';
 
     this.editorTextArea = document.createElement('textarea');
     if (this.text !== this.DEFAULT_TEXT) {
@@ -112,17 +112,17 @@ export class TextMarker extends RectangularMarkerBase {
     document.body.appendChild(this.editor);
 
     const buttons = document.createElement('div');
-    buttons.className = 'fc-whiteboardtext-editor-button-bar';
+    buttons.className = 'fc-whiteboard-text-editor-button-bar';
     this.editor.appendChild(buttons);
 
     const okButton = document.createElement('div');
-    okButton.className = 'fc-whiteboardtext-editor-button';
+    okButton.className = 'fc-whiteboard-text-editor-button';
     okButton.innerHTML = OkIcon;
     okButton.addEventListener('click', this.onEditorOkClick);
     buttons.appendChild(okButton);
 
     const cancelButton = document.createElement('div');
-    cancelButton.className = 'fc-whiteboardtext-editor-button';
+    cancelButton.className = 'fc-whiteboard-text-editor-button';
     cancelButton.innerHTML = CancelIcon;
     cancelButton.addEventListener('click', this.closeEditor);
     buttons.appendChild(cancelButton);

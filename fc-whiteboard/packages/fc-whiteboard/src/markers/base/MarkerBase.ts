@@ -1,3 +1,4 @@
+import { onChangeFunc, EventType } from './../../event/Event';
 import { MarkerType } from './../types';
 import * as uuid from 'uuid/v1';
 import { SvgHelper } from '../../renderer/SvgHelper';
@@ -5,6 +6,7 @@ import { SvgHelper } from '../../renderer/SvgHelper';
 export class MarkerBase {
   id: string = uuid();
   type: MarkerType = 'base';
+  onChange: onChangeFunc = () => {};
 
   public static createMarker = (): MarkerBase => {
     const marker = new MarkerBase();
@@ -30,17 +32,31 @@ export class MarkerBase {
 
   private isDragging: boolean = false;
 
+  public reactToManipulation(type: EventType, { dx, dy }: { dx: number; dy: number }) {
+    if (type === 'move') {
+      this.move(dx, dy);
+    }
+
+    if (type === 'resize') {
+      this.resize(dx, dy);
+    }
+  }
+
   public manipulate = (ev: MouseEvent) => {
     const scale = this.visual.getScreenCTM()!.a;
     const dx = (ev.screenX - this.previousMouseX) / scale;
     const dy = (ev.screenY - this.previousMouseY) / scale;
 
     if (this.isDragging) {
+      this.onChange({ target: 'marker', id: this.id, event: 'move', data: { dx, dy } });
       this.move(dx, dy);
     }
+
     if (this.isResizing) {
+      this.onChange({ target: 'marker', id: this.id, event: 'resize', data: { dx, dy } });
       this.resize(dx, dy);
     }
+
     this.previousMouseX = ev.screenX;
     this.previousMouseY = ev.screenY;
   };

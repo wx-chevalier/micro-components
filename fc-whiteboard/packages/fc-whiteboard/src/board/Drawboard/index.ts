@@ -1,3 +1,6 @@
+import { WhitePage } from './../WhitePage/index';
+import { onChangeFunc } from './../../event/Event';
+import { uuid } from './../../utils/uuid';
 import { SvgHelper } from '../../renderer/SvgHelper';
 import { Synthetizer } from '../../renderer/Synthetizer';
 import { Toolbar } from '../../toolbar/Toolbar';
@@ -18,9 +21,13 @@ const PointerIcon = require('./mouse-pointer.svg');
 const CloseIcon = require('./times.svg');
 
 import './index.less';
-import { eventHub } from 'fc-whiteboard/src/event/EventHub';
 
 export class Drawboard {
+  id: string = uuid();
+
+  /** 句柄 */
+  page: WhitePage;
+
   private target: HTMLImageElement;
   private markerImage: SVGSVGElement;
   private markerImageHolder: HTMLDivElement;
@@ -31,6 +38,13 @@ export class Drawboard {
   private height: number;
 
   private markers: MarkerBase[];
+  get markerMap(): { [key: string]: MarkerBase } {
+    const map = {};
+    this.markers.forEach(marker => {
+      map[marker.id] = marker;
+    });
+    return map;
+  }
   private activeMarker: MarkerBase | null;
 
   private toolbar: Toolbar;
@@ -38,6 +52,7 @@ export class Drawboard {
 
   private completeCallback: (dataUrl: string) => void;
   private cancelCallback: () => void;
+  private onChange: onChangeFunc = () => {};
 
   private toolbars: ToolbarItem[] = [
     {
@@ -78,13 +93,22 @@ export class Drawboard {
 
   private scale = 1.0;
 
-  constructor(target: HTMLImageElement) {
+  constructor(
+    page: WhitePage,
+    target: HTMLImageElement,
+    { onChange }: { onChange?: onChangeFunc } = {}
+  ) {
+    this.page = page;
     this.target = target;
     this.width = target.clientWidth;
     this.height = target.clientHeight;
 
     this.markers = [];
     this.activeMarker = null;
+
+    if (onChange) {
+      this.onChange = onChange;
+    }
   }
 
   public show = (completeCallback: (dataUrl: string) => void, cancelCallback?: () => void) => {
@@ -96,7 +120,9 @@ export class Drawboard {
 
     this.open();
 
-    this.showUI();
+    if (this.page.mode !== 'mirror') {
+      this.showUI();
+    }
   };
 
   public open = () => {
@@ -129,9 +155,15 @@ export class Drawboard {
     }
   };
 
-  public addMarker = (markerType: typeof MarkerBase) => {
+  public addMarker = (markerType: typeof MarkerBase, { id }: { id?: string } = {}) => {
     const marker = markerType.createMarker();
+
+    if (id) {
+      marker.id = id;
+    }
+
     marker.onSelected = this.selectMarker;
+    marker.onChange = this.onChange;
 
     if (marker.defs && marker.defs.length > 0) {
       for (const d of marker.defs) {
@@ -142,7 +174,12 @@ export class Drawboard {
     }
 
     // 触发事件流
-    eventHub.emit('add', marker.type);
+    this.onChange({
+      target: 'drawboard',
+      id: this.id,
+      event: 'add',
+      data: { type: marker.type, id: marker.id }
+    });
 
     this.markers.push(marker);
 
@@ -318,14 +355,14 @@ export class Drawboard {
                     Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji",
                     "Segoe UI Emoji", "Segoe UI Symbol";
             }
-            .fc-whiteboardrect-control-box .fc-whiteboardrect-control-rect {
+            .fc-whiteboard-rect-control-box .fc-whiteboard-rect-control-rect {
                 stroke: black;
                 stroke-width: 1;
                 stroke-opacity: 0.5;
                 stroke-dasharray: 3, 2;
                 fill: transparent;
             }
-            .fc-whiteboardcontrol-grip {
+            .fc-whiteboard-control-grip {
                 fill: #cccccc;
                 stroke: #333333;
                 stroke-width: 2;

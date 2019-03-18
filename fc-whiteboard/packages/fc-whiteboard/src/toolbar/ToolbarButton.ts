@@ -18,7 +18,7 @@ export class ToolbarButton {
   public getElement = (): HTMLElement => {
     const div = document.createElement('div');
     if (this.toolbarItem.name !== 'separator') {
-      div.className = 'fc-whiteboardtoolbar-button';
+      div.className = 'fc-whiteboard-toolbar-button';
       if (this.clickHandler) {
         div.addEventListener('click', (ev: MouseEvent) => {
           if (this.clickHandler) {
@@ -34,7 +34,7 @@ export class ToolbarButton {
         div.innerText = this.toolbarItem.tooltipText;
       }
     } else {
-      div.className = 'fc-whiteboardtoolbar-separator';
+      div.className = 'fc-whiteboard-toolbar-separator';
     }
 
     return div;
