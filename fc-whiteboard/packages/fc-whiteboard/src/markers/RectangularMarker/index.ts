@@ -1,12 +1,12 @@
 import { SvgHelper } from '../../renderer/SvgHelper';
-import { MarkerBase } from './MarkerBase';
+import { BaseMarker } from '../BaseMarker';
 import { RectangularMarkerGrips } from './RectangularMarkerGrips';
-import { ResizeGrip } from './ResizeGrip';
+import { ResizeGrip } from '../BaseMarker/ResizeGrip';
 import { PositionType } from 'fc-whiteboard/src/event/Event';
 
-export class RectangularMarkerBase extends MarkerBase {
-  public static createMarker = (): RectangularMarkerBase => {
-    const marker = new RectangularMarkerBase();
+export class RectangularMarker extends BaseMarker {
+  public static createMarker = (): RectangularMarker => {
+    const marker = new RectangularMarker();
     marker.setup();
     return marker;
   };

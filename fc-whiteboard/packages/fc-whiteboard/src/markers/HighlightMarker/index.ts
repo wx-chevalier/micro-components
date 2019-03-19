@@ -1,11 +1,11 @@
 import { MarkerType } from './../types';
 import { SvgHelper } from '../../renderer/SvgHelper';
-import { RectMarkerBase } from '../rect/RectMarkerBase';
+import { RectBaseMarker } from '../RectMarker/RectBaseMarker';
 
-export class HighlightMarker extends RectMarkerBase {
+export class HighlightMarker extends RectBaseMarker {
   type: MarkerType = 'highlight';
 
-  public static createMarker = (): RectMarkerBase => {
+  public static createMarker = (): RectBaseMarker => {
     const marker = new HighlightMarker();
     marker.setup();
     return marker;

@@ -1,11 +1,11 @@
 import { MarkerType } from './../types';
-import { LineMarkerBase } from '../line/LineMarkerBase';
-import { SvgHelper } from '../../renderer/SvgHelper';
+import { LinearMarker } from '../LinearMarker';
+import { SvgHelper } from 'fc-whiteboard/src/renderer/SvgHelper';
 
-export class ArrowMarker extends LineMarkerBase {
+export class ArrowMarker extends LinearMarker {
   type: MarkerType = 'arrow';
 
-  public static createMarker = (): LineMarkerBase => {
+  public static createMarker = (): LinearMarker => {
     const marker = new ArrowMarker();
     marker.setup();
     return marker;

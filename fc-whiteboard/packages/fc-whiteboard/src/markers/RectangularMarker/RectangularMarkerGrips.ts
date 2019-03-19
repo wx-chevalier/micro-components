@@ -1,4 +1,4 @@
-import { ResizeGrip } from './ResizeGrip';
+import { ResizeGrip } from '../BaseMarker/ResizeGrip';
 
 export class RectangularMarkerGrips {
   public topLeft: ResizeGrip;

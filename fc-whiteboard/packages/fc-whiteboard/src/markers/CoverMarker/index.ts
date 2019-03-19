@@ -1,11 +1,11 @@
 import { MarkerType } from './../types';
 import { SvgHelper } from '../../renderer/SvgHelper';
-import { RectMarkerBase } from '../rect/RectMarkerBase';
+import { RectBaseMarker } from '../RectMarker/RectBaseMarker';
 
-export class CoverMarker extends RectMarkerBase {
+export class CoverMarker extends RectBaseMarker {
   type: MarkerType = 'cover';
 
-  public static createMarker = (): RectMarkerBase => {
+  public static createMarker = (): RectBaseMarker => {
     const marker = new CoverMarker();
     marker.setup();
     return marker;

@@ -1,11 +1,11 @@
-import { RectMarkerBase } from './RectMarkerBase';
 import { MarkerType } from './../types';
-import { SvgHelper } from '../../renderer/SvgHelper';
+import { RectBaseMarker } from './RectBaseMarker';
+import { SvgHelper } from 'fc-whiteboard/src/renderer/SvgHelper';
 
-export class RectMarker extends RectMarkerBase {
+export class RectMarker extends RectBaseMarker {
   type: MarkerType = 'rect';
 
-  public static createMarker = (): RectMarkerBase => {
+  public static createMarker = (): RectBaseMarker => {
     const marker = new RectMarker();
     marker.setup();
     return marker;

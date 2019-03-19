@@ -1,15 +1,16 @@
-import { TextMarker } from './text/TextMarker';
-import { LineMarker } from './line/LineMarker';
-import { ArrowMarker } from './arrow/ArrowMarker';
-import { MarkerBase } from './base/MarkerBase';
-import { CoverMarker } from './cover/CoverMarker';
-import { RectMarker } from './rect/RectMarker';
+import { TextMarker } from './TextMarker/index';
+import { ArrowMarker } from './ArrowMarker/index';
+import { BaseMarker } from './BaseMarker/index';
+import { CoverMarker } from './CoverMarker';
+import { LineMarker } from './LineMarker';
+import { RectMarker } from './RectMarker';
+
 export type MarkerType = 'base' | 'arrow' | 'cover' | 'line' | 'rect' | 'text' | 'highlight';
 
-export function getMarkerByType(type: MarkerType): typeof MarkerBase {
+export function getMarkerByType(type: MarkerType): typeof BaseMarker {
   switch (type) {
     case 'base':
-      return MarkerBase;
+      return BaseMarker;
     case 'arrow':
       return ArrowMarker;
     case 'cover':
@@ -21,6 +22,6 @@ export function getMarkerByType(type: MarkerType): typeof MarkerBase {
     case 'text':
       return TextMarker;
     default:
-      return MarkerBase;
+      return BaseMarker;
   }
 }

@@ -1,11 +1,11 @@
-import { MarkerType } from './../types';
+import { MarkerType } from '../types';
+import { RectangularMarker } from '../RectangularMarker';
 import { SvgHelper } from '../../renderer/SvgHelper';
-import { RectangularMarkerBase } from '../base/RectangularMarkerBase';
 
-const OkIcon = require('./check.svg');
-const CancelIcon = require('./times.svg');
+const OkIcon = require('../../assets/check.svg');
+const CancelIcon = require('../../assets/times.svg');
 
-export class TextMarker extends RectangularMarkerBase {
+export class TextMarker extends RectangularMarker {
   type: MarkerType = 'text';
 
   public static createMarker = (): TextMarker => {

@@ -1,16 +1,16 @@
 import { PositionType } from 'fc-whiteboard/src/event/Event';
-import { onChangeFunc, EventType } from './../../event/Event';
-import { MarkerType } from './../types';
+import { onChangeFunc, EventType } from '../../event/Event';
+import { MarkerType } from '../types';
 import * as uuid from 'uuid/v1';
 import { SvgHelper } from '../../renderer/SvgHelper';
 
-export class MarkerBase {
+export class BaseMarker {
   id: string = uuid();
   type: MarkerType = 'base';
   onChange: onChangeFunc = () => {};
 
-  public static createMarker = (): MarkerBase => {
-    const marker = new MarkerBase();
+  public static createMarker = (): BaseMarker => {
+    const marker = new BaseMarker();
     marker.setup();
     return marker;
   };
@@ -18,7 +18,7 @@ export class MarkerBase {
   public visual: SVGGElement;
   public renderVisual: SVGGElement;
 
-  public onSelected: (marker: MarkerBase) => void;
+  public onSelected: (marker: BaseMarker) => void;
 
   public defs: SVGElement[] = [];
 

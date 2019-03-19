@@ -1,10 +1,10 @@
+import { BaseMarker } from '../BaseMarker';
+import { ResizeGrip } from '../BaseMarker/ResizeGrip';
 import { SvgHelper } from '../../renderer/SvgHelper';
-import { MarkerBase } from '../base/MarkerBase';
-import { ResizeGrip } from '../base/ResizeGrip';
 
-export class LineMarkerBase extends MarkerBase {
-  public static createMarker = (): LineMarkerBase => {
-    const marker = new LineMarkerBase();
+export class LinearMarker extends BaseMarker {
+  public static createMarker = (): LinearMarker => {
+    const marker = new LinearMarker();
     marker.setup();
     return marker;
   };

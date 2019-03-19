@@ -1,3 +1,5 @@
+import { BaseMarker } from './../../markers/BaseMarker/index';
+import { lineMarkerToolbarItem } from './../../toolbar/toolbar-items';
 import { WhitePage } from './../WhitePage/index';
 import { onChangeFunc } from './../../event/Event';
 import { uuid } from './../../utils/uuid';
@@ -6,21 +8,19 @@ import { Synthetizer } from '../../renderer/Synthetizer';
 import { Toolbar } from '../../toolbar/Toolbar';
 import { ToolbarItem } from '../../toolbar/ToolbarItem';
 
-import { MarkerBase } from '../../markers/base/MarkerBase';
-
-import { ArrowMarkerToolbarItem } from '../../markers/arrow/ArrowMarkerToolbarItem';
-import { CoverMarkerToolbarItem } from '../../markers/cover/CoverMarkerToolbarItem';
-import { HighlightMarkerToolbarItem } from '../../markers/highlight/HighlightMarkerToolbarItem';
-import { LineMarkerToolbarItem } from '../../markers/line/LineMarkerToolbarItem';
-import { RectMarkerToolbarItem } from '../../markers/rect/RectMarkerToolbarItem';
-import { TextMarkerToolbarItem } from '../../markers/text/TextMarkerToolbarItem';
-
-const OkIcon = require('./check.svg');
-const DeleteIcon = require('./eraser.svg');
-const PointerIcon = require('./mouse-pointer.svg');
-const CloseIcon = require('./times.svg');
-
 import './index.less';
+import {
+  arrowMarkerToolbarItem,
+  highlightMarkerToolbarItem,
+  textMarkerToolbarItem,
+  coverMarkerToolbarItem,
+  rectMarkerToolbarItem
+} from '../../toolbar/toolbar-items';
+
+const OkIcon = require('../../assets/check.svg');
+const DeleteIcon = require('../../assets/eraser.svg');
+const PointerIcon = require('../../assets/mouse-pointer.svg');
+const CloseIcon = require('../../assets/times.svg');
 
 export class Drawboard {
   id: string = uuid();
@@ -37,15 +37,15 @@ export class Drawboard {
   private width: number;
   private height: number;
 
-  private markers: MarkerBase[];
-  get markerMap(): { [key: string]: MarkerBase } {
+  private markers: BaseMarker[];
+  get markerMap(): { [key: string]: BaseMarker } {
     const map = {};
     this.markers.forEach(marker => {
       map[marker.id] = marker;
     });
     return map;
   }
-  private activeMarker: MarkerBase | null;
+  private activeMarker: BaseMarker | null;
 
   private toolbar: Toolbar;
   private toolbarUI: HTMLElement;
@@ -69,12 +69,12 @@ export class Drawboard {
       name: 'separator',
       tooltipText: ''
     },
-    new RectMarkerToolbarItem(),
-    new CoverMarkerToolbarItem(),
-    new HighlightMarkerToolbarItem(),
-    new LineMarkerToolbarItem(),
-    new ArrowMarkerToolbarItem(),
-    new TextMarkerToolbarItem(),
+    rectMarkerToolbarItem,
+    coverMarkerToolbarItem,
+    highlightMarkerToolbarItem,
+    lineMarkerToolbarItem,
+    arrowMarkerToolbarItem,
+    textMarkerToolbarItem,
     {
       name: 'separator',
       tooltipText: ''
@@ -155,7 +155,7 @@ export class Drawboard {
     }
   };
 
-  public addMarker = (markerType: typeof MarkerBase, { id }: { id?: string } = {}) => {
+  public addMarker = (markerType: typeof BaseMarker, { id }: { id?: string } = {}) => {
     const marker = markerType.createMarker();
 
     if (id) {
@@ -402,14 +402,14 @@ export class Drawboard {
     }
   };
 
-  private selectMarker = (marker: MarkerBase | null) => {
+  private selectMarker = (marker: BaseMarker | null) => {
     if (this.activeMarker && this.activeMarker !== marker) {
       this.activeMarker.deselect();
     }
     this.activeMarker = marker;
   };
 
-  private deleteMarker = (marker: MarkerBase) => {
+  private deleteMarker = (marker: BaseMarker) => {
     this.markerImage.removeChild(marker.visual);
     if (this.activeMarker === marker) {
       this.activeMarker = null;

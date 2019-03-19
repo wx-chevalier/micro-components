@@ -1,10 +1,10 @@
+import { PositionType } from '../../event/Event';
 import { SvgHelper } from '../../renderer/SvgHelper';
-import { RectangularMarkerBase } from '../base/RectangularMarkerBase';
-import { PositionType } from 'fc-whiteboard/src/event/Event';
+import { RectangularMarker } from '../RectangularMarker';
 
-export class RectMarkerBase extends RectangularMarkerBase {
-  public static createMarker = (): RectMarkerBase => {
-    const marker = new RectMarkerBase();
+export class RectBaseMarker extends RectangularMarker {
+  public static createMarker = (): RectBaseMarker => {
+    const marker = new RectBaseMarker();
     marker.setup();
     return marker;
   };
