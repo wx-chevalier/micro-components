@@ -48,6 +48,16 @@ export class WhitePage {
           this.drawboard.addMarker(getMarkerByType(data.type), { id: data.id });
         }
 
+        if (ev.event === 'remove') {
+          const data: { id: string } = ev.data as {
+            id: string;
+          };
+
+          const marker = this.drawboard.markerMap[data.id];
+
+          this.drawboard.deleteMarker(marker);
+        }
+
         if (ev.event === 'move' || ev.event === 'resize') {
           const marker = this.drawboard.markerMap[ev.id];
           marker.reactToManipulation(ev.event, ev.data as any);

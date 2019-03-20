@@ -1,3 +1,4 @@
+import { HighlightMarker } from './HighlightMarker/index';
 import { TextMarker } from './TextMarker/index';
 import { ArrowMarker } from './ArrowMarker/index';
 import { BaseMarker } from './BaseMarker/index';
@@ -9,12 +10,14 @@ export type MarkerType = 'base' | 'arrow' | 'cover' | 'line' | 'rect' | 'text' |
 
 export function getMarkerByType(type: MarkerType): typeof BaseMarker {
   switch (type) {
-    case 'base':
-      return BaseMarker;
     case 'arrow':
       return ArrowMarker;
+    case 'base':
+      return BaseMarker;
     case 'cover':
       return CoverMarker;
+    case 'highlight':
+      return HighlightMarker;
     case 'line':
       return LineMarker;
     case 'rect':

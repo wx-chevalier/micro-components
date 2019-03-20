@@ -207,6 +207,15 @@ export class Drawboard {
 
   public deleteActiveMarker = () => {
     if (this.activeMarker) {
+      // 触发事件
+      if (this.onChange) {
+        this.onChange({
+          event: 'remove',
+          id: this.id,
+          target: 'drawboard',
+          data: { id: this.activeMarker.id }
+        });
+      }
       this.deleteMarker(this.activeMarker);
     }
   };
@@ -418,7 +427,7 @@ export class Drawboard {
     this.activeMarker = marker;
   };
 
-  private deleteMarker = (marker: BaseMarker) => {
+  public deleteMarker = (marker: BaseMarker) => {
     this.markerImage.removeChild(marker.visual);
     if (this.activeMarker === marker) {
       this.activeMarker = null;
