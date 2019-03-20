@@ -1,8 +1,8 @@
-import { SvgHelper } from '../../renderer/SvgHelper';
-import { BaseMarker } from '../BaseMarker';
 import { RectangularMarkerGrips } from './RectangularMarkerGrips';
+import { BaseMarker } from '../BaseMarker';
 import { ResizeGrip } from '../BaseMarker/ResizeGrip';
-import { PositionType } from 'fc-whiteboard/src/event/Event';
+import { PositionType } from '../../event/Event';
+import { SvgHelper } from '../../renderer/SvgHelper';
 
 export class RectangularMarker extends BaseMarker {
   public static createMarker = (): RectangularMarker => {

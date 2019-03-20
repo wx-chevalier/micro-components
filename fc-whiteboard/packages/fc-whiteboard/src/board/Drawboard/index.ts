@@ -94,12 +94,16 @@ export class Drawboard {
   private scale = 1.0;
 
   constructor(
-    page: WhitePage,
     target: HTMLImageElement,
-    { onChange }: { onChange?: onChangeFunc } = {}
+    { page, onChange }: { page?: WhitePage; onChange?: onChangeFunc } = {}
   ) {
-    this.page = page;
+    if (page) {
+      this.page = page;
+    }
+
     this.target = target;
+
+    // 如果仅传入图片地址或者 Blob，则必须为全屏模式
     this.width = target.clientWidth;
     this.height = target.clientHeight;
 
@@ -157,6 +161,11 @@ export class Drawboard {
 
   public addMarker = (markerType: typeof BaseMarker, { id }: { id?: string } = {}) => {
     const marker = markerType.createMarker();
+
+    // 假如 Drawboard 存在 Page 引用，则传导给 Marker
+    if (this.page) {
+      marker.page = this.page;
+    }
 
     if (id) {
       marker.id = id;

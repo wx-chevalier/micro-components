@@ -1,6 +1,7 @@
 import { BaseMarker } from '../BaseMarker';
 import { ResizeGrip } from '../BaseMarker/ResizeGrip';
 import { SvgHelper } from '../../renderer/SvgHelper';
+import { PositionType } from 'fc-whiteboard/src/event/Event';
 
 export class LinearMarker extends BaseMarker {
   public static createMarker = (): LinearMarker => {
@@ -17,8 +18,7 @@ export class LinearMarker extends BaseMarker {
 
   private controlBox: SVGGElement;
 
-  private controlGrip1: ResizeGrip;
-  private controlGrip2: ResizeGrip;
+  private controlGrips: { left: ResizeGrip; right: ResizeGrip };
   private activeGrip: ResizeGrip | null;
 
   private x1: number = 0;
@@ -56,10 +56,10 @@ export class LinearMarker extends BaseMarker {
     this.addControlBox();
   }
 
-  protected resize(x: number, y: number) {
+  protected resize(x: number, y: number, onPosition?: (pos: PositionType) => void) {
     if (this.activeGrip) {
       if (
-        this.activeGrip === this.controlGrip1 &&
+        this.activeGrip === this.controlGrips.left &&
         this.getLineLength(this.x1 + x, this.y1 + 1, this.x2, this.y2) >= this.MIN_LENGTH
       ) {
         this.x1 += x;
@@ -68,8 +68,11 @@ export class LinearMarker extends BaseMarker {
         this.markerBgLine.setAttribute('y1', this.y1.toString());
         this.markerLine.setAttribute('x1', this.x1.toString());
         this.markerLine.setAttribute('y1', this.y1.toString());
+        if (onPosition) {
+          onPosition('left');
+        }
       } else if (
-        this.activeGrip === this.controlGrip2 &&
+        this.activeGrip === this.controlGrips.right &&
         this.getLineLength(this.x1, this.y1, this.x2 + x, this.y2 + y) >= this.MIN_LENGTH
       ) {
         this.x2 += x;
@@ -78,10 +81,23 @@ export class LinearMarker extends BaseMarker {
         this.markerBgLine.setAttribute('y2', this.y2.toString());
         this.markerLine.setAttribute('x2', this.x2.toString());
         this.markerLine.setAttribute('y2', this.y2.toString());
+        if (onPosition) {
+          onPosition('right');
+        }
       }
     }
 
     this.adjustControlBox();
+  }
+
+  protected resizeByEvent(x: number, y: number, pos?: PositionType) {
+    if (pos === 'left') {
+      this.activeGrip = this.controlGrips.left;
+    } else {
+      this.activeGrip = this.controlGrips.right;
+    }
+
+    this.resize(x, y);
   }
 
   private getLineLength = (x1: number, y1: number, x2: number, y2: number): number => {
@@ -103,8 +119,10 @@ export class LinearMarker extends BaseMarker {
   };
 
   private addControlGrips = () => {
-    this.controlGrip1 = this.createGrip();
-    this.controlGrip2 = this.createGrip();
+    this.controlGrips = {
+      left: this.createGrip(),
+      right: this.createGrip()
+    };
 
     this.positionGrips();
   };
@@ -126,15 +144,15 @@ export class LinearMarker extends BaseMarker {
   };
 
   private positionGrips = () => {
-    const gripSize = this.controlGrip1.GRIP_SIZE;
+    const gripSize = this.controlGrips.left.GRIP_SIZE;
 
     const x1 = this.x1 - gripSize / 2;
     const y1 = this.y1 - gripSize / 2;
     const x2 = this.x2 - gripSize / 2;
     const y2 = this.y2 - gripSize / 2;
 
-    this.positionGrip(this.controlGrip1.visual, x1, y1);
-    this.positionGrip(this.controlGrip2.visual, x2, y2);
+    this.positionGrip(this.controlGrips.left.visual, x1, y1);
+    this.positionGrip(this.controlGrips.right.visual, x2, y2);
   };
 
   private positionGrip = (grip: SVGGraphicsElement, x: number, y: number) => {
@@ -146,9 +164,9 @@ export class LinearMarker extends BaseMarker {
   private gripMouseDown = (ev: MouseEvent) => {
     this.isResizing = true;
     this.activeGrip =
-      (ev.target as SVGGraphicsElement) === this.controlGrip1.visual
-        ? this.controlGrip1
-        : this.controlGrip2;
+      (ev.target as SVGGraphicsElement) === this.controlGrips.left.visual
+        ? this.controlGrips.left
+        : this.controlGrips.right;
     this.previousMouseX = ev.screenX;
     this.previousMouseY = ev.screenY;
     ev.stopPropagation();

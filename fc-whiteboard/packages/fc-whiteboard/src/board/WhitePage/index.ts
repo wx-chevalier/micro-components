@@ -23,11 +23,12 @@ export class WhitePage {
 
     if (this.mode === 'master') {
       if (eventHub) {
-        this.drawboard = new Drawboard(this, target, {
+        this.drawboard = new Drawboard(target, {
+          page: this,
           onChange: ev => eventHub.emit('change', ev)
         });
       } else {
-        this.drawboard = new Drawboard(this, target);
+        this.drawboard = new Drawboard(target, { page: this });
       }
     }
 
@@ -36,7 +37,7 @@ export class WhitePage {
         throw new Error('Invalid eventHub');
       }
 
-      this.drawboard = new Drawboard(this, target);
+      this.drawboard = new Drawboard(target, { page: this });
 
       eventHub.on('change', (ev: ChangeEvent) => {
         if (ev.event === 'add') {
