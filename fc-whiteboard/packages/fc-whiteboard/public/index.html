@@ -5,7 +5,16 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>fc-whiteboard</title>
     <style>
-      .image {
+      #demos {
+        display: flex;
+        align-items: center;
+      }
+
+      #demos a {
+        margin-left: 16px;
+      }
+
+      #root {
         width: 500px;
         height: 500px;
         top: 100px;
@@ -16,24 +25,15 @@
   <body>
     <body>
       <noscript>You need to enable JavaScript to run this app.</noscript>
-      <div id="root">
-        <img
-          id="image1"
-          class="image"
-          style="left:100px"
-          src="https://i.postimg.cc/SNDkCfXD/image.png"
-        />
-        <img
-          id="image2"
-          class="image"
-          style="left:800px"
-          src="https://i.postimg.cc/SNDkCfXD/image.png"
-        />
+      <div id="demos">
+        <h3>Other Demos</h3>
+        <a href="./mirror.html">Mirror</a>
       </div>
+      <div id="root"></div>
       <script>
         window.__DEV_APP__ = {};
       </script>
-      <script src="./index.js"></script>
+      <script src="./mirror.js"></script>
     </body>
   </body>
 </html>

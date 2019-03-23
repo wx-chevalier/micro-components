@@ -1,6 +1,7 @@
 import { MarkerType } from '../types';
 import { RectangularMarker } from '../RectangularMarker';
 import { SvgHelper } from '../../renderer/SvgHelper';
+import { PositionType } from 'fc-whiteboard/src/event/Event';
 
 const OkIcon = require('../../assets/check.svg');
 const CancelIcon = require('../../assets/times.svg');
@@ -13,6 +14,12 @@ export class TextMarker extends RectangularMarker {
     marker.setup();
     return marker;
   };
+
+  /** 设置文本 */
+  public setText(text: string) {
+    this.text = text;
+    this.renderText();
+  }
 
   protected readonly MIN_SIZE = 50;
 
@@ -41,8 +48,9 @@ export class TextMarker extends RectangularMarker {
     this.visual.addEventListener('touchstart', this.onTap);
   }
 
-  protected resize(x: number, y: number) {
-    super.resize(x, y);
+  protected resize(x: number, y: number, onPosition?: (pos: PositionType) => void) {
+    super.resize(x, y, onPosition);
+
     this.sizeText();
   }
 
@@ -128,12 +136,17 @@ export class TextMarker extends RectangularMarker {
     buttons.appendChild(cancelButton);
   };
 
+  /** 响应文本输入的事件 */
   private onEditorOkClick = (ev: MouseEvent | null) => {
     if (this.editorTextArea.value.trim()) {
       this.text = this.editorTextArea.value;
     } else {
       this.text = this.DEFAULT_TEXT;
     }
+
+    // 触发文本修改时间
+    this.onChange({ target: 'marker', id: this.id, event: 'changeText', data: this.text });
+
     this.renderText();
     this.closeEditor();
   };

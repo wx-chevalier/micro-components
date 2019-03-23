@@ -5,7 +5,7 @@ const devConfig = require('../../../../scripts/webpack/webpack.config.dev');
 
 module.exports = merge(devConfig, {
   entry: {
-    index: path.resolve(__dirname, '../../example')
+    mirror: path.resolve(__dirname, '../../example/mirror/index.ts')
   },
   devServer: {
     contentBase: path.resolve(__dirname, '../../public')

@@ -1,41 +1,22 @@
+import { WhitePageSource } from './../types';
+import { Baseboard } from './../Baseboard/index';
 import { BaseMarker } from './../../markers/BaseMarker/index';
-import { lineMarkerToolbarItem } from './../../toolbar/toolbar-items';
+import { getToolbars } from './../../toolbar/toolbar-items';
 import { WhitePage } from './../WhitePage/index';
 import { onChangeFunc } from './../../event/Event';
 import { uuid } from './../../utils/uuid';
-import { SvgHelper } from '../../renderer/SvgHelper';
+
 import { Synthetizer } from '../../renderer/Synthetizer';
 import { Toolbar } from '../../toolbar/Toolbar';
 import { ToolbarItem } from '../../toolbar/ToolbarItem';
 
 import './index.less';
-import {
-  arrowMarkerToolbarItem,
-  highlightMarkerToolbarItem,
-  textMarkerToolbarItem,
-  coverMarkerToolbarItem,
-  rectMarkerToolbarItem
-} from '../../toolbar/toolbar-items';
 
-const OkIcon = require('../../assets/check.svg');
-const DeleteIcon = require('../../assets/eraser.svg');
-const PointerIcon = require('../../assets/mouse-pointer.svg');
-const CloseIcon = require('../../assets/times.svg');
-
-export class Drawboard {
+export class Drawboard extends Baseboard {
   id: string = uuid();
 
   /** 句柄 */
   page: WhitePage;
-
-  private target: HTMLImageElement;
-  private markerImage: SVGSVGElement;
-  private markerImageHolder: HTMLDivElement;
-  private defs: SVGDefsElement;
-
-  private targetRect: ClientRect;
-  private width: number;
-  private height: number;
 
   private markers: BaseMarker[];
   get markerMap(): { [key: string]: BaseMarker } {
@@ -50,62 +31,23 @@ export class Drawboard {
   private toolbar: Toolbar;
   private toolbarUI: HTMLElement;
 
-  private completeCallback: (dataUrl: string) => void;
-  private cancelCallback: () => void;
+  /** 回调 */
+  private onComplete: (dataUrl: string) => void;
   private onChange: onChangeFunc = () => {};
+  private onCancel: () => void;
 
-  private toolbars: ToolbarItem[] = [
-    {
-      icon: PointerIcon,
-      name: 'pointer',
-      tooltipText: 'Pointer'
-    },
-    {
-      icon: DeleteIcon,
-      name: 'delete',
-      tooltipText: 'Delete'
-    },
-    {
-      name: 'separator',
-      tooltipText: ''
-    },
-    rectMarkerToolbarItem,
-    coverMarkerToolbarItem,
-    highlightMarkerToolbarItem,
-    lineMarkerToolbarItem,
-    arrowMarkerToolbarItem,
-    textMarkerToolbarItem,
-    {
-      name: 'separator',
-      tooltipText: ''
-    },
-    {
-      icon: OkIcon,
-      name: 'ok',
-      tooltipText: 'OK'
-    },
-    {
-      icon: CloseIcon,
-      name: 'close',
-      tooltipText: 'Close'
-    }
-  ];
-
+  private toolbars: ToolbarItem[] = getToolbars();
   private scale = 1.0;
 
   constructor(
-    target: HTMLImageElement,
+    source: WhitePageSource,
     { page, onChange }: { page?: WhitePage; onChange?: onChangeFunc } = {}
   ) {
+    super(source);
+
     if (page) {
       this.page = page;
     }
-
-    this.target = target;
-
-    // 如果仅传入图片地址或者 Blob，则必须为全屏模式
-    this.width = target.clientWidth;
-    this.height = target.clientHeight;
 
     this.markers = [];
     this.activeMarker = null;
@@ -115,11 +57,11 @@ export class Drawboard {
     }
   }
 
-  public show = (completeCallback: (dataUrl: string) => void, cancelCallback?: () => void) => {
-    this.completeCallback = completeCallback;
+  public show = (onComplete: (dataUrl: string) => void, onCancel?: () => void) => {
+    this.onComplete = onComplete;
 
-    if (cancelCallback) {
-      this.cancelCallback = cancelCallback;
+    if (onCancel) {
+      this.onCancel = onCancel;
     }
 
     this.open();
@@ -132,18 +74,18 @@ export class Drawboard {
   public open = () => {
     this.setTargetRect();
 
-    this.initMarkerCanvas();
+    this.initBoard();
     this.attachEvents();
     this.setStyles();
 
     window.addEventListener('resize', this.adjustUI);
   };
 
-  public render = (completeCallback: (dataUrl: string) => void, cancelCallback?: () => void) => {
-    this.completeCallback = completeCallback;
+  public render = (onComplete: (dataUrl: string) => void, onCancel?: () => void) => {
+    this.onComplete = onComplete;
 
-    if (cancelCallback) {
-      this.cancelCallback = cancelCallback;
+    if (onCancel) {
+      this.onCancel = onCancel;
     }
 
     this.selectMarker(null);
@@ -154,8 +96,8 @@ export class Drawboard {
     if (this.toolbarUI) {
       document.body.removeChild(this.toolbarUI);
     }
-    if (this.markerImage) {
-      document.body.removeChild(this.markerImageHolder);
+    if (this.board) {
+      document.body.removeChild(this.boardHolder);
     }
   };
 
@@ -176,7 +118,7 @@ export class Drawboard {
 
     if (marker.defs && marker.defs.length > 0) {
       for (const d of marker.defs) {
-        if (d.id && !this.markerImage.getElementById(d.id)) {
+        if (d.id && !this.board.getElementById(d.id)) {
           this.defs.appendChild(d);
         }
       }
@@ -194,7 +136,7 @@ export class Drawboard {
 
     this.selectMarker(marker);
 
-    this.markerImage.appendChild(marker.visual);
+    this.board.appendChild(marker.visual);
 
     const bbox = marker.visual.getBBox();
     const x = this.width / 2 / this.scale - bbox.width / 2;
@@ -231,13 +173,13 @@ export class Drawboard {
 
   private startRender = (done: (dataUrl: string) => void) => {
     const renderer = new Synthetizer();
-    renderer.rasterize(this.target, this.markerImage, done);
+    renderer.rasterize(this.target, this.board, done);
   };
 
   private attachEvents = () => {
-    this.markerImage.addEventListener('mousedown', this.mouseDown);
-    this.markerImage.addEventListener('mousemove', this.mouseMove);
-    this.markerImage.addEventListener('mouseup', this.mouseUp);
+    this.board.addEventListener('mousedown', this.mouseDown);
+    this.board.addEventListener('mousemove', this.mouseMove);
+    this.board.addEventListener('mouseup', this.mouseUp);
   };
 
   private mouseDown = (ev: MouseEvent) => {
@@ -261,35 +203,6 @@ export class Drawboard {
     }
   };
 
-  private initMarkerCanvas = () => {
-    this.markerImageHolder = document.createElement('div');
-    // fix for Edge's touch behavior
-    this.markerImageHolder.style.setProperty('touch-action', 'none');
-    this.markerImageHolder.style.setProperty('-ms-touch-action', 'none');
-
-    this.markerImage = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    this.markerImage.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    this.markerImage.setAttribute('width', this.width.toString());
-    this.markerImage.setAttribute('height', this.height.toString());
-    this.markerImage.setAttribute(
-      'viewBox',
-      '0 0 ' + this.width.toString() + ' ' + this.height.toString()
-    );
-
-    this.markerImageHolder.style.position = 'absolute';
-    this.markerImageHolder.style.width = `${this.width}px`;
-    this.markerImageHolder.style.height = `${this.height}px`;
-    this.markerImageHolder.style.transformOrigin = 'top left';
-    this.positionMarkerImage();
-
-    this.defs = SvgHelper.createDefs();
-    this.markerImage.appendChild(this.defs);
-
-    this.markerImageHolder.appendChild(this.markerImage);
-
-    document.body.appendChild(this.markerImageHolder);
-  };
-
   private adjustUI = (ev: UIEvent) => {
     this.adjustSize();
     this.positionUI();
@@ -299,25 +212,20 @@ export class Drawboard {
     this.width = this.target.clientWidth;
     this.height = this.target.clientHeight;
 
-    const scale = this.target.clientWidth / this.markerImageHolder.clientWidth;
+    const scale = this.target.clientWidth / this.boardHolder.clientWidth;
     if (scale !== 1.0) {
       this.scale *= scale;
-      this.markerImageHolder.style.width = `${this.width}px`;
-      this.markerImageHolder.style.height = `${this.height}px`;
+      this.boardHolder.style.width = `${this.width}px`;
+      this.boardHolder.style.height = `${this.height}px`;
 
-      this.markerImageHolder.style.transform = `scale(${this.scale})`;
+      this.boardHolder.style.transform = `scale(${this.scale})`;
     }
   };
 
   private positionUI = () => {
     this.setTargetRect();
-    this.positionMarkerImage();
+    this.positionBoard();
     this.positionToolbar();
-  };
-
-  private positionMarkerImage = () => {
-    this.markerImageHolder.style.top = this.targetRect.top + 'px';
-    this.markerImageHolder.style.left = this.targetRect.left + 'px';
   };
 
   private positionToolbar = () => {
@@ -387,7 +295,7 @@ export class Drawboard {
             }
         `;
 
-    this.markerImage.appendChild(editorStyleSheet);
+    this.board.appendChild(editorStyleSheet);
   };
 
   private toolbarClick = (ev: MouseEvent, toolbarItem: ToolbarItem) => {
@@ -428,7 +336,7 @@ export class Drawboard {
   };
 
   public deleteMarker = (marker: BaseMarker) => {
-    this.markerImage.removeChild(marker.visual);
+    this.board.removeChild(marker.visual);
     if (this.activeMarker === marker) {
       this.activeMarker = null;
     }
@@ -442,17 +350,17 @@ export class Drawboard {
 
   private cancel = () => {
     this.close();
-    if (this.cancelCallback) {
-      this.cancelCallback();
+    if (this.onCancel) {
+      this.onCancel();
     }
   };
 
   private renderFinished = (dataUrl: string) => {
-    this.completeCallback(dataUrl);
+    this.onComplete(dataUrl);
   };
 
   private renderFinishedClose = (dataUrl: string) => {
     this.close();
-    this.completeCallback(dataUrl);
+    this.onComplete(dataUrl);
   };
 }

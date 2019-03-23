@@ -30,12 +30,11 @@ export class BaseMarker {
   protected height: number = 50;
 
   protected isActive: boolean = true;
+  protected isDragging: boolean = false;
   protected isResizing: boolean = false;
 
   protected previousMouseX: number = 0;
   protected previousMouseY: number = 0;
-
-  private isDragging: boolean = false;
 
   public reactToManipulation(
     type: EventType,
@@ -50,6 +49,7 @@ export class BaseMarker {
     }
   }
 
+  /** 响应元素视图状态变化 */
   public manipulate = (ev: MouseEvent) => {
     const scale = this.visual.getScreenCTM()!.a;
     const dx = (ev.screenX - this.previousMouseX) / scale;

@@ -1,5 +1,5 @@
 export type TargetType = 'page' | 'drawboard' | 'marker';
-export type EventType = 'add' | 'resize' | 'move' | 'remove';
+export type EventType = 'add' | 'resize' | 'move' | 'remove' | 'changeText';
 export type PositionType =
   | 'left'
   | 'right'

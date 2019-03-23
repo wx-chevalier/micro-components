@@ -3,4 +3,4 @@ export type WhiteboardMode = 'master' | 'mirror';
 
 export type RenderCallback = (container: HTMLElement) => void;
 
-export type WhitePageSource = string | RenderCallback;
+export type WhitePageSource = string | HTMLImageElement | RenderCallback;
