@@ -1,8 +1,11 @@
+import { uuid } from './../../utils/uuid';
 import { WhitePageSource } from './../types';
 import { SvgHelper } from './../../renderer/SvgHelper/index';
-import { isHTMLImageElement } from 'fc-whiteboard/src/utils/validator';
+
 /** 基础的绘制版 */
 export class Baseboard {
+  id: string = uuid();
+
   /** 元素 */
   source: WhitePageSource;
 
@@ -10,7 +13,7 @@ export class Baseboard {
   target: HTMLImageElement;
   targetRect: ClientRect;
 
-  board: SVGSVGElement;
+  boardCanvas: SVGSVGElement;
   boardHolder: HTMLDivElement;
   defs: SVGDefsElement;
 
@@ -18,8 +21,10 @@ export class Baseboard {
   height: number;
 
   constructor(source: WhitePageSource) {
-    if (isHTMLImageElement(source)) {
-      this.target = source as HTMLImageElement;
+    this.source = source;
+
+    if (source.imgEle) {
+      this.target = source.imgEle!;
 
       // 如果仅传入图片地址或者 Blob，则必须为全屏模式
       this.width = this.target.clientWidth;
@@ -28,16 +33,20 @@ export class Baseboard {
   }
 
   protected initBoard = () => {
+    // init holder
     this.boardHolder = document.createElement('div');
+    this.boardHolder.id = `fcw-board-holder-${this.id}`;
     // fix for Edge's touch behavior
     this.boardHolder.style.setProperty('touch-action', 'none');
     this.boardHolder.style.setProperty('-ms-touch-action', 'none');
+    document.body.appendChild(this.boardHolder);
 
-    this.board = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    this.board.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    this.board.setAttribute('width', this.width.toString());
-    this.board.setAttribute('height', this.height.toString());
-    this.board.setAttribute(
+    // init canvas
+    this.boardCanvas = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    this.boardCanvas.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    this.boardCanvas.setAttribute('width', this.width.toString());
+    this.boardCanvas.setAttribute('height', this.height.toString());
+    this.boardCanvas.setAttribute(
       'viewBox',
       '0 0 ' + this.width.toString() + ' ' + this.height.toString()
     );
@@ -47,13 +56,9 @@ export class Baseboard {
     this.boardHolder.style.height = `${this.height}px`;
     this.boardHolder.style.transformOrigin = 'top left';
     this.positionBoard();
-
     this.defs = SvgHelper.createDefs();
-    this.board.appendChild(this.defs);
-
-    this.boardHolder.appendChild(this.board);
-
-    document.body.appendChild(this.boardHolder);
+    this.boardCanvas.appendChild(this.defs);
+    this.boardHolder.appendChild(this.boardCanvas);
   };
 
   protected positionBoard = () => {

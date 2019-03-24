@@ -1,9 +1,16 @@
+import { isHTMLImageElement } from 'fc-whiteboard/src/utils/validator';
+
+/** 图片导出 */
 export class Synthetizer {
   public rasterize(
-    target: HTMLImageElement,
+    target: HTMLImageElement | HTMLDivElement,
     markerImage: SVGSVGElement,
     done: (dataUrl: string) => void
   ) {
+    if (!isHTMLImageElement(target)) {
+      throw new Error('Error: only support export HTMLImageElement');
+    }
+
     const canvas = document.createElement('canvas');
     canvas.width = markerImage.width.baseVal.value;
     canvas.height = markerImage.height.baseVal.value;
@@ -16,7 +23,7 @@ export class Synthetizer {
       throw new Error('Invalid ctx');
     }
 
-    ctx.drawImage(target, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(target as HTMLImageElement, 0, 0, canvas.width, canvas.height);
 
     const DOMURL = window.URL; // || window.webkitURL || window;
 

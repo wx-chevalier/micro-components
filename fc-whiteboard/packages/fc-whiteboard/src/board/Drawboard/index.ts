@@ -4,7 +4,6 @@ import { BaseMarker } from './../../markers/BaseMarker/index';
 import { getToolbars } from './../../toolbar/toolbar-items';
 import { WhitePage } from './../WhitePage/index';
 import { onChangeFunc } from './../../event/Event';
-import { uuid } from './../../utils/uuid';
 
 import { Synthetizer } from '../../renderer/Synthetizer';
 import { Toolbar } from '../../toolbar/Toolbar';
@@ -13,8 +12,6 @@ import { ToolbarItem } from '../../toolbar/ToolbarItem';
 import './index.less';
 
 export class Drawboard extends Baseboard {
-  id: string = uuid();
-
   /** 句柄 */
   page: WhitePage;
 
@@ -32,7 +29,7 @@ export class Drawboard extends Baseboard {
   private toolbarUI: HTMLElement;
 
   /** 回调 */
-  private onComplete: (dataUrl: string) => void;
+  private onComplete: (dataUrl: string) => void = () => {};
   private onChange: onChangeFunc = () => {};
   private onCancel: () => void;
 
@@ -57,21 +54,17 @@ export class Drawboard extends Baseboard {
     }
   }
 
-  public show = (onComplete: (dataUrl: string) => void, onCancel?: () => void) => {
-    this.onComplete = onComplete;
+  /** @region LifeCycle open - hide - show - ... - close */
+  /** 打开画板 */
+  public open = (onComplete?: (dataUrl: string) => void, onCancel?: () => void) => {
+    if (onComplete) {
+      this.onComplete = onComplete;
+    }
 
     if (onCancel) {
       this.onCancel = onCancel;
     }
 
-    this.open();
-
-    if (this.page.mode !== 'mirror') {
-      this.showUI();
-    }
-  };
-
-  public open = () => {
     this.setTargetRect();
 
     this.initBoard();
@@ -79,6 +72,36 @@ export class Drawboard extends Baseboard {
     this.setStyles();
 
     window.addEventListener('resize', this.adjustUI);
+
+    if (this.page.mode !== 'mirror') {
+      this.showUI();
+    }
+  };
+
+  public hide = () => {
+    if (this.source.imgSrc) {
+      this.target.style.display = 'none';
+    }
+    this.boardHolder.style.display = 'none';
+    this.toolbar.hide();
+  };
+
+  public show = () => {
+    if (this.source.imgSrc) {
+      this.target.style.display = 'block';
+    }
+
+    this.boardHolder.style.display = 'block';
+    this.toolbar.show();
+  };
+
+  public close = () => {
+    if (this.toolbarUI) {
+      document.body.removeChild(this.toolbarUI);
+    }
+    if (this.boardCanvas) {
+      document.body.removeChild(this.boardHolder);
+    }
   };
 
   public render = (onComplete: (dataUrl: string) => void, onCancel?: () => void) => {
@@ -90,15 +113,6 @@ export class Drawboard extends Baseboard {
 
     this.selectMarker(null);
     this.startRender(this.renderFinished);
-  };
-
-  public close = () => {
-    if (this.toolbarUI) {
-      document.body.removeChild(this.toolbarUI);
-    }
-    if (this.board) {
-      document.body.removeChild(this.boardHolder);
-    }
   };
 
   public addMarker = (markerType: typeof BaseMarker, { id }: { id?: string } = {}) => {
@@ -118,7 +132,7 @@ export class Drawboard extends Baseboard {
 
     if (marker.defs && marker.defs.length > 0) {
       for (const d of marker.defs) {
-        if (d.id && !this.board.getElementById(d.id)) {
+        if (d.id && !this.boardCanvas.getElementById(d.id)) {
           this.defs.appendChild(d);
         }
       }
@@ -136,7 +150,7 @@ export class Drawboard extends Baseboard {
 
     this.selectMarker(marker);
 
-    this.board.appendChild(marker.visual);
+    this.boardCanvas.appendChild(marker.visual);
 
     const bbox = marker.visual.getBBox();
     const x = this.width / 2 / this.scale - bbox.width / 2;
@@ -173,13 +187,13 @@ export class Drawboard extends Baseboard {
 
   private startRender = (done: (dataUrl: string) => void) => {
     const renderer = new Synthetizer();
-    renderer.rasterize(this.target, this.board, done);
+    renderer.rasterize(this.target, this.boardCanvas, done);
   };
 
   private attachEvents = () => {
-    this.board.addEventListener('mousedown', this.mouseDown);
-    this.board.addEventListener('mousemove', this.mouseMove);
-    this.board.addEventListener('mouseup', this.mouseUp);
+    this.boardCanvas.addEventListener('mousedown', this.mouseDown);
+    this.boardCanvas.addEventListener('mousemove', this.mouseMove);
+    this.boardCanvas.addEventListener('mouseup', this.mouseUp);
   };
 
   private mouseDown = (ev: MouseEvent) => {
@@ -295,7 +309,7 @@ export class Drawboard extends Baseboard {
             }
         `;
 
-    this.board.appendChild(editorStyleSheet);
+    this.boardCanvas.appendChild(editorStyleSheet);
   };
 
   private toolbarClick = (ev: MouseEvent, toolbarItem: ToolbarItem) => {
@@ -336,7 +350,7 @@ export class Drawboard extends Baseboard {
   };
 
   public deleteMarker = (marker: BaseMarker) => {
-    this.board.removeChild(marker.visual);
+    this.boardCanvas.removeChild(marker.visual);
     if (this.activeMarker === marker) {
       this.activeMarker = null;
     }

@@ -875,6 +875,11 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
+"@types/siema@^1.4.3":
+  version "1.4.3"
+  resolved "http://registry.npm.taobao.org/@types/siema/download/@types/siema-1.4.3.tgz#62c7208d1545b5451ac0a3d868c6ee1b78d63851"
+  integrity sha1-YscgjRVFtUUawKPYaMbuG3jWOFE=
+
 "@types/uuid@^3.4.4":
   version "3.4.4"
   resolved "http://registry.npm.taobao.org/@types/uuid/download/@types/uuid-3.4.4.tgz#7af69360fa65ef0decb41fd150bf4ca5c0cefdf5"
@@ -9286,6 +9291,11 @@ shellwords@^0.1.1:
   version "0.1.1"
   resolved "http://registry.npm.taobao.org/shellwords/download/shellwords-0.1.1.tgz#d6b9181c1a48d397324c84871efbcfc73fc0654b"
   integrity sha1-1rkYHBpI05cyTISHHvvPxz/AZUs=
+
+siema@^1.5.1:
+  version "1.5.1"
+  resolved "http://registry.npm.taobao.org/siema/download/siema-1.5.1.tgz#eff312b77e8340fa4d81d5d053ebbeb9113ff888"
+  integrity sha1-7/MSt36DQPpNgdXQU+u+uRE/+Ig=
 
 signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"

@@ -38,6 +38,7 @@
     "prop-types": "^15.6.2",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
+    "siema": "^1.5.1",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
@@ -46,6 +47,7 @@
     "@types/jest": "23.3.12",
     "@types/react-dom": "^16.0.11",
     "@types/react-router-dom": "^4.3.1",
+    "@types/siema": "^1.4.3",
     "@types/uuid": "^3.4.4",
     "autoprefixer": "9.4.4",
     "awesome-typescript-loader": "^5.2.1",
