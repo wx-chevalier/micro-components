@@ -3,10 +3,12 @@ import { BaseMarker } from '../BaseMarker';
 import { ResizeGrip } from '../BaseMarker/ResizeGrip';
 import { PositionType } from '../../event/Event';
 import { SvgHelper } from '../../renderer/SvgHelper';
+import { WhitePage } from 'fc-whiteboard/src/board/WhitePage';
 
 export class RectangularMarker extends BaseMarker {
-  public static createMarker = (): RectangularMarker => {
+  public static createMarker = (page?: WhitePage): RectangularMarker => {
     const marker = new RectangularMarker();
+    marker.page = page;
     marker.setup();
     return marker;
   };
@@ -40,6 +42,10 @@ export class RectangularMarker extends BaseMarker {
     super.setup();
 
     this.addControlBox();
+
+    if (this.page && this.page.mode === 'mirror') {
+      this.controlBox.style.display = 'none';
+    }
   }
 
   protected resizeByEvent(x: number, y: number, pos: PositionType) {

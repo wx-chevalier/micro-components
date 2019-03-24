@@ -1,11 +1,13 @@
+import { WhitePage } from './../../board/WhitePage/index';
 import { BaseMarker } from '../BaseMarker';
 import { ResizeGrip } from '../BaseMarker/ResizeGrip';
 import { SvgHelper } from '../../renderer/SvgHelper';
 import { PositionType } from 'fc-whiteboard/src/event/Event';
 
 export class LinearMarker extends BaseMarker {
-  public static createMarker = (): LinearMarker => {
+  public static createMarker = (page?: WhitePage): LinearMarker => {
     const marker = new LinearMarker();
+    marker.page = page;
     marker.setup();
     return marker;
   };
@@ -54,6 +56,10 @@ export class LinearMarker extends BaseMarker {
     this.addToRenderVisual(this.markerLine);
 
     this.addControlBox();
+
+    if (this.page && this.page.mode === 'mirror') {
+      this.controlBox.style.display = 'none';
+    }
   }
 
   protected resize(x: number, y: number, onPosition?: (pos: PositionType) => void) {

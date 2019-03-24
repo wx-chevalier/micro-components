@@ -9,12 +9,13 @@ export class BaseMarker {
   id: string = uuid();
   type: MarkerType = 'base';
   // 归属的
-  page: WhitePage;
+  page?: WhitePage;
   // Marker 的属性发生变化后的回调
   onChange: onSyncFunc = () => {};
 
-  public static createMarker = (): BaseMarker => {
+  public static createMarker = (page?: WhitePage): BaseMarker => {
     const marker = new BaseMarker();
+    marker.page = page;
     marker.setup();
     return marker;
   };
@@ -165,6 +166,11 @@ export class BaseMarker {
 
   private mouseDown = (ev: MouseEvent) => {
     ev.stopPropagation();
+
+    if (this.page && this.page.mode === 'mirror') {
+      return;
+    }
+
     this.select();
     this.isDragging = true;
     this.previousMouseX = ev.screenX;

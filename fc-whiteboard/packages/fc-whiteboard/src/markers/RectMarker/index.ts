@@ -1,3 +1,4 @@
+import { WhitePage } from './../../board/WhitePage/index';
 import { MarkerType } from './../types';
 import { RectBaseMarker } from './RectBaseMarker';
 import { SvgHelper } from 'fc-whiteboard/src/renderer/SvgHelper';
@@ -5,8 +6,9 @@ import { SvgHelper } from 'fc-whiteboard/src/renderer/SvgHelper';
 export class RectMarker extends RectBaseMarker {
   type: MarkerType = 'rect';
 
-  public static createMarker = (): RectBaseMarker => {
+  public static createMarker = (page?: WhitePage): RectBaseMarker => {
     const marker = new RectMarker();
+    marker.page = page;
     marker.setup();
     return marker;
   };

@@ -75,7 +75,7 @@ export class Drawboard extends Baseboard {
 
     window.addEventListener('resize', this.adjustUI);
 
-    if (this.page.mode !== 'mirror') {
+    if (this.page.mode === 'master') {
       this.showUI();
     }
   };
@@ -87,7 +87,10 @@ export class Drawboard extends Baseboard {
     // 这里不使用 display:none，是为了保证在隐藏时候仍然可以执行更新
     this.boardHolder.style.opacity = '0';
     this.boardHolder.style.zIndex = '-1';
-    this.toolbar.hide();
+
+    if (this.toolbar) {
+      this.toolbar.hide();
+    }
   };
 
   public show = () => {
@@ -97,7 +100,10 @@ export class Drawboard extends Baseboard {
 
     this.boardHolder.style.opacity = '1';
     this.boardHolder.style.zIndex = '9999';
-    this.toolbar.show();
+
+    if (this.toolbar) {
+      this.toolbar.show();
+    }
   };
 
   public close = () => {
@@ -121,12 +127,8 @@ export class Drawboard extends Baseboard {
   };
 
   public addMarker = (markerType: typeof BaseMarker, { id }: { id?: string } = {}) => {
-    const marker = markerType.createMarker();
-
     // 假如 Drawboard 存在 Page 引用，则传导给 Marker
-    if (this.page) {
-      marker.page = this.page;
-    }
+    const marker = markerType.createMarker(this.page);
 
     if (id) {
       marker.id = id;
@@ -146,7 +148,7 @@ export class Drawboard extends Baseboard {
     // 触发事件流
     this.onChange({
       target: 'marker',
-      parentId: this.id,
+      parentId: this.page ? this.page.id : this.id,
       event: 'add',
       data: { type: marker.type, id: marker.id }
     });
@@ -172,7 +174,7 @@ export class Drawboard extends Baseboard {
       if (this.onChange) {
         this.onChange({
           event: 'remove',
-          id: this.id,
+          id: this.activeMarker.id,
           target: 'marker',
           data: { id: this.activeMarker.id }
         });

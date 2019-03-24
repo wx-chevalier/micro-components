@@ -144,7 +144,7 @@ export class WhitePage {
 
   /** 处理 Marker 的同步事件 */
   private onMarkerSync(ev: SyncEvent) {
-    if (ev.event === 'add') {
+    if (ev.event === 'add' && ev.parentId === this.id) {
       const data: { id: string; type: MarkerType } = ev.data as {
         id: string;
         type: MarkerType;

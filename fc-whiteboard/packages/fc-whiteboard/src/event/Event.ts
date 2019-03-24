@@ -10,6 +10,8 @@ export type EventType =
   | 'move'
   // 移除
   | 'remove'
+  // 下标改变
+  | 'changeIndex'
   // 文本改变
   | 'changeText';
 export type PositionType =
@@ -29,7 +31,7 @@ export interface SyncEvent {
   id?: string;
   parentId?: string;
   event: EventType;
-  data?: object | string;
+  data?: object | string | number;
 }
 
 export type onSyncFunc = (ev: SyncEvent) => void;

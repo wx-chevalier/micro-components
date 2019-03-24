@@ -1,12 +1,14 @@
 import { MarkerType } from './../types';
 import { LinearMarker } from '../LinearMarker';
 import { SvgHelper } from 'fc-whiteboard/src/renderer/SvgHelper';
+import { WhitePage } from 'fc-whiteboard/src/board/WhitePage';
 
 export class ArrowMarker extends LinearMarker {
   type: MarkerType = 'arrow';
 
-  public static createMarker = (): LinearMarker => {
+  public static createMarker = (page?: WhitePage): LinearMarker => {
     const marker = new ArrowMarker();
+    marker.page = page;
     marker.setup();
     return marker;
   };

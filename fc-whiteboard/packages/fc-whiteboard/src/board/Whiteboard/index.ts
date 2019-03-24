@@ -191,13 +191,23 @@ export class Whiteboard {
     }
 
     this.eventHub.on('sync', (ev: SyncEvent) => {
-      if (ev.target === 'whiteboard' && ev.event === 'snap') {
+      if (ev.target !== 'whiteboard') {
+        return;
+      }
+
+      if (ev.event === 'snap') {
         // 如果已经初始化完毕，则直接跳过
         if (this.isInitialized) {
           return;
         }
 
         this.onSnapshot(ev.data as SerializableWhiteboard);
+      }
+
+      if (ev.event === 'changeIndex' && ev.id === this.id) {
+        if (this.isInitialized) {
+          this.onPageChange(ev.data as number);
+        }
       }
     });
   }
@@ -242,6 +252,15 @@ export class Whiteboard {
         page.hide();
       }
     });
+
+    if (this.mode === 'master' && this.eventHub) {
+      this.eventHub.emit('sync', {
+        event: 'changeIndex',
+        id: this.id,
+        target: 'whiteboard',
+        data: nextPageIndex
+      });
+    }
   }
 
   private emitSnapshot() {
@@ -267,9 +286,10 @@ export class Whiteboard {
 
   /** 响应获取到的快照事件 */
   private onSnapshot(snap: SerializableWhiteboard) {
-    const { sources, pageIds } = snap;
+    const { id, sources, pageIds, visiblePageIndex } = snap;
 
     if (!this.isInitialized) {
+      this.id = id;
       this.sources = sources;
       this.initSiema();
 
@@ -295,5 +315,6 @@ export class Whiteboard {
     }
 
     this.isInitialized = true;
+    this.onPageChange(visiblePageIndex);
   }
 }

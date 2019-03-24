@@ -2,6 +2,7 @@ import { MarkerType } from '../types';
 import { RectangularMarker } from '../RectangularMarker';
 import { SvgHelper } from '../../renderer/SvgHelper';
 import { PositionType } from 'fc-whiteboard/src/event/Event';
+import { WhitePage } from 'fc-whiteboard/src/board/WhitePage';
 
 const OkIcon = require('../../assets/check.svg');
 const CancelIcon = require('../../assets/times.svg');
@@ -9,8 +10,9 @@ const CancelIcon = require('../../assets/times.svg');
 export class TextMarker extends RectangularMarker {
   type: MarkerType = 'text';
 
-  public static createMarker = (): TextMarker => {
+  public static createMarker = (page?: WhitePage): TextMarker => {
     const marker = new TextMarker();
+    marker.page = page;
     marker.setup();
     return marker;
   };

@@ -1,10 +1,12 @@
 import { PositionType } from '../../event/Event';
 import { SvgHelper } from '../../renderer/SvgHelper';
 import { RectangularMarker } from '../RectangularMarker';
+import { WhitePage } from 'fc-whiteboard/src/board/WhitePage';
 
 export class RectBaseMarker extends RectangularMarker {
-  public static createMarker = (): RectBaseMarker => {
+  public static createMarker = (page?: WhitePage): RectBaseMarker => {
     const marker = new RectBaseMarker();
+    marker.page = page;
     marker.setup();
     return marker;
   };
