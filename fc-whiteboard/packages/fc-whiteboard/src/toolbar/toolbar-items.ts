@@ -1,3 +1,4 @@
+import { WhitePage } from './../board/WhitePage/index';
 import { RectMarker } from './../markers/RectMarker/index';
 import { CoverMarker } from './../markers/CoverMarker/index';
 import { TextMarker } from './../markers/TextMarker/index';
@@ -53,8 +54,8 @@ export const lineMarkerToolbarItem = new ToolbarItem({
   markerType: LineMarker
 });
 
-export function getToolbars() {
-  return [
+export function getToolbars(page?: WhitePage) {
+  const toolbars = [
     {
       icon: PointerIcon,
       name: 'pointer',
@@ -78,16 +79,26 @@ export function getToolbars() {
     {
       name: 'separator',
       tooltipText: ''
-    },
-    {
-      icon: OkIcon,
-      name: 'ok',
-      tooltipText: 'OK'
-    },
-    {
-      icon: CloseIcon,
-      name: 'close',
-      tooltipText: 'Close'
     }
   ];
+
+  if (!page) {
+    toolbars.push(
+      ...[
+        {
+          icon: OkIcon,
+          name: 'ok',
+          tooltipText: 'OK'
+        }
+      ]
+    );
+  }
+
+  toolbars.push({
+    icon: CloseIcon,
+    name: 'close',
+    tooltipText: 'Close'
+  });
+
+  return toolbars;
 }

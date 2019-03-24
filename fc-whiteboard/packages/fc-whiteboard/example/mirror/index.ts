@@ -1,10 +1,10 @@
 import { EventHub } from './../../src/event/EventHub';
 import { WhitePage } from '../../src/board/WhitePage/index';
-import { ChangeEvent } from '../../src/event/Event';
+import { SyncEvent } from '../../src/event/Event';
 
 const eventHub = new EventHub();
 
-eventHub.on('change', (changeEv: ChangeEvent) => {
+eventHub.on('sync', (changeEv: SyncEvent) => {
   console.log(changeEv);
 });
 

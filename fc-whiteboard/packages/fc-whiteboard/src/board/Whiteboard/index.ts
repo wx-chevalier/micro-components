@@ -1,3 +1,4 @@
+import { SyncEvent } from './../../event/Event';
 import * as Siema from 'siema';
 
 import { WhiteboardMode } from '../types';
@@ -12,6 +13,13 @@ const LeftArrowIcon = require('../../assets/bx-left-arrow.svg');
 const RightArrowIcon = require('../../assets/bx-right-arrow.svg');
 
 const prefix = 'fcw-board';
+
+export class SerializableWhiteboard {
+  id: string;
+  sources: string[];
+  pageIds: string[];
+  visiblePageIndex: number;
+}
 
 export class Whiteboard {
   id: string = uuid();
@@ -39,23 +47,22 @@ export class Whiteboard {
   // 是否被初始化过，如果尚未被初始化，则等待来自于 Master 的同步消息
   isInitialized: boolean = false;
   visiblePageIndex: number = 0;
+  emitInterval: any;
 
   constructor(
     target: HTMLDivElement,
-    sources: string[],
     {
+      sources,
       eventHub,
       mode,
       visiblePageIndex
-    }: { eventHub?: EventHub; mode?: WhiteboardMode; visiblePageIndex?: number } = {}
+    }: {
+      sources?: string[];
+      eventHub?: EventHub;
+      mode?: WhiteboardMode;
+      visiblePageIndex?: number;
+    } = {}
   ) {
-    this.sources = sources;
-    this.eventHub = eventHub;
-
-    if (mode) {
-      this.mode = mode;
-    }
-
     if (target) {
       this.target = target;
     } else {
@@ -69,6 +76,17 @@ export class Whiteboard {
 
     addClassName(this.target, prefix);
 
+    if (sources) {
+      this.sources = sources;
+    }
+
+    this.eventHub = eventHub;
+
+    if (mode) {
+      this.mode = mode;
+    }
+
+    // set inner state
     if (typeof visiblePageIndex !== 'undefined') {
       this.visiblePageIndex = visiblePageIndex;
     }
@@ -88,7 +106,22 @@ export class Whiteboard {
     });
   }
 
-  public close() {}
+  /** 关闭当前的 Whiteboard */
+  public close() {
+    if (this.emitInterval) {
+      clearInterval(this.emitInterval);
+    }
+  }
+
+  /** 获取当前快照 */
+  public snap(): SerializableWhiteboard {
+    return {
+      id: this.id,
+      sources: this.sources,
+      pageIds: this.pages.map(page => page.id),
+      visiblePageIndex: this.visiblePageIndex
+    };
+  }
 
   /** 初始化操作 */
   private init() {
@@ -99,6 +132,8 @@ export class Whiteboard {
 
     if (this.mode === 'master') {
       this.initMaster();
+
+      this.emitSnapshot();
     }
 
     if (this.mode === 'mirror') {
@@ -119,35 +154,13 @@ export class Whiteboard {
         }
       );
 
-      // 这里隐藏 Dashboard 的图片源
+      // 这里隐藏 Dashboard 的图片源，Siema 切换的是占位图片
       page.container.style.opacity = '0';
 
       this.pages.push(page);
     });
 
-    // 初始化所有的占位图片，用于给 Siema 播放使用
-    this.sources.forEach(source => {
-      const imgEle = document.createElement('img');
-      addClassName(imgEle, `${prefix}-img`);
-      imgEle.src = source;
-      imgEle.alt = 'Siema image';
-
-      this.imgsContainer.appendChild(imgEle);
-    });
-
-    // 初始化 Siema，并且添加控制节点
-    this.siema = new Siema({
-      selector: this.imgsContainer,
-      duration: 200,
-      easing: 'ease-out',
-      perPage: 1,
-      startIndex: 0,
-      draggable: false,
-      multipleDrag: true,
-      threshold: 20,
-      loop: false,
-      rtl: false
-    });
+    this.initSiema();
 
     // 初始化控制节点
     const controller = createDivWithClassName(`${prefix}-controller`, this.target);
@@ -172,7 +185,49 @@ export class Whiteboard {
   }
 
   /** 以镜像模式启动 */
-  private initMirror() {}
+  private initMirror() {
+    if (!this.eventHub) {
+      throw new Error('Invalid eventHub');
+    }
+
+    this.eventHub.on('sync', (ev: SyncEvent) => {
+      if (ev.target === 'whiteboard' && ev.event === 'snap') {
+        // 如果已经初始化完毕，则直接跳过
+        if (this.isInitialized) {
+          return;
+        }
+
+        this.onSnapshot(ev.data as SerializableWhiteboard);
+      }
+    });
+  }
+
+  /** 初始化 Siema */
+  private initSiema() {
+    // 初始化所有的占位图片，用于给 Siema 播放使用
+    this.sources.forEach(source => {
+      const imgEle = document.createElement('img');
+      addClassName(imgEle, `${prefix}-img`);
+      imgEle.src = source;
+      imgEle.alt = 'Siema image';
+
+      this.imgsContainer.appendChild(imgEle);
+    });
+
+    // 初始化 Siema，并且添加控制节点
+    this.siema = new Siema({
+      selector: this.imgsContainer,
+      duration: 200,
+      easing: 'ease-out',
+      perPage: 1,
+      startIndex: 0,
+      draggable: false,
+      multipleDrag: true,
+      threshold: 20,
+      loop: false,
+      rtl: false
+    });
+  }
 
   /** 响应页面切换的事件 */
   private onPageChange(nextPageIndex: number) {
@@ -187,5 +242,58 @@ export class Whiteboard {
         page.hide();
       }
     });
+  }
+
+  private emitSnapshot() {
+    const innerFunc = () => {
+      if (this.eventHub) {
+        this.eventHub.emit('sync', {
+          event: 'snap',
+          id: this.id,
+          target: 'whiteboard',
+          data: this.snap()
+        });
+      }
+    };
+
+    // 定期触发事件
+    this.emitInterval = setInterval(() => {
+      innerFunc();
+    }, 5 * 1000);
+
+    // 首次事件，延时 500ms 发出
+    setTimeout(innerFunc, 500);
+  }
+
+  /** 响应获取到的快照事件 */
+  private onSnapshot(snap: SerializableWhiteboard) {
+    const { sources, pageIds } = snap;
+
+    if (!this.isInitialized) {
+      this.sources = sources;
+      this.initSiema();
+
+      // 初始化所有的 WhitePages
+      this.sources.forEach((source, i) => {
+        const page = new WhitePage(
+          { imgSrc: source },
+          {
+            mode: this.mode,
+            eventHub: this.eventHub,
+            parentContainer: this.pagesContainer
+          }
+        );
+        page.id = pageIds[i];
+
+        // 这里隐藏 Dashboard 的图片源，Siema 切换的是占位图片
+        page.container.style.opacity = '0';
+
+        this.pages.push(page);
+
+        page.open();
+      });
+    }
+
+    this.isInitialized = true;
   }
 }

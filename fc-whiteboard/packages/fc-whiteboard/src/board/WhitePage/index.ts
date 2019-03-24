@@ -1,6 +1,6 @@
 import { TextMarker } from './../../markers/TextMarker/index';
 import { MarkerType } from './../../markers/types';
-import { ChangeEvent } from './../../event/Event';
+import { SyncEvent } from './../../event/Event';
 import { EventHub } from '../../event/EventHub';
 import { WhiteboardMode, WhitePageSource } from './../types';
 import { Drawboard } from './../Drawboard/index';
@@ -96,9 +96,6 @@ export class WhitePage {
 
       this.container.appendChild(this.target);
     }
-
-    // 设置 target 的一系列属性
-    this.target.className = `${this.target.className || ''} fcw-whitepage`.trim();
   }
 
   /** 以 Master 模式启动 */
@@ -109,7 +106,7 @@ export class WhitePage {
         { imgEle: this.target },
         {
           page: this,
-          onChange: ev => this.eventHub!.emit('change', ev)
+          onChange: ev => this.eventHub!.emit('sync', ev)
         }
       );
     } else {
@@ -125,44 +122,71 @@ export class WhitePage {
 
     this.drawboard = new Drawboard({ imgEle: this.target }, { page: this });
 
-    this.eventHub.on('change', (ev: ChangeEvent) => {
-      if (ev.event === 'add') {
-        const data: { id: string; type: MarkerType } = ev.data as {
-          id: string;
-          type: MarkerType;
-        };
-
-        // 这里判断该 Marker 是否已经添加过；如果已经存在则忽略
-        const marker = this.drawboard.markerMap[data.id];
-        if (!marker) {
-          this.drawboard.addMarker(getMarkerByType(data.type), { id: data.id });
+    this.eventHub.on('sync', (ev: SyncEvent) => {
+      try {
+        // 判断是否为 WhitePage 的同步
+        if (ev.target === 'page' && ev.id === this.id) {
+          this.onPageSync();
         }
-      }
 
-      if (ev.event === 'remove') {
-        const data: { id: string } = ev.data as {
-          id: string;
-        };
-
-        const marker = this.drawboard.markerMap[data.id];
-        this.drawboard.deleteMarker(marker);
-      }
-
-      if (ev.event === 'move' || ev.event === 'resize') {
-        const marker = this.drawboard.markerMap[ev.id];
-
-        if (marker) {
-          marker.reactToManipulation(ev.event, ev.data as any);
+        // 处理 Marker 的同步事件
+        if (ev.target === 'marker') {
+          this.onMarkerSync(ev);
         }
-      }
-
-      // 响应文本变化事件
-      if (ev.event === 'changeText') {
-        const marker = this.drawboard.markerMap[ev.id] as TextMarker;
-        if (marker) {
-          marker.setText(ev.data as string);
-        }
+      } catch (e) {
+        console.warn(e);
       }
     });
+  }
+
+  /** 处理 Page 的同步事件 */
+  private onPageSync() {}
+
+  /** 处理 Marker 的同步事件 */
+  private onMarkerSync(ev: SyncEvent) {
+    if (ev.event === 'add') {
+      const data: { id: string; type: MarkerType } = ev.data as {
+        id: string;
+        type: MarkerType;
+      };
+
+      // 这里判断该 Marker 是否已经添加过；如果已经存在则忽略
+      const marker = this.drawboard.markerMap[data.id];
+      if (!marker) {
+        this.drawboard.addMarker(getMarkerByType(data.type), { id: data.id });
+      }
+    }
+
+    // 其余的情况，不存在 id 则直接返回空
+    if (!ev.id) {
+      return;
+    }
+
+    if (ev.event === 'remove') {
+      const data: { id: string } = ev.data as {
+        id: string;
+      };
+
+      const marker = this.drawboard.markerMap[data.id];
+      if (marker) {
+        this.drawboard.deleteMarker(marker);
+      }
+    }
+
+    if (ev.event === 'move' || ev.event === 'resize') {
+      const marker = this.drawboard.markerMap[ev.id];
+
+      if (marker) {
+        marker.reactToManipulation(ev.event, ev.data as any);
+      }
+    }
+
+    // 响应文本变化事件
+    if (ev.event === 'changeText') {
+      const marker = this.drawboard.markerMap[ev.id] as TextMarker;
+      if (marker) {
+        marker.setText(ev.data as string);
+      }
+    }
   }
 }

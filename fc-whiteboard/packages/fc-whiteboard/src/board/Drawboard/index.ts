@@ -3,7 +3,7 @@ import { Baseboard } from './../Baseboard/index';
 import { BaseMarker } from './../../markers/BaseMarker/index';
 import { getToolbars } from './../../toolbar/toolbar-items';
 import { WhitePage } from './../WhitePage/index';
-import { onChangeFunc } from './../../event/Event';
+import { onSyncFunc } from './../../event/Event';
 
 import { Synthetizer } from '../../renderer/Synthetizer';
 import { Toolbar } from '../../toolbar/Toolbar';
@@ -12,6 +12,9 @@ import { ToolbarItem } from '../../toolbar/ToolbarItem';
 import './index.less';
 
 export class Drawboard extends Baseboard {
+  /** Options */
+  private scale = 1.0;
+
   /** 句柄 */
   page: WhitePage;
 
@@ -26,19 +29,17 @@ export class Drawboard extends Baseboard {
   private activeMarker: BaseMarker | null;
 
   private toolbar: Toolbar;
+  private toolbars: ToolbarItem[];
   private toolbarUI: HTMLElement;
 
   /** 回调 */
   private onComplete: (dataUrl: string) => void = () => {};
-  private onChange: onChangeFunc = () => {};
+  private onChange: onSyncFunc = () => {};
   private onCancel: () => void;
-
-  private toolbars: ToolbarItem[] = getToolbars();
-  private scale = 1.0;
 
   constructor(
     source: WhitePageSource,
-    { page, onChange }: { page?: WhitePage; onChange?: onChangeFunc } = {}
+    { page, onChange }: { page?: WhitePage; onChange?: onSyncFunc } = {}
   ) {
     super(source);
 
@@ -48,6 +49,7 @@ export class Drawboard extends Baseboard {
 
     this.markers = [];
     this.activeMarker = null;
+    this.toolbars = getToolbars(page);
 
     if (onChange) {
       this.onChange = onChange;
@@ -143,8 +145,8 @@ export class Drawboard extends Baseboard {
 
     // 触发事件流
     this.onChange({
-      target: 'drawboard',
-      id: this.id,
+      target: 'marker',
+      parentId: this.id,
       event: 'add',
       data: { type: marker.type, id: marker.id }
     });
@@ -171,7 +173,7 @@ export class Drawboard extends Baseboard {
         this.onChange({
           event: 'remove',
           id: this.id,
-          target: 'drawboard',
+          target: 'marker',
           data: { id: this.activeMarker.id }
         });
       }

@@ -1,6 +1,6 @@
 import { WhitePage } from './../../board/WhitePage/index';
 import { PositionType } from 'fc-whiteboard/src/event/Event';
-import { onChangeFunc, EventType } from '../../event/Event';
+import { onSyncFunc, EventType } from '../../event/Event';
 import { MarkerType } from '../types';
 import * as uuid from 'uuid/v1';
 import { SvgHelper } from '../../renderer/SvgHelper';
@@ -11,7 +11,7 @@ export class BaseMarker {
   // 归属的
   page: WhitePage;
   // Marker 的属性发生变化后的回调
-  onChange: onChangeFunc = () => {};
+  onChange: onSyncFunc = () => {};
 
   public static createMarker = (): BaseMarker => {
     const marker = new BaseMarker();
