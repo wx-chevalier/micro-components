@@ -1,19 +1,27 @@
 import * as Siema from 'siema';
 
-import { EventHub } from './../../event/EventHub';
-import { WhitePage } from './../WhitePage/index';
 import { WhiteboardMode } from '../types';
-import { uuid } from 'fc-whiteboard/src/utils/uuid';
+import { WhitePage } from '../WhitePage/index';
+import { EventHub } from '../../event/EventHub';
+import { uuid } from '../../utils/uuid';
+import { addClassName, createDivWithClassName } from '../../utils/dom';
 
 import './index.less';
 
+const LeftArrowIcon = require('../../assets/bx-left-arrow.svg');
+const RightArrowIcon = require('../../assets/bx-right-arrow.svg');
+
+const prefix = 'fcw-board';
+
 export class Whiteboard {
   id: string = uuid();
+  sources: string[] = [];
 
   /** 元素 */
-  sources: string[] = [];
   // 如果传入的是图片地址，则需要挂载到该 Target 元素下
   target: HTMLDivElement;
+  imgsContainer: HTMLDivElement;
+  pagesContainer: HTMLDivElement;
 
   /** UI Options */
   // 事件中心
@@ -28,6 +36,8 @@ export class Whiteboard {
   siema: any;
 
   /** State | 内部状态 */
+  // 是否被初始化过，如果尚未被初始化，则等待来自于 Master 的同步消息
+  isInitialized: boolean = false;
   visiblePageIndex: number = 0;
 
   constructor(
@@ -56,7 +66,8 @@ export class Whiteboard {
     if (!this.target.id) {
       this.target.id = this.id;
     }
-    this.target.className = `${this.target.className} fcw-whiteboard`;
+
+    addClassName(this.target, prefix);
 
     if (typeof visiblePageIndex !== 'undefined') {
       this.visiblePageIndex = visiblePageIndex;
@@ -77,8 +88,26 @@ export class Whiteboard {
     });
   }
 
+  public close() {}
+
   /** 初始化操作 */
   private init() {
+    // 为 target 添加子 imgs 容器
+    this.imgsContainer = createDivWithClassName(`${prefix}-imgs`, this.target);
+    // 为 target 添加子 pages 容器
+    this.pagesContainer = createDivWithClassName(`${prefix}-pages`, this.target);
+
+    if (this.mode === 'master') {
+      this.initMaster();
+    }
+
+    if (this.mode === 'mirror') {
+      this.initMirror();
+    }
+  }
+
+  /** 以主模式启动 */
+  private initMaster() {
     // 初始化所有的 WhitePages
     this.sources.forEach(source => {
       const page = new WhitePage(
@@ -86,16 +115,29 @@ export class Whiteboard {
         {
           mode: this.mode,
           eventHub: this.eventHub,
-          parentContainer: this.target
+          parentContainer: this.pagesContainer
         }
       );
+
+      // 这里隐藏 Dashboard 的图片源
+      page.container.style.opacity = '0';
 
       this.pages.push(page);
     });
 
-    // 初始化
+    // 初始化所有的占位图片，用于给 Siema 播放使用
+    this.sources.forEach(source => {
+      const imgEle = document.createElement('img');
+      addClassName(imgEle, `${prefix}-img`);
+      imgEle.src = source;
+      imgEle.alt = 'Siema image';
+
+      this.imgsContainer.appendChild(imgEle);
+    });
+
+    // 初始化 Siema，并且添加控制节点
     this.siema = new Siema({
-      selector: this.target,
+      selector: this.imgsContainer,
       duration: 200,
       easing: 'ease-out',
       perPage: 1,
@@ -107,16 +149,43 @@ export class Whiteboard {
       rtl: false
     });
 
-    const prev = document.querySelector('#prev');
-    const next = document.querySelector('#next');
+    // 初始化控制节点
+    const controller = createDivWithClassName(`${prefix}-controller`, this.target);
 
-    prev!.addEventListener('click', () => {
-      console.log(11);
-      this.siema.prev();
+    const prevEle = createDivWithClassName(`${prefix}-flip-arrow`, controller);
+    prevEle.innerHTML = LeftArrowIcon;
+
+    const nextEle = createDivWithClassName(`${prefix}-flip-arrow`, controller);
+    nextEle.innerHTML = RightArrowIcon;
+
+    nextEle!.addEventListener('click', () => {
+      const nextPageIndex =
+        this.visiblePageIndex + 1 > this.pages.length - 1 ? 0 : this.visiblePageIndex + 1;
+      this.onPageChange(nextPageIndex);
     });
-    next!.addEventListener('click', () => {
-      console.log(12);
-      this.siema.next();
+    prevEle!.addEventListener('click', () => {
+      const nextPageIndex =
+        this.visiblePageIndex - 1 < 0 ? this.pages.length - 1 : this.visiblePageIndex - 1;
+
+      this.onPageChange(nextPageIndex);
+    });
+  }
+
+  /** 以镜像模式启动 */
+  private initMirror() {}
+
+  /** 响应页面切换的事件 */
+  private onPageChange(nextPageIndex: number) {
+    this.siema.goTo(nextPageIndex);
+    this.visiblePageIndex = nextPageIndex;
+
+    // 将所有的 Page 隐藏
+    this.pages.forEach((page, i) => {
+      if (nextPageIndex === i) {
+        page.show();
+      } else {
+        page.hide();
+      }
     });
   }
 }

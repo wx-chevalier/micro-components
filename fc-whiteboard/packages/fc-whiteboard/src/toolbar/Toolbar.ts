@@ -33,10 +33,12 @@ export class Toolbar {
   };
 
   public hide() {
-    this.toolbarUI.style.display = 'none';
+    this.toolbarUI.style.opacity = '0';
+    this.toolbarUI.style.zIndex = '-1';
   }
 
   public show() {
-    this.toolbarUI.style.display = 'block';
+    this.toolbarUI.style.opacity = '1';
+    this.toolbarUI.style.zIndex = '999';
   }
 }

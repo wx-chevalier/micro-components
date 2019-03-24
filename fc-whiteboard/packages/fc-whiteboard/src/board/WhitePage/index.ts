@@ -7,6 +7,11 @@ import { Drawboard } from './../Drawboard/index';
 import { uuid } from './../../utils/uuid';
 import { getMarkerByType } from '../../markers/types';
 
+import './index.less';
+import { createDivWithClassName } from 'fc-whiteboard/src/utils/dom';
+
+const prefix = 'fcw-page';
+
 /** 白板中的每一页 */
 export class WhitePage {
   id: string = uuid();
@@ -15,7 +20,7 @@ export class WhitePage {
   target: HTMLImageElement;
 
   /** UI Options */
-  container?: HTMLDivElement;
+  container: HTMLDivElement;
   // 父容器指针
   parentContainer?: HTMLDivElement;
   mode: WhiteboardMode = 'master';
@@ -82,14 +87,14 @@ export class WhitePage {
 
     // 如果是图片，则需要创建 Image 元素
     if (typeof source.imgSrc === 'string') {
-      this.container = document.createElement('div');
+      this.container = createDivWithClassName(prefix, this.parentContainer!);
+      this.container.id = this.id;
 
       this.target = document.createElement('img');
       this.target.src = source.imgSrc;
       this.target.alt = 'Siema image';
 
       this.container.appendChild(this.target);
-      this.parentContainer!.appendChild(this.container);
     }
 
     // 设置 target 的一系列属性
@@ -112,6 +117,7 @@ export class WhitePage {
     }
   }
 
+  /** 以 Mirror 模式启动 */
   protected initMirror() {
     if (!this.eventHub) {
       throw new Error('Invalid eventHub');

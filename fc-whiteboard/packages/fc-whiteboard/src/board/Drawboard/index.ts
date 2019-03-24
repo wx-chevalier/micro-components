@@ -82,7 +82,9 @@ export class Drawboard extends Baseboard {
     if (this.source.imgSrc) {
       this.target.style.display = 'none';
     }
-    this.boardHolder.style.display = 'none';
+    // 这里不使用 display:none，是为了保证在隐藏时候仍然可以执行更新
+    this.boardHolder.style.opacity = '0';
+    this.boardHolder.style.zIndex = '-1';
     this.toolbar.hide();
   };
 
@@ -91,7 +93,8 @@ export class Drawboard extends Baseboard {
       this.target.style.display = 'block';
     }
 
-    this.boardHolder.style.display = 'block';
+    this.boardHolder.style.opacity = '1';
+    this.boardHolder.style.zIndex = '9999';
     this.toolbar.show();
   };
 
