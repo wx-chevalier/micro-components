@@ -1,4 +1,4 @@
-import { isHTMLImageElement } from 'fc-whiteboard/src/utils/validator';
+import { isHTMLImageElement } from '../../utils/validator';
 
 /** 图片导出 */
 export class Synthetizer {

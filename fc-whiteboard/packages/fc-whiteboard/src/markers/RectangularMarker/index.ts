@@ -3,7 +3,7 @@ import { BaseMarker } from '../BaseMarker';
 import { ResizeGrip } from '../BaseMarker/ResizeGrip';
 import { PositionType } from '../../event/Event';
 import { SvgHelper } from '../../renderer/SvgHelper';
-import { WhitePage } from 'fc-whiteboard/src/board/WhitePage';
+import { WhitePage } from '../../board/WhitePage';
 
 export class RectangularMarker extends BaseMarker {
   public static createMarker = (page?: WhitePage): RectangularMarker => {

@@ -8,7 +8,7 @@ import { uuid } from './../../utils/uuid';
 import { getMarkerByType } from '../../markers/types';
 
 import './index.less';
-import { createDivWithClassName } from 'fc-whiteboard/src/utils/dom';
+import { createDivWithClassName } from '../../utils/dom';
 
 const prefix = 'fcw-page';
 

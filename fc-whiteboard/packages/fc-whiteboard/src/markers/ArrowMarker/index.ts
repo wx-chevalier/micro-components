@@ -1,7 +1,7 @@
 import { MarkerType } from './../types';
 import { LinearMarker } from '../LinearMarker';
-import { SvgHelper } from 'fc-whiteboard/src/renderer/SvgHelper';
-import { WhitePage } from 'fc-whiteboard/src/board/WhitePage';
+import { SvgHelper } from '../../renderer/SvgHelper';
+import { WhitePage } from '../../board/WhitePage';
 
 export class ArrowMarker extends LinearMarker {
   type: MarkerType = 'arrow';

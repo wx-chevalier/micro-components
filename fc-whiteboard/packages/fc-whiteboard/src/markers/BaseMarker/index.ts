@@ -1,5 +1,5 @@
 import { WhitePage } from './../../board/WhitePage/index';
-import { PositionType } from 'fc-whiteboard/src/event/Event';
+import { PositionType } from '../../event/Event';
 import { onSyncFunc, EventType } from '../../event/Event';
 import { MarkerType } from '../types';
 import * as uuid from 'uuid/v1';

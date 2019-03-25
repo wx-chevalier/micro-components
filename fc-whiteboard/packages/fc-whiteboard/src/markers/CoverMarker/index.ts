@@ -1,7 +1,7 @@
 import { MarkerType } from './../types';
 import { SvgHelper } from '../../renderer/SvgHelper';
 import { RectBaseMarker } from '../RectMarker/RectBaseMarker';
-import { WhitePage } from 'fc-whiteboard/src/board/WhitePage';
+import { WhitePage } from '../../board/WhitePage';
 
 export class CoverMarker extends RectBaseMarker {
   type: MarkerType = 'cover';

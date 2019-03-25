@@ -2,7 +2,7 @@ import { WhitePage } from './../../board/WhitePage/index';
 import { BaseMarker } from '../BaseMarker';
 import { ResizeGrip } from '../BaseMarker/ResizeGrip';
 import { SvgHelper } from '../../renderer/SvgHelper';
-import { PositionType } from 'fc-whiteboard/src/event/Event';
+import { PositionType } from '../../event/Event';
 
 export class LinearMarker extends BaseMarker {
   public static createMarker = (page?: WhitePage): LinearMarker => {
