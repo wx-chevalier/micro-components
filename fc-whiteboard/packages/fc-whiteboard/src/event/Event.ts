@@ -1,4 +1,5 @@
 export type TargetType = 'whiteboard' | 'page' | 'marker';
+
 export type EventType =
   // 完全的状态同步，FCW 支持两种状态的同步交换：Snapshot(Snap) 与 KeyActions(KA) 方式
   | 'snap'
@@ -14,6 +15,7 @@ export type EventType =
   | 'changeIndex'
   // 文本改变
   | 'changeText';
+
 export type PositionType =
   | 'left'
   | 'right'

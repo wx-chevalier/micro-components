@@ -21,9 +21,7 @@
     "noUnusedLocals": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "paths": {
-      "lego-form-core": ["lego-form-core/src/"]
-    }
+    "paths": {}
   },
   "include": ["**/*.js", "**/*.ts", "**/*.tsx"],
   "exclude": [

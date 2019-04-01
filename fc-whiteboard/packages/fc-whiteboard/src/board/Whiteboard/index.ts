@@ -41,11 +41,15 @@ export class Whiteboard {
 
   /** 句柄 */
   pages: WhitePage[] = [];
+  get activePage() {
+    return this.pages[this.visiblePageIndex];
+  }
   siema: any;
 
   /** State | 内部状态 */
   // 是否被初始化过，如果尚未被初始化，则等待来自于 Master 的同步消息
   isInitialized: boolean = false;
+  isSyncing: boolean = false;
   visiblePageIndex: number = 0;
   emitInterval: any;
 
@@ -113,6 +117,19 @@ export class Whiteboard {
     }
   }
 
+  /** 展示当前的 WhitePage */
+  public show() {
+    if (this.activePage) {
+      this.activePage.show();
+    }
+  }
+
+  public hide() {
+    if (this.activePage) {
+      this.activePage.hide();
+    }
+  }
+
   /** 获取当前快照 */
   public snap(): SerializableWhiteboard {
     return {
@@ -155,7 +172,7 @@ export class Whiteboard {
       );
 
       // 这里隐藏 Dashboard 的图片源，Siema 切换的是占位图片
-      page.container.style.opacity = '0';
+      page.container.style.visibility = 'hidden';
 
       this.pages.push(page);
     });
@@ -288,10 +305,10 @@ export class Whiteboard {
   private onSnapshot(snap: SerializableWhiteboard) {
     const { id, sources, pageIds, visiblePageIndex } = snap;
 
-    if (!this.isInitialized) {
+    if (!this.isInitialized && !this.isSyncing) {
       this.id = id;
       this.sources = sources;
-      this.initSiema();
+      this.isSyncing = true;
 
       // 初始化所有的 WhitePages
       this.sources.forEach((source, i) => {
@@ -306,15 +323,18 @@ export class Whiteboard {
         page.id = pageIds[i];
 
         // 这里隐藏 Dashboard 的图片源，Siema 切换的是占位图片
-        page.container.style.opacity = '0';
+        page.container.style.visibility = 'hidden';
 
         this.pages.push(page);
 
         page.open();
       });
+
+      this.initSiema();
     }
 
     this.isInitialized = true;
+    this.isSyncing = false;
     this.onPageChange(visiblePageIndex);
   }
 }
