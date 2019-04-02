@@ -4,11 +4,12 @@ import { uuid } from '../utils/uuid';
 
 export class Toolbar {
   id: string = uuid();
+  zIndex: number = 999;
 
-  private toolbarItems: ToolbarItem[];
-  private toolbarUI: HTMLElement;
+  toolbarItems: ToolbarItem[];
+  toolbarUI: HTMLElement;
 
-  private clickHandler: (ev: MouseEvent, toolbarItem: ToolbarItem) => void;
+  clickHandler: (ev: MouseEvent, toolbarItem: ToolbarItem) => void;
 
   constructor(
     toolbarItems: ToolbarItem[],
@@ -39,6 +40,6 @@ export class Toolbar {
 
   public show() {
     this.toolbarUI.style.visibility = 'visible';
-    this.toolbarUI.style.zIndex = '999';
+    this.toolbarUI.style.zIndex = `${this.zIndex}`;
   }
 }

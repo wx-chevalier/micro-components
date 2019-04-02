@@ -1,3 +1,4 @@
+/** 通用的 Svg 助手 */
 export class SvgHelper {
   public static createRect = (
     width: number | string,

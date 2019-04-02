@@ -1,14 +1,15 @@
 import { isHTMLImageElement } from '../../utils/validator';
 
-/** 图片导出 */
+/** 图片导出，将原图片与 Svgs 绘制到某个 Canvas 中 */
 export class Synthetizer {
   public rasterize(
-    target: HTMLImageElement | HTMLDivElement,
+    // target 是原图片
+    target: HTMLImageElement,
     markerImage: SVGSVGElement,
     done: (dataUrl: string) => void
   ) {
     if (!isHTMLImageElement(target)) {
-      throw new Error('Error: only support export HTMLImageElement');
+      throw new Error('Error: only support export to HTMLImageElement');
     }
 
     const canvas = document.createElement('canvas');

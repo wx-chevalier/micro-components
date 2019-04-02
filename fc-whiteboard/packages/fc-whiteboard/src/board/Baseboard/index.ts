@@ -6,6 +6,9 @@ import { SvgHelper } from './../../renderer/SvgHelper/index';
 export class Baseboard {
   id: string = uuid();
 
+  // 状态
+  isFullscreen: boolean = false;
+
   /** 元素 */
   source: WhitePageSource;
 
@@ -23,13 +26,15 @@ export class Baseboard {
   constructor(source: WhitePageSource) {
     this.source = source;
 
+    // 如果传入的是某个元素，则直接附着
     if (source.imgEle) {
       this.target = source.imgEle!;
 
-      // 如果仅传入图片地址或者 Blob，则必须为全屏模式
       this.width = this.target.clientWidth;
       this.height = this.target.clientHeight;
     }
+
+    // 如果仅传入图片地址或者 Blob，则必须为全屏模式
   }
 
   protected initBoard = () => {
@@ -61,8 +66,17 @@ export class Baseboard {
     this.boardHolder.appendChild(this.boardCanvas);
   };
 
+  /** 放置 Board */
   protected positionBoard = () => {
     this.boardHolder.style.top = this.targetRect.top + 'px';
     this.boardHolder.style.left = this.targetRect.left + 'px';
   };
+
+  protected initEmbeddingToolbar = () => {};
+
+  protected positionEmbeddingToolbar = () => {};
+
+  protected initFloatingToolbar = () => {};
+
+  protected positionFloatingToolbar = () => {};
 }

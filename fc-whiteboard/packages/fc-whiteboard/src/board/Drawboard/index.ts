@@ -13,12 +13,13 @@ import './index.less';
 
 export class Drawboard extends Baseboard {
   /** Options */
-  private scale = 1.0;
+  scale = 1.0;
+  zIndex: number = 999;
 
   /** 句柄 */
   page: WhitePage;
 
-  private markers: BaseMarker[];
+  markers: BaseMarker[];
   get markerMap(): { [key: string]: BaseMarker } {
     const map = {};
     this.markers.forEach(marker => {
@@ -26,25 +27,29 @@ export class Drawboard extends Baseboard {
     });
     return map;
   }
-  private activeMarker: BaseMarker | null;
+  activeMarker: BaseMarker | null;
 
-  private toolbar: Toolbar;
-  private toolbars: ToolbarItem[];
-  private toolbarUI: HTMLElement;
+  toolbar: Toolbar;
+  toolbars: ToolbarItem[];
+  toolbarUI: HTMLElement;
 
   /** 回调 */
-  private onComplete: (dataUrl: string) => void = () => {};
-  private onChange: onSyncFunc = () => {};
-  private onCancel: () => void;
+  onComplete: (dataUrl: string) => void = () => {};
+  onChange: onSyncFunc = () => {};
+  onCancel: () => void;
 
   constructor(
     source: WhitePageSource,
-    { page, onChange }: { page?: WhitePage; onChange?: onSyncFunc } = {}
+    { page, zIndex, onChange }: { page?: WhitePage; zIndex?: number; onChange?: onSyncFunc } = {}
   ) {
     super(source);
 
     if (page) {
       this.page = page;
+    }
+
+    if (zIndex) {
+      this.zIndex = zIndex;
     }
 
     this.markers = [];
@@ -99,7 +104,7 @@ export class Drawboard extends Baseboard {
     }
 
     this.boardHolder.style.visibility = 'visible';
-    this.boardHolder.style.zIndex = '9999';
+    this.boardHolder.style.zIndex = `${this.zIndex}`;
 
     if (this.toolbar) {
       this.toolbar.show();
@@ -258,9 +263,13 @@ export class Drawboard extends Baseboard {
 
   private showUI = () => {
     this.toolbar = new Toolbar(this.toolbars, this.toolbarClick);
+    this.toolbar.zIndex = this.zIndex;
+
     this.toolbarUI = this.toolbar.getUI();
+
     document.body.appendChild(this.toolbarUI);
     this.toolbarUI.style.position = 'absolute';
+
     this.positionToolbar();
   };
 
