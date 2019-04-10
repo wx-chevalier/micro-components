@@ -147,6 +147,12 @@ export class Whiteboard {
     };
   }
 
+  public emit(borderEvent: SyncEvent) {
+    if (this.mode === 'master' && this.eventHub) {
+      this.eventHub.emit('sync', borderEvent);
+    }
+  }
+
   /** 初始化操作 */
   private init() {
     // 为 target 添加子 imgs 容器
@@ -173,7 +179,7 @@ export class Whiteboard {
         { imgSrc: source },
         {
           mode: this.mode,
-          eventHub: this.eventHub,
+          whiteboard: this,
           parentContainer: this.pagesContainer
         }
       );
@@ -285,12 +291,6 @@ export class Whiteboard {
     });
   }
 
-  private emit(borderEvent: SyncEvent) {
-    if (this.mode === 'master' && this.eventHub) {
-      this.eventHub.emit('sync', borderEvent);
-    }
-  }
-
   private emitSnapshot() {
     const innerFunc = () => {
       this.emit({
@@ -325,7 +325,7 @@ export class Whiteboard {
           { imgSrc: source },
           {
             mode: this.mode,
-            eventHub: this.eventHub,
+            whiteboard: this,
             parentContainer: this.pagesContainer
           }
         );

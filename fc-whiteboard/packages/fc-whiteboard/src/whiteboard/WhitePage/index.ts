@@ -2,12 +2,13 @@ import { Source, Mode } from './../../utils/types';
 import { Drawboard } from './../../drawboard/Drawboard/index';
 import { TextMarker } from '../../markers/TextMarker/index';
 import { SyncEvent } from '../../event/SyncEvent';
-import { EventHub } from '../../event/EventHub';
+
 import { uuid } from '../../utils/uuid';
 import { getMarkerByType } from '../../markers/types';
 
 import './index.less';
 import { createDivWithClassName } from '../../utils/dom';
+import { Whiteboard } from '../Whiteboard';
 
 const prefix = 'fcw-page';
 
@@ -26,21 +27,21 @@ export class WhitePage {
 
   /** Handlers */
   drawboard: Drawboard;
-  eventHub?: EventHub;
+  whiteboard?: Whiteboard;
 
   constructor(
     source: Source,
     {
       mode,
-      eventHub,
+      whiteboard,
       parentContainer
-    }: { mode?: Mode; eventHub?: EventHub; parentContainer?: HTMLDivElement } = {}
+    }: { mode?: Mode; whiteboard?: Whiteboard; parentContainer?: HTMLDivElement } = {}
   ) {
     if (mode) {
       this.mode = mode;
     }
-    this.eventHub = eventHub;
     this.parentContainer = parentContainer;
+    this.whiteboard = whiteboard;
 
     this.initSource(source);
 
@@ -99,13 +100,13 @@ export class WhitePage {
 
   /** 以 Master 模式启动 */
   protected initMaster() {
-    if (this.eventHub) {
+    if (this.whiteboard) {
       // 对于 WhitePage 中加载的 Drawboard，必须是传入自身可控的 Image 元素
       this.drawboard = new Drawboard(
         { imgEle: this.target },
         {
           page: this,
-          onChange: ev => this.eventHub!.emit('sync', ev)
+          onChange: ev => this.whiteboard!.emit(ev)
         }
       );
     } else {
@@ -115,13 +116,13 @@ export class WhitePage {
 
   /** 以 Mirror 模式启动 */
   protected initMirror() {
-    if (!this.eventHub) {
-      throw new Error('Invalid eventHub');
+    if (!this.whiteboard) {
+      throw new Error('Invalid whiteboard');
     }
 
     this.drawboard = new Drawboard({ imgEle: this.target }, { page: this });
 
-    this.eventHub.on('sync', (ev: SyncEvent) => {
+    this.whiteboard!.eventHub!.on('sync', (ev: SyncEvent) => {
       try {
         // 判断是否为 WhitePage 的同步
         if (ev.target === 'page' && ev.id === this.id) {
