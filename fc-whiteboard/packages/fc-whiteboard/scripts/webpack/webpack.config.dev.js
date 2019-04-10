@@ -5,7 +5,6 @@ const devConfig = require('../../../../scripts/webpack/webpack.config.dev');
 
 module.exports = merge(devConfig, {
   entry: {
-    whitepage: path.resolve(__dirname, '../../example/whitepage/index.ts'),
     whiteboard: path.resolve(__dirname, '../../example/whiteboard/index.ts')
   },
   devServer: {

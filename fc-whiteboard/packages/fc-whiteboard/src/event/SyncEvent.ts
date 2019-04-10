@@ -1,6 +1,6 @@
 import { BorderEventType } from './border-events';
 import { MarkerEventType, MarkerData } from './marker-events';
-import { WhiteboardSnap } from '../whiteboard/WhiteboardSnap';
+import { WhiteboardSnap } from '../whiteboard/AbstractWhiteboard/snap';
 
 export type TargetType = 'whiteboard' | 'page' | 'marker';
 

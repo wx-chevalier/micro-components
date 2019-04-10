@@ -9,7 +9,7 @@ import { uuid } from '../../utils/uuid';
 import { addClassName, createDivWithClassName } from '../../utils/dom';
 
 import './index.less';
-import { WhiteboardSnap } from '../WhiteboardSnap';
+import { WhiteboardSnap } from '../AbstractWhiteboard/snap';
 
 const LeftArrowIcon = require('../../assets/bx-left-arrow.svg');
 const RightArrowIcon = require('../../assets/bx-right-arrow.svg');
@@ -149,6 +149,8 @@ export class Whiteboard {
 
   public emit(borderEvent: SyncEvent) {
     if (this.mode === 'master' && this.eventHub) {
+      borderEvent.timestamp = Math.floor(Date.now() / 1000);
+
       this.eventHub.emit('sync', borderEvent);
     }
   }
@@ -304,7 +306,7 @@ export class Whiteboard {
     // 定期触发事件
     this.emitInterval = setInterval(() => {
       innerFunc();
-    }, 5 * 1000);
+    }, this.snapInterval);
 
     // 首次事件，延时 500ms 发出
     setTimeout(innerFunc, 500);
