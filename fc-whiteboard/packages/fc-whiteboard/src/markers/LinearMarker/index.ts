@@ -1,8 +1,8 @@
-import { WhitePage } from './../../board/WhitePage/index';
+import { WhitePage } from '../../whiteboard/WhitePage/index';
 import { BaseMarker } from '../BaseMarker';
 import { ResizeGrip } from '../BaseMarker/ResizeGrip';
 import { SvgHelper } from '../../renderer/SvgHelper';
-import { PositionType } from '../../event/Event';
+import { PositionType } from '../../utils/layout';
 
 export class LinearMarker extends BaseMarker {
   public static createMarker = (page?: WhitePage): LinearMarker => {

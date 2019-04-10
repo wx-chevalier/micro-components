@@ -1,9 +1,9 @@
-import { WhitePageSource } from './../types';
+import { Source } from './../../utils/types';
 import { Baseboard } from './../Baseboard/index';
 import { BaseMarker } from './../../markers/BaseMarker/index';
 import { getToolbars } from './../../toolbar/toolbar-items';
-import { WhitePage } from './../WhitePage/index';
-import { onSyncFunc } from './../../event/Event';
+import { WhitePage } from '../../whiteboard/WhitePage';
+import { onSyncFunc } from '../../event/SyncEvent';
 
 import { Synthetizer } from '../../renderer/Synthetizer';
 import { Toolbar } from '../../toolbar/Toolbar';
@@ -39,7 +39,7 @@ export class Drawboard extends Baseboard {
   onCancel: () => void;
 
   constructor(
-    source: WhitePageSource,
+    source: Source,
     { page, zIndex, onChange }: { page?: WhitePage; zIndex?: number; onChange?: onSyncFunc } = {}
   ) {
     super(source);
@@ -154,8 +154,8 @@ export class Drawboard extends Baseboard {
     this.onChange({
       target: 'marker',
       parentId: this.page ? this.page.id : this.id,
-      event: 'add',
-      data: { type: marker.type, id: marker.id }
+      event: 'addMarker',
+      marker: { type: marker.type, id: marker.id }
     });
 
     this.markers.push(marker);
@@ -178,10 +178,10 @@ export class Drawboard extends Baseboard {
       // 触发事件
       if (this.onChange) {
         this.onChange({
-          event: 'remove',
+          event: 'removeMarker',
           id: this.activeMarker.id,
           target: 'marker',
-          data: { id: this.activeMarker.id }
+          marker: { id: this.activeMarker.id }
         });
       }
       this.deleteMarker(this.activeMarker);

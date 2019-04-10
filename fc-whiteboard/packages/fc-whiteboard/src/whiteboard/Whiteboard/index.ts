@@ -1,25 +1,20 @@
-import { SyncEvent } from './../../event/Event';
 import * as Siema from 'siema';
 
-import { WhiteboardMode } from '../types';
+import { Mode } from './../../utils/types';
+import { SyncEvent } from '../../event/SyncEvent';
+
 import { WhitePage } from '../WhitePage/index';
 import { EventHub } from '../../event/EventHub';
 import { uuid } from '../../utils/uuid';
 import { addClassName, createDivWithClassName } from '../../utils/dom';
 
 import './index.less';
+import { WhiteboardSnap } from '../WhiteboardSnap';
 
 const LeftArrowIcon = require('../../assets/bx-left-arrow.svg');
 const RightArrowIcon = require('../../assets/bx-right-arrow.svg');
 
 const prefix = 'fcw-board';
-
-export class SerializableWhiteboard {
-  id: string;
-  sources: string[];
-  pageIds: string[];
-  visiblePageIndex: number;
-}
 
 export class Whiteboard {
   id: string = uuid();
@@ -31,11 +26,14 @@ export class Whiteboard {
   imgsContainer: HTMLDivElement;
   pagesContainer: HTMLDivElement;
 
+  /** Options */
+  snapInterval: number = 15 * 1000;
+
   /** UI Options */
   // 事件中心
   eventHub?: EventHub;
   // 编辑模式
-  mode: WhiteboardMode = 'master';
+  mode: Mode = 'master';
   // 是否为全屏模式
   isFullscreen: boolean = false;
 
@@ -63,7 +61,7 @@ export class Whiteboard {
     }: {
       sources?: string[];
       eventHub?: EventHub;
-      mode?: WhiteboardMode;
+      mode?: Mode;
       visiblePageIndex?: number;
     } = {}
   ) {
@@ -131,7 +129,16 @@ export class Whiteboard {
   }
 
   /** 获取当前快照 */
-  public snap(): SerializableWhiteboard {
+  public snap(shadow: boolean = true): WhiteboardSnap {
+    if (shadow) {
+      return {
+        id: this.id,
+        sources: this.sources,
+        pageIds: this.pages.map(page => page.id),
+        visiblePageIndex: this.visiblePageIndex
+      };
+    }
+
     return {
       id: this.id,
       sources: this.sources,
@@ -208,22 +215,22 @@ export class Whiteboard {
     }
 
     this.eventHub.on('sync', (ev: SyncEvent) => {
-      if (ev.target !== 'whiteboard') {
+      if (ev.target !== 'whiteboard' || !ev.border) {
         return;
       }
 
-      if (ev.event === 'snap') {
+      if (ev.event === 'borderSnap') {
         // 如果已经初始化完毕，则直接跳过
         if (this.isInitialized) {
           return;
         }
 
-        this.onSnapshot(ev.data as SerializableWhiteboard);
+        this.onSnapshot(ev.border);
       }
 
-      if (ev.event === 'changeIndex' && ev.id === this.id) {
+      if (ev.event === 'borderChangePage' && ev.id === this.id) {
         if (this.isInitialized) {
-          this.onPageChange(ev.data as number);
+          this.onPageChange(ev.border.visiblePageIndex);
         }
       }
     });
@@ -270,26 +277,28 @@ export class Whiteboard {
       }
     });
 
+    this.emit({
+      event: 'borderChangePage',
+      id: this.id,
+      target: 'whiteboard',
+      border: this.snap()
+    });
+  }
+
+  private emit(borderEvent: SyncEvent) {
     if (this.mode === 'master' && this.eventHub) {
-      this.eventHub.emit('sync', {
-        event: 'changeIndex',
-        id: this.id,
-        target: 'whiteboard',
-        data: nextPageIndex
-      });
+      this.eventHub.emit('sync', borderEvent);
     }
   }
 
   private emitSnapshot() {
     const innerFunc = () => {
-      if (this.eventHub) {
-        this.eventHub.emit('sync', {
-          event: 'snap',
-          id: this.id,
-          target: 'whiteboard',
-          data: this.snap()
-        });
-      }
+      this.emit({
+        event: 'borderSnap',
+        id: this.id,
+        target: 'whiteboard',
+        border: this.snap()
+      });
     };
 
     // 定期触发事件
@@ -302,7 +311,7 @@ export class Whiteboard {
   }
 
   /** 响应获取到的快照事件 */
-  private onSnapshot(snap: SerializableWhiteboard) {
+  private onSnapshot(snap: WhiteboardSnap) {
     const { id, sources, pageIds, visiblePageIndex } = snap;
 
     if (!this.isInitialized && !this.isSyncing) {

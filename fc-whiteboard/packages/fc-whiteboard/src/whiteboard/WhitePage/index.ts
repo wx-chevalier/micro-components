@@ -1,10 +1,9 @@
-import { TextMarker } from './../../markers/TextMarker/index';
-import { MarkerType } from './../../markers/types';
-import { SyncEvent } from './../../event/Event';
+import { Source, Mode } from './../../utils/types';
+import { Drawboard } from './../../drawboard/Drawboard/index';
+import { TextMarker } from '../../markers/TextMarker/index';
+import { SyncEvent } from '../../event/SyncEvent';
 import { EventHub } from '../../event/EventHub';
-import { WhiteboardMode, WhitePageSource } from './../types';
-import { Drawboard } from './../Drawboard/index';
-import { uuid } from './../../utils/uuid';
+import { uuid } from '../../utils/uuid';
 import { getMarkerByType } from '../../markers/types';
 
 import './index.less';
@@ -16,26 +15,26 @@ const prefix = 'fcw-page';
 export class WhitePage {
   id: string = uuid();
 
-  source: WhitePageSource;
+  source: Source;
   target: HTMLImageElement;
 
   /** UI Options */
   container: HTMLDivElement;
   // 父容器指针
   parentContainer?: HTMLDivElement;
-  mode: WhiteboardMode = 'master';
+  mode: Mode = 'master';
 
   /** Handlers */
   drawboard: Drawboard;
   eventHub?: EventHub;
 
   constructor(
-    source: WhitePageSource,
+    source: Source,
     {
       mode,
       eventHub,
       parentContainer
-    }: { mode?: WhiteboardMode; eventHub?: EventHub; parentContainer?: HTMLDivElement } = {}
+    }: { mode?: Mode; eventHub?: EventHub; parentContainer?: HTMLDivElement } = {}
   ) {
     if (mode) {
       this.mode = mode;
@@ -72,7 +71,7 @@ export class WhitePage {
   }
 
   /** 初始化源 */
-  private initSource(source: WhitePageSource) {
+  private initSource(source: Source) {
     // 判断 Source 的类型是否符合要求
     if (typeof source.imgSrc === 'string' && !this.parentContainer) {
       throw new Error('Invalid source, If you set image url, you must also set parentContainer');
@@ -144,48 +143,48 @@ export class WhitePage {
 
   /** 处理 Marker 的同步事件 */
   private onMarkerSync(ev: SyncEvent) {
-    if (ev.event === 'add' && ev.parentId === this.id) {
-      const data: { id: string; type: MarkerType } = ev.data as {
-        id: string;
-        type: MarkerType;
-      };
+    if (!ev.marker) {
+      return;
+    }
+    const id = ev.marker.id;
 
+    if (ev.event === 'addMarker' && ev.parentId === this.id) {
       // 这里判断该 Marker 是否已经添加过；如果已经存在则忽略
-      const marker = this.drawboard.markerMap[data.id];
+      if (id) {
+        return;
+      }
+
+      const marker = this.drawboard.markerMap[id!];
       if (!marker) {
-        this.drawboard.addMarker(getMarkerByType(data.type), { id: data.id });
+        this.drawboard.addMarker(getMarkerByType(ev.marker.type!), { id: ev.marker.id });
       }
     }
 
     // 其余的情况，不存在 id 则直接返回空
-    if (!ev.id) {
+    if (!id) {
       return;
     }
 
-    if (ev.event === 'remove') {
-      const data: { id: string } = ev.data as {
-        id: string;
-      };
-
-      const marker = this.drawboard.markerMap[data.id];
+    if (ev.event === 'removeMarker') {
+      const marker = this.drawboard.markerMap[id];
       if (marker) {
         this.drawboard.deleteMarker(marker);
       }
     }
 
-    if (ev.event === 'move' || ev.event === 'resize') {
-      const marker = this.drawboard.markerMap[ev.id];
+    if (ev.event === 'moveMarker' || ev.event === 'resizeMarker') {
+      const marker = this.drawboard.markerMap[id];
 
       if (marker) {
-        marker.reactToManipulation(ev.event, ev.data as any);
+        marker.reactToManipulation(ev.event, ev.marker);
       }
     }
 
     // 响应文本变化事件
-    if (ev.event === 'changeText') {
-      const marker = this.drawboard.markerMap[ev.id] as TextMarker;
+    if (ev.event === 'inputMarker') {
+      const marker = this.drawboard.markerMap[id] as TextMarker;
       if (marker) {
-        marker.setText(ev.data as string);
+        marker.setText(ev.marker.text!);
       }
     }
   }

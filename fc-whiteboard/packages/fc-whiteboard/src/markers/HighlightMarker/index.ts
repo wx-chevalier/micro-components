@@ -1,7 +1,7 @@
 import { MarkerType } from './../types';
 import { SvgHelper } from '../../renderer/SvgHelper';
 import { RectBaseMarker } from '../RectMarker/RectBaseMarker';
-import { WhitePage } from '../../board/WhitePage';
+import { WhitePage } from '../../whiteboard/WhitePage';
 
 export class HighlightMarker extends RectBaseMarker {
   type: MarkerType = 'highlight';

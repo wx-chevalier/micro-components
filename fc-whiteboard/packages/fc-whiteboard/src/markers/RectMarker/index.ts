@@ -1,4 +1,4 @@
-import { WhitePage } from './../../board/WhitePage/index';
+import { WhitePage } from '../../whiteboard/WhitePage/index';
 import { MarkerType } from './../types';
 import { RectBaseMarker } from './RectBaseMarker';
 import { SvgHelper } from '../../renderer/SvgHelper';

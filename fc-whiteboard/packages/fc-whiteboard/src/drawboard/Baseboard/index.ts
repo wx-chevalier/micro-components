@@ -1,5 +1,5 @@
+import { Source } from './../../utils/types';
 import { uuid } from './../../utils/uuid';
-import { WhitePageSource } from './../types';
 import { SvgHelper } from './../../renderer/SvgHelper/index';
 
 /** 基础的绘制版 */
@@ -10,7 +10,7 @@ export class Baseboard {
   isFullscreen: boolean = false;
 
   /** 元素 */
-  source: WhitePageSource;
+  source: Source;
 
   // 目前使用 Image 元素作为输出源
   target: HTMLImageElement;
@@ -23,7 +23,7 @@ export class Baseboard {
   width: number;
   height: number;
 
-  constructor(source: WhitePageSource) {
+  constructor(source: Source) {
     this.source = source;
 
     // 如果传入的是某个元素，则直接附着

@@ -1,6 +1,6 @@
-import { WhitePage } from './../../board/WhitePage/index';
-import { PositionType } from '../../event/Event';
-import { onSyncFunc, EventType } from '../../event/Event';
+import { WhitePage } from '../../whiteboard/WhitePage/index';
+import { PositionType } from '../../utils/layout';
+import { onSyncFunc, EventType } from '../../event/SyncEvent';
 import { MarkerType } from '../types';
 import * as uuid from 'uuid/v1';
 import { SvgHelper } from '../../renderer/SvgHelper';
@@ -39,13 +39,21 @@ export class BaseMarker {
 
   public reactToManipulation(
     type: EventType,
-    { dx, dy, pos }: { dx: number; dy: number; pos: PositionType }
+    { dx, dy, pos }: { dx?: number; dy?: number; pos?: PositionType } = {}
   ) {
-    if (type === 'move') {
+    if (type === 'moveMarker') {
+      if (!dx || !dy) {
+        return;
+      }
+
       this.move(dx, dy);
     }
 
-    if (type === 'resize') {
+    if (type === 'resizeMarker') {
+      if (!dx || !dy) {
+        return;
+      }
+
       this.resizeByEvent(dx, dy, pos);
     }
   }
@@ -57,13 +65,18 @@ export class BaseMarker {
     const dy = (ev.screenY - this.previousMouseY) / scale;
 
     if (this.isDragging) {
-      this.onChange({ target: 'marker', id: this.id, event: 'move', data: { dx, dy } });
+      this.onChange({ target: 'marker', id: this.id, event: 'moveMarker', marker: { dx, dy } });
       this.move(dx, dy);
     }
 
     if (this.isResizing) {
       this.resize(dx, dy, (pos: PositionType) => {
-        this.onChange({ target: 'marker', id: this.id, event: 'resize', data: { dx, dy, pos } });
+        this.onChange({
+          target: 'marker',
+          id: this.id,
+          event: 'resizeMarker',
+          marker: { dx, dy, pos }
+        });
       });
     }
 

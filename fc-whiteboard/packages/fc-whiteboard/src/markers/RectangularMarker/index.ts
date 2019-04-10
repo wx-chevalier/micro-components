@@ -1,9 +1,9 @@
 import { RectangularMarkerGrips } from './RectangularMarkerGrips';
 import { BaseMarker } from '../BaseMarker';
 import { ResizeGrip } from '../BaseMarker/ResizeGrip';
-import { PositionType } from '../../event/Event';
 import { SvgHelper } from '../../renderer/SvgHelper';
-import { WhitePage } from '../../board/WhitePage';
+import { WhitePage } from '../../whiteboard/WhitePage';
+import { PositionType } from '../../utils/layout';
 
 export class RectangularMarker extends BaseMarker {
   public static createMarker = (page?: WhitePage): RectangularMarker => {

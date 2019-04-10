@@ -1,6 +1,6 @@
-import { EventHub } from './../../src/event/EventHub';
-import { WhitePage } from '../../src/board/WhitePage/index';
-import { SyncEvent } from '../../src/event/Event';
+import { EventHub } from '../../src/event/EventHub';
+import { WhitePage } from '../../src/whiteboard/WhitePage/index';
+import { SyncEvent } from '../../src/event/SyncEvent';
 
 const eventHub = new EventHub();
 

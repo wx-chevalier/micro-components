@@ -1,7 +1,7 @@
 import { MarkerType } from './../types';
 import { LinearMarker } from '../LinearMarker';
 import { SvgHelper } from './../../renderer/SvgHelper/index';
-import { WhitePage } from '../../board/WhitePage';
+import { WhitePage } from '../../whiteboard/WhitePage';
 
 export class LineMarker extends LinearMarker {
   type: MarkerType = 'line';

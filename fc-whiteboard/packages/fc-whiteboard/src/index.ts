@@ -1,4 +1,4 @@
 export { EventHub } from './event/EventHub';
-export { Drawboard } from './board/Drawboard';
-export { Whiteboard } from './board/Whiteboard';
-export { WhiteboardMode } from './board/types';
+export { Drawboard } from './drawboard/Drawboard';
+export { Whiteboard } from './whiteboard/Whiteboard';
+export { Mode } from './utils/types';

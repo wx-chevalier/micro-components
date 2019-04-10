@@ -1,4 +1,4 @@
-import { WhitePage } from './../board/WhitePage/index';
+import { WhitePage } from '../whiteboard/WhitePage/index';
 import { RectMarker } from './../markers/RectMarker/index';
 import { CoverMarker } from './../markers/CoverMarker/index';
 import { TextMarker } from './../markers/TextMarker/index';

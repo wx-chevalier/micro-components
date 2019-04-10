@@ -1,8 +1,8 @@
 import { MarkerType } from '../types';
 import { RectangularMarker } from '../RectangularMarker';
 import { SvgHelper } from '../../renderer/SvgHelper';
-import { PositionType } from '../../event/Event';
-import { WhitePage } from '../../board/WhitePage';
+import { WhitePage } from '../../whiteboard/WhitePage';
+import { PositionType } from '../../utils/layout';
 
 const OkIcon = require('../../assets/check.svg');
 const CancelIcon = require('../../assets/times.svg');
@@ -147,7 +147,12 @@ export class TextMarker extends RectangularMarker {
     }
 
     // 触发文本修改时间
-    this.onChange({ target: 'marker', id: this.id, event: 'changeText', data: this.text });
+    this.onChange({
+      target: 'marker',
+      id: this.id,
+      event: 'inputMarker',
+      marker: { text: this.text }
+    });
 
     this.renderText();
     this.closeEditor();
