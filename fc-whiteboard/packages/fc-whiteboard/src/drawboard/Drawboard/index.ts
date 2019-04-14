@@ -131,6 +131,7 @@ export class Drawboard extends Baseboard {
     this.startRender(this.renderFinished);
   };
 
+  /** 添加某个 Marker */
   public addMarker = (markerType: typeof BaseMarker, { id }: { id?: string } = {}) => {
     // 假如 Drawboard 存在 Page 引用，则传导给 Marker
     const marker = markerType.createMarker(this.page);
@@ -139,6 +140,7 @@ export class Drawboard extends Baseboard {
       marker.id = id;
     }
 
+    marker.drawboard = this;
     marker.onSelected = this.selectMarker;
     marker.onChange = this.onChange;
 
@@ -159,18 +161,17 @@ export class Drawboard extends Baseboard {
     });
 
     this.markers.push(marker);
-
     this.selectMarker(marker);
-
     this.boardCanvas.appendChild(marker.visual);
 
+    // 默认居中
     const bbox = marker.visual.getBBox();
     const x = this.width / 2 / this.scale - bbox.width / 2;
     const y = this.height / 2 / this.scale - bbox.height / 2;
 
-    const translate = marker.visual.transform.baseVal.getItem(0);
-    translate.setMatrix(translate.matrix.translate(x, y));
-    marker.visual.transform.baseVal.replaceItem(translate, 0);
+    marker.moveTo(x, y);
+
+    return marker;
   };
 
   public deleteActiveMarker = () => {

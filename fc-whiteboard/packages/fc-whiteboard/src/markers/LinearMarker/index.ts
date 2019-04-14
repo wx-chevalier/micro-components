@@ -3,8 +3,13 @@ import { BaseMarker } from '../BaseMarker';
 import { ResizeGrip } from '../BaseMarker/ResizeGrip';
 import { SvgHelper } from '../../renderer/SvgHelper';
 import { PositionType } from '../../utils/layout';
+import { MarkerSnap } from '../../whiteboard/AbstractWhiteboard/snap';
+import { LinearBound } from '../types';
 
-export class LinearMarker extends BaseMarker {
+/**
+ * 线性标识
+ */
+export class LinearMarker extends BaseMarker implements LinearBound {
   public static createMarker = (page?: WhitePage): LinearMarker => {
     const marker = new LinearMarker();
     marker.page = page;
@@ -12,22 +17,51 @@ export class LinearMarker extends BaseMarker {
     return marker;
   };
 
-  protected markerLine: SVGLineElement;
-
   private readonly MIN_LENGTH = 20;
+  // 线的左端点与右端点
+  x1: number = 0;
+  y1: number = 0;
+  x2: number = this.width;
+  y2: number = 0;
 
+  /** @region UI Handlers */
+  protected markerLine: SVGLineElement;
   private markerBgLine: SVGLineElement; // touch target
-
   private controlBox: SVGGElement;
 
   private controlGrips: { left: ResizeGrip; right: ResizeGrip };
   private activeGrip: ResizeGrip | null;
 
-  private x1: number = 0;
-  private y1: number = 0;
-  private x2: number = this.width;
-  private y2: number = 0;
+  /** Getter & Setter */
+  public getLineLength = (x1: number, y1: number, x2: number, y2: number): number => {
+    const dx = Math.abs(x1 - x2);
+    const dy = Math.abs(y1 - y2);
 
+    return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+  };
+
+  public captureSnap(): MarkerSnap {
+    const baseSnap = super.captureSnap();
+
+    baseSnap.linearSnap = {
+      x1: this.x1,
+      y1: this.y1,
+      x2: this.x2,
+      y2: this.y2
+    };
+
+    return baseSnap;
+  }
+
+  public applySnap(snap: MarkerSnap): void {
+    super.applySnap(snap);
+
+    if (snap.linearSnap) {
+      this.positionLine(snap.linearSnap);
+    }
+  }
+
+  /** 复写操作事件 */
   public endManipulation() {
     super.endManipulation();
     this.isResizing = false;
@@ -62,6 +96,7 @@ export class LinearMarker extends BaseMarker {
     }
   }
 
+  /** 主动伸缩操作 */
   protected resize(x: number, y: number, onPosition?: (pos: PositionType) => void) {
     if (this.activeGrip) {
       if (
@@ -96,6 +131,7 @@ export class LinearMarker extends BaseMarker {
     this.adjustControlBox();
   }
 
+  /** 根据事件进行伸缩操作 */
   protected resizeByEvent(x: number, y: number, pos?: PositionType) {
     if (pos === 'left') {
       this.activeGrip = this.controlGrips.left;
@@ -106,12 +142,7 @@ export class LinearMarker extends BaseMarker {
     this.resize(x, y);
   }
 
-  private getLineLength = (x1: number, y1: number, x2: number, y2: number): number => {
-    const dx = Math.abs(x1 - x2);
-    const dy = Math.abs(y1 - y2);
-
-    return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-  };
+  /** Init */
 
   private addControlBox = () => {
     this.controlBox = SvgHelper.createGroup([['class', 'fc-whiteboard-line-control-box']]);
@@ -149,24 +180,7 @@ export class LinearMarker extends BaseMarker {
     return grip;
   };
 
-  private positionGrips = () => {
-    const gripSize = this.controlGrips.left.GRIP_SIZE;
-
-    const x1 = this.x1 - gripSize / 2;
-    const y1 = this.y1 - gripSize / 2;
-    const x2 = this.x2 - gripSize / 2;
-    const y2 = this.y2 - gripSize / 2;
-
-    this.positionGrip(this.controlGrips.left.visual, x1, y1);
-    this.positionGrip(this.controlGrips.right.visual, x2, y2);
-  };
-
-  private positionGrip = (grip: SVGGraphicsElement, x: number, y: number) => {
-    const translate = grip.transform.baseVal.getItem(0);
-    translate.setTranslate(x, y);
-    grip.transform.baseVal.replaceItem(translate, 0);
-  };
-
+  /** Event Handlers */
   private gripMouseDown = (ev: MouseEvent) => {
     this.isResizing = true;
     this.activeGrip =
@@ -188,5 +202,36 @@ export class LinearMarker extends BaseMarker {
     if (this.isResizing) {
       this.resize(ev.movementX, ev.movementY);
     }
+  };
+
+  /** UI Position */
+  private positionLine = (bound: LinearBound) => {
+    this.x1 = bound.x1;
+    this.y1 = bound.y1;
+    this.x2 = bound.x2;
+    this.y2 = bound.y2;
+
+    this.markerBgLine.setAttribute('x1', this.x1.toString());
+    this.markerBgLine.setAttribute('y1', this.y1.toString());
+    this.markerLine.setAttribute('x2', this.x2.toString());
+    this.markerLine.setAttribute('y2', this.y2.toString());
+  };
+
+  private positionGrips = () => {
+    const gripSize = this.controlGrips.left.GRIP_SIZE;
+
+    const x1 = this.x1 - gripSize / 2;
+    const y1 = this.y1 - gripSize / 2;
+    const x2 = this.x2 - gripSize / 2;
+    const y2 = this.y2 - gripSize / 2;
+
+    this.positionGrip(this.controlGrips.left.visual, x1, y1);
+    this.positionGrip(this.controlGrips.right.visual, x2, y2);
+  };
+
+  private positionGrip = (grip: SVGGraphicsElement, x: number, y: number) => {
+    const translate = grip.transform.baseVal.getItem(0);
+    translate.setTranslate(x, y);
+    grip.transform.baseVal.replaceItem(translate, 0);
   };
 }

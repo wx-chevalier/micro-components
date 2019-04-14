@@ -4,6 +4,7 @@ import { ResizeGrip } from '../BaseMarker/ResizeGrip';
 import { SvgHelper } from '../../renderer/SvgHelper';
 import { WhitePage } from '../../whiteboard/WhitePage';
 import { PositionType } from '../../utils/layout';
+import { MarkerSnap } from '../../whiteboard/AbstractWhiteboard/snap';
 
 export class RectangularMarker extends BaseMarker {
   public static createMarker = (page?: WhitePage): RectangularMarker => {
@@ -21,6 +22,32 @@ export class RectangularMarker extends BaseMarker {
 
   private controlGrips: RectangularMarkerGrips;
   private activeGrip: ResizeGrip | null;
+
+  /** Getter & Setter */
+  public captureSnap(): MarkerSnap {
+    const snap = super.captureSnap();
+
+    snap.rectSnap = {
+      width: this.width,
+      height: this.height
+    };
+
+    return snap;
+  }
+
+  public applySnap(snap: MarkerSnap) {
+    super.applySnap(snap);
+
+    if (snap.rectSnap) {
+      const { width, height } = snap.rectSnap;
+
+      if (width && height) {
+        this.width = width;
+        this.height = height;
+        this.adjustControlBox();
+      }
+    }
+  }
 
   public endManipulation() {
     super.endManipulation();
@@ -48,74 +75,98 @@ export class RectangularMarker extends BaseMarker {
     }
   }
 
-  protected resizeByEvent(x: number, y: number, pos: PositionType) {
+  protected resizeByEvent(dx: number, dy: number, pos: PositionType) {
     this.activeGrip = this.controlGrips[pos];
-    this.resize(x, y);
+    this.resize(dx, dy);
   }
 
-  protected resize(x: number, y: number, onPosition?: (pos: PositionType) => void) {
+  protected resize(dx: number, dy: number, onPosition?: (pos: PositionType) => void) {
     let translateX = 0;
     let translateY = 0;
 
     switch (this.activeGrip) {
       case this.controlGrips.topLeft:
-        this.width -= x;
-        this.height -= y;
-        translateX += x;
-        translateY += y;
+        this.width -= dx;
+        this.height -= dy;
+        translateX += dx;
+        translateY += dy;
+
+        this.x += dx;
+        this.y += dy;
+
         if (onPosition) {
           onPosition('topLeft');
         }
         break;
+
       case this.controlGrips.bottomLeft:
-        this.width -= x;
-        this.height += y;
-        translateX += x;
+        this.width -= dx;
+        this.height += dy;
+        translateX += dx;
+
+        this.x += dx;
+
         if (onPosition) {
           onPosition('bottomLeft');
         }
         break;
+
       case this.controlGrips.topRight:
-        this.width += x;
-        this.height -= y;
-        translateY += y;
+        this.width += dx;
+        this.height -= dy;
+        translateY += dy;
+
+        this.y += dy;
+
         if (onPosition) {
           onPosition('topRight');
         }
         break;
+
       case this.controlGrips.bottomRight:
-        this.width += x;
-        this.height += y;
+        this.width += dx;
+        this.height += dy;
         if (onPosition) {
           onPosition('bottomRight');
         }
         break;
+
       case this.controlGrips.centerLeft:
-        this.width -= x;
-        translateX += x;
+        this.width -= dx;
+        translateX += dx;
+
+        this.x += dx;
+
         if (onPosition) {
           onPosition('centerLeft');
         }
         break;
+
       case this.controlGrips.centerRight:
-        this.width += x;
+        this.width += dx;
         if (onPosition) {
           onPosition('centerRight');
         }
         break;
+
       case this.controlGrips.topCenter:
-        this.height -= y;
-        translateY += y;
+        this.height -= dy;
+        translateY += dy;
+
+        this.y += dy;
+
         if (onPosition) {
           onPosition('topCenter');
         }
         break;
+
       case this.controlGrips.bottomCenter:
-        this.height += y;
+        this.height += dy;
         if (onPosition) {
           onPosition('bottomCenter');
         }
         break;
+
       default:
         break;
     }
@@ -144,10 +195,7 @@ export class RectangularMarker extends BaseMarker {
     this.adjustControlBox();
   }
 
-  protected onTouch(ev: TouchEvent) {
-    super.onTouch(ev);
-  }
-
+  /** Init Comps */
   private addControlBox = () => {
     this.controlBox = SvgHelper.createGroup([['class', 'fc-whiteboard-rect-control-box']]);
     const translate = SvgHelper.createTransform();
@@ -204,6 +252,32 @@ export class RectangularMarker extends BaseMarker {
     return grip;
   };
 
+  /** Event Handlers */
+  protected onTouch(ev: TouchEvent) {
+    super.onTouch(ev);
+  }
+
+  private gripMouseDown = (ev: MouseEvent) => {
+    this.isResizing = true;
+    this.activeGrip = this.controlGrips.findGripByVisual(ev.target as SVGGraphicsElement) || null;
+    this.previousMouseX = ev.screenX;
+    this.previousMouseY = ev.screenY;
+    ev.stopPropagation();
+  };
+
+  private gripMouseUp = (ev: MouseEvent) => {
+    this.isResizing = false;
+    this.activeGrip = null;
+    ev.stopPropagation();
+  };
+
+  private gripMouseMove = (ev: MouseEvent) => {
+    if (this.isResizing) {
+      this.manipulate(ev);
+    }
+  };
+
+  /** UI Position */
   private positionGrips = () => {
     const gripSize = this.controlGrips.topLeft.GRIP_SIZE;
 
@@ -228,25 +302,5 @@ export class RectangularMarker extends BaseMarker {
     const translate = grip.transform.baseVal.getItem(0);
     translate.setTranslate(x, y);
     grip.transform.baseVal.replaceItem(translate, 0);
-  };
-
-  private gripMouseDown = (ev: MouseEvent) => {
-    this.isResizing = true;
-    this.activeGrip = this.controlGrips.findGripByVisual(ev.target as SVGGraphicsElement) || null;
-    this.previousMouseX = ev.screenX;
-    this.previousMouseY = ev.screenY;
-    ev.stopPropagation();
-  };
-
-  private gripMouseUp = (ev: MouseEvent) => {
-    this.isResizing = false;
-    this.activeGrip = null;
-    ev.stopPropagation();
-  };
-
-  private gripMouseMove = (ev: MouseEvent) => {
-    if (this.isResizing) {
-      this.manipulate(ev);
-    }
   };
 }

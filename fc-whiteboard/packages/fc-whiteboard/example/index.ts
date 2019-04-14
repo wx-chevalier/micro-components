@@ -1,10 +1,13 @@
+import { SyncEvent } from './../src/event/SyncEvent';
 import { EventHub } from './../src/event/EventHub';
 import { Whiteboard } from '../src/whiteboard/Whiteboard/index';
 
 const eventHub = new EventHub();
 
 eventHub.on('sync', (changeEv: SyncEvent) => {
-  console.log(changeEv);
+  if (changeEv.event === 'borderSnap') {
+    console.log(changeEv);
+  }
 });
 
 const images = [
@@ -15,7 +18,9 @@ const images = [
 
 const whiteboard = new Whiteboard(document.getElementById('root') as HTMLDivElement, {
   sources: images,
-  eventHub
+  eventHub,
+  // Add this option to disable incremental sync, just use full sync
+  onlyEmitSnap: true
 });
 whiteboard.open();
 

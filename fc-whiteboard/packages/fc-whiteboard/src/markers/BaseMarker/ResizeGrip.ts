@@ -1,5 +1,6 @@
 import { SvgHelper } from '../../renderer/SvgHelper';
 
+/** 操作小圆点 */
 export class ResizeGrip {
   public visual: SVGGraphicsElement;
 

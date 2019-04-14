@@ -8,6 +8,13 @@ import { RectMarker } from './RectMarker';
 
 export type MarkerType = 'base' | 'arrow' | 'cover' | 'line' | 'rect' | 'text' | 'highlight';
 
+export interface LinearBound {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+}
+
 export function getMarkerByType(type: MarkerType): typeof BaseMarker {
   switch (type) {
     case 'arrow':

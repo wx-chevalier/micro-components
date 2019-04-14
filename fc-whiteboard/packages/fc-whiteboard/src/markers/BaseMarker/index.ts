@@ -4,12 +4,16 @@ import { onSyncFunc, EventType } from '../../event/SyncEvent';
 import { MarkerType } from '../types';
 import * as uuid from 'uuid/v1';
 import { SvgHelper } from '../../renderer/SvgHelper';
+import { MarkerSnap } from '../../whiteboard/AbstractWhiteboard/snap';
+import { Drawboard } from '../../drawboard/Drawboard/index';
 
 export class BaseMarker {
   id: string = uuid();
   type: MarkerType = 'base';
-  // 归属的
+  // 归属的 WhitePage
   page?: WhitePage;
+  // 归属的 Drawboard
+  drawboard?: Drawboard;
   // Marker 的属性发生变化后的回调
   onChange: onSyncFunc = () => {};
 
@@ -27,8 +31,10 @@ export class BaseMarker {
 
   public defs: SVGElement[] = [];
 
-  protected width: number = 200;
-  protected height: number = 50;
+  x: number = 0;
+  y: number = 0;
+  width: number = 200;
+  height: number = 50;
 
   protected isActive: boolean = true;
   protected isDragging: boolean = false;
@@ -64,11 +70,13 @@ export class BaseMarker {
     const dx = (ev.screenX - this.previousMouseX) / scale;
     const dy = (ev.screenY - this.previousMouseY) / scale;
 
+    // 如果在拖拽
     if (this.isDragging) {
       this.onChange({ target: 'marker', id: this.id, event: 'moveMarker', marker: { dx, dy } });
       this.move(dx, dy);
     }
 
+    // 如果是缩放
     if (this.isResizing) {
       this.resize(dx, dy, (pos: PositionType) => {
         this.onChange({
@@ -103,6 +111,59 @@ export class BaseMarker {
     return;
   }
 
+  /** 生成某个快照 */
+  public captureSnap(): MarkerSnap {
+    return {
+      id: this.id,
+      type: this.type,
+      isActive: this.isActive,
+      x: this.x,
+      y: this.y
+    };
+  }
+
+  /** 应用某个快照 */
+  public applySnap(snap: MarkerSnap): void {
+    this.id = snap.id;
+    this.type = snap.type;
+
+    if (snap.x && snap.y) {
+      // 移动当前位置
+      this.moveTo(snap.x, snap.y);
+    }
+
+    // 判断是否为激活
+    if (this.isActive) {
+      this.select();
+    }
+  }
+
+  protected resize(x: number, y: number, cb?: Function) {
+    return;
+  }
+  protected resizeByEvent(x: number, y: number, pos?: PositionType) {
+    return;
+  }
+
+  public move = (dx: number, dy: number) => {
+    const translate = this.visual.transform.baseVal.getItem(0);
+    translate.setMatrix(translate.matrix.translate(dx, dy));
+    this.visual.transform.baseVal.replaceItem(translate, 0);
+
+    this.x += dx;
+    this.y += dy;
+  };
+
+  public moveTo = (x: number, y: number) => {
+    const translate = this.visual.transform.baseVal.getItem(0);
+    translate.setMatrix(translate.matrix.translate(x - this.x, y - this.y));
+    this.visual.transform.baseVal.replaceItem(translate, 0);
+
+    this.x = x;
+    this.y = y;
+  };
+
+  /** Init */
   protected setup() {
     this.visual = SvgHelper.createGroup();
     // translate
@@ -127,13 +188,6 @@ export class BaseMarker {
   protected addToRenderVisual = (el: SVGElement) => {
     this.renderVisual.appendChild(el);
   };
-
-  protected resize(x: number, y: number, cb?: Function) {
-    return;
-  }
-  protected resizeByEvent(x: number, y: number, pos?: PositionType) {
-    return;
-  }
 
   /** 截获 Touch 事件，并且转发为 Mouse 事件 */
   protected onTouch(ev: TouchEvent) {
@@ -198,11 +252,5 @@ export class BaseMarker {
   private mouseMove = (ev: MouseEvent) => {
     ev.stopPropagation();
     this.manipulate(ev);
-  };
-
-  private move = (dx: number, dy: number) => {
-    const translate = this.visual.transform.baseVal.getItem(0);
-    translate.setMatrix(translate.matrix.translate(dx, dy));
-    this.visual.transform.baseVal.replaceItem(translate, 0);
   };
 }

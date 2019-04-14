@@ -2,6 +2,7 @@ import { PositionType } from '../../utils/layout';
 import { SvgHelper } from '../../renderer/SvgHelper';
 import { RectangularMarker } from '../RectangularMarker';
 import { WhitePage } from '../../whiteboard/WhitePage';
+import { MarkerSnap } from '../../whiteboard/AbstractWhiteboard/snap';
 
 export class RectBaseMarker extends RectangularMarker {
   public static createMarker = (page?: WhitePage): RectBaseMarker => {
@@ -12,6 +13,17 @@ export class RectBaseMarker extends RectangularMarker {
   };
 
   private markerRect: SVGRectElement;
+
+  /** Getter & Setter */
+
+  public applySnap(snap: MarkerSnap) {
+    super.applySnap(snap);
+
+    if (snap.rectSnap) {
+      this.markerRect.setAttribute('width', this.width.toString());
+      this.markerRect.setAttribute('height', this.height.toString());
+    }
+  }
 
   protected setup() {
     super.setup();

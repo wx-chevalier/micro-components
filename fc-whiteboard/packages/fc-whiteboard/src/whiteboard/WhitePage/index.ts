@@ -9,6 +9,7 @@ import { getMarkerByType } from '../../markers/types';
 import './index.less';
 import { createDivWithClassName } from '../../utils/dom';
 import { Whiteboard } from '../Whiteboard';
+import { WhitepageSnap } from '../AbstractWhiteboard/snap';
 
 const prefix = 'fcw-page';
 
@@ -69,6 +70,34 @@ export class WhitePage {
 
   public close() {
     this.drawboard.close();
+  }
+
+  /** 生成快照 */
+  public captureSnap(): WhitepageSnap {
+    const markerSnaps = this.drawboard.markers.map(m => m.captureSnap());
+
+    return {
+      id: this.id,
+      markers: markerSnaps
+    };
+  }
+
+  /** 应用快照 */
+  public applySnap(snap: WhitepageSnap) {
+    snap.markers.forEach(markerSnap => {
+      // 判断是否存在，存在则同步，否则创建
+      const marker = this.drawboard.markerMap[markerSnap.id];
+      debugger;
+
+      if (marker) {
+        marker.applySnap(markerSnap);
+      } else {
+        const newMarker = this.drawboard.addMarker(getMarkerByType(markerSnap.type), {
+          id: markerSnap.id
+        });
+        newMarker.applySnap(markerSnap);
+      }
+    });
   }
 
   /** 初始化源 */

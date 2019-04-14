@@ -3,6 +3,7 @@ import { RectangularMarker } from '../RectangularMarker';
 import { SvgHelper } from '../../renderer/SvgHelper';
 import { WhitePage } from '../../whiteboard/WhitePage';
 import { PositionType } from '../../utils/layout';
+import { MarkerSnap } from '../../whiteboard/AbstractWhiteboard/snap';
 
 const OkIcon = require('../../assets/check.svg');
 const CancelIcon = require('../../assets/times.svg');
@@ -17,23 +18,38 @@ export class TextMarker extends RectangularMarker {
     return marker;
   };
 
-  /** 设置文本 */
+  /** UI Options */
+  protected readonly MIN_SIZE = 50;
+  private readonly DEFAULT_TEXT = 'Double-click to edit text';
+  private text: string = this.DEFAULT_TEXT;
+  private inDoubleTap = false;
+
+  /** UI Handlers */
+  private textElement: SVGTextElement;
+  private editor: HTMLDivElement;
+  private editorTextArea: HTMLTextAreaElement;
+
+  /** Getter & Setter */
   public setText(text: string) {
     this.text = text;
     this.renderText();
   }
 
-  protected readonly MIN_SIZE = 50;
+  public captureSnap(): MarkerSnap {
+    const baseSnap = super.captureSnap();
 
-  private readonly DEFAULT_TEXT = 'Double-click to edit text';
-  private text: string = this.DEFAULT_TEXT;
-  private textElement: SVGTextElement;
+    baseSnap.textSnap = { text: this.text };
 
-  private inDoubleTap = false;
+    return baseSnap;
+  }
 
-  private editor: HTMLDivElement;
+  public applySnap(snap: MarkerSnap) {
+    super.applySnap(snap);
 
-  private editorTextArea: HTMLTextAreaElement;
+    if (snap.textSnap && snap.textSnap.text !== this.text) {
+      this.setText(snap.textSnap.text);
+    }
+  }
 
   protected setup() {
     super.setup();
