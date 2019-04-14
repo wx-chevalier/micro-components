@@ -2,14 +2,13 @@ import { Source, Mode } from './../../utils/types';
 import { Drawboard } from './../../drawboard/Drawboard/index';
 import { TextMarker } from '../../markers/TextMarker/index';
 import { SyncEvent } from '../../event/SyncEvent';
-
 import { uuid } from '../../utils/uuid';
 import { getMarkerByType } from '../../markers/types';
+import { createDivWithClassName } from '../../utils/dom';
+import { WhitepageSnap } from '../AbstractWhiteboard/snap';
+import { AbstractWhiteboard } from '../AbstractWhiteboard/index';
 
 import './index.less';
-import { createDivWithClassName } from '../../utils/dom';
-import { Whiteboard } from '../Whiteboard';
-import { WhitepageSnap } from '../AbstractWhiteboard/snap';
 
 const prefix = 'fcw-page';
 
@@ -28,7 +27,7 @@ export class WhitePage {
 
   /** Handlers */
   drawboard: Drawboard;
-  whiteboard?: Whiteboard;
+  whiteboard?: AbstractWhiteboard;
 
   constructor(
     source: Source,
@@ -36,7 +35,7 @@ export class WhitePage {
       mode,
       whiteboard,
       parentContainer
-    }: { mode?: Mode; whiteboard?: Whiteboard; parentContainer?: HTMLDivElement } = {}
+    }: { mode?: Mode; whiteboard?: AbstractWhiteboard; parentContainer?: HTMLDivElement } = {}
   ) {
     if (mode) {
       this.mode = mode;
@@ -87,7 +86,6 @@ export class WhitePage {
     snap.markers.forEach(markerSnap => {
       // 判断是否存在，存在则同步，否则创建
       const marker = this.drawboard.markerMap[markerSnap.id];
-      debugger;
 
       if (marker) {
         marker.applySnap(markerSnap);
@@ -176,14 +174,10 @@ export class WhitePage {
     if (!ev.marker) {
       return;
     }
-    const id = ev.marker.id;
+
+    const id = ev.id;
 
     if (ev.event === 'addMarker' && ev.parentId === this.id) {
-      // 这里判断该 Marker 是否已经添加过；如果已经存在则忽略
-      if (id) {
-        return;
-      }
-
       const marker = this.drawboard.markerMap[id!];
       if (!marker) {
         this.drawboard.addMarker(getMarkerByType(ev.marker.type!), { id: ev.marker.id });

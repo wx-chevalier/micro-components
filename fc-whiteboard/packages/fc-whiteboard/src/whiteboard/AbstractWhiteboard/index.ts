@@ -8,6 +8,7 @@ import { addClassName } from '../../utils/dom';
 
 import './index.less';
 import { WhiteboardSnap } from '../AbstractWhiteboard/snap';
+import * as Siema from 'siema';
 
 const prefix = 'fcw-board';
 
@@ -56,7 +57,7 @@ export abstract class AbstractWhiteboard {
 
   constructor(
     target: HTMLDivElement,
-    { sources, eventHub, mode, visiblePageIndex, onlyEmitSnap }: Partial<AbstractWhiteboard> = {}
+    { sources, eventHub, visiblePageIndex, onlyEmitSnap }: Partial<AbstractWhiteboard> = {}
   ) {
     if (target) {
       this.target = target;
@@ -76,10 +77,6 @@ export abstract class AbstractWhiteboard {
     }
 
     this.eventHub = eventHub;
-
-    if (mode) {
-      this.mode = mode;
-    }
 
     // set inner state
     if (typeof visiblePageIndex !== 'undefined') {
@@ -162,4 +159,31 @@ export abstract class AbstractWhiteboard {
 
   /** 初始化操作 */
   protected abstract init(): void;
+
+  /** 初始化 Siema */
+  protected initSiema() {
+    // 初始化所有的占位图片，用于给 Siema 播放使用
+    this.sources.forEach(source => {
+      const imgEle = document.createElement('img');
+      addClassName(imgEle, `${prefix}-img`);
+      imgEle.src = source;
+      imgEle.alt = 'Siema image';
+
+      this.imgsContainer.appendChild(imgEle);
+    });
+
+    // 初始化 Siema，并且添加控制节点
+    this.siema = new Siema({
+      selector: this.imgsContainer,
+      duration: 200,
+      easing: 'ease-out',
+      perPage: 1,
+      startIndex: 0,
+      draggable: false,
+      multipleDrag: true,
+      threshold: 20,
+      loop: false,
+      rtl: false
+    });
+  }
 }

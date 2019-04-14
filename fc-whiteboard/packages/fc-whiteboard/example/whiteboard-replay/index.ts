@@ -17,12 +17,12 @@ const whiteboard = new Whiteboard(document.getElementById('root') as HTMLDivElem
   sources: images,
   eventHub
 });
+
 whiteboard.open();
 
 const mirrorWhiteboard = new Whiteboard(document.getElementById('root-mirror') as HTMLDivElement, {
   sources: images,
-  eventHub,
-  mode: 'mirror'
+  eventHub
 });
 
 mirrorWhiteboard.open();
