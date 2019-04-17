@@ -10,7 +10,7 @@ export class RectangularMarker extends BaseMarker {
   public static createMarker = (page?: WhitePage): RectangularMarker => {
     const marker = new RectangularMarker();
     marker.page = page;
-    marker.setup();
+    marker.init();
     return marker;
   };
 
@@ -65,8 +65,8 @@ export class RectangularMarker extends BaseMarker {
     this.controlBox.style.display = 'none';
   }
 
-  protected setup() {
-    super.setup();
+  protected init() {
+    super.init();
 
     this.addControlBox();
 

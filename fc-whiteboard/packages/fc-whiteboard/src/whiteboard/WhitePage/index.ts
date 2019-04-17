@@ -9,6 +9,7 @@ import { WhitepageSnap } from '../AbstractWhiteboard/snap';
 import { AbstractWhiteboard } from '../AbstractWhiteboard/index';
 
 import './index.less';
+import { ToolbarItem } from 'fc-whiteboard/src/toolbar/ToolbarItem';
 
 const prefix = 'fcw-page';
 
@@ -34,8 +35,11 @@ export class WhitePage {
     {
       mode,
       whiteboard,
-      parentContainer
-    }: { mode?: Mode; whiteboard?: AbstractWhiteboard; parentContainer?: HTMLDivElement } = {}
+      parentContainer,
+      extraToolbarItems
+    }: Partial<WhitePage> & {
+      extraToolbarItems?: ToolbarItem[];
+    } = {}
   ) {
     if (mode) {
       this.mode = mode;
@@ -46,7 +50,7 @@ export class WhitePage {
     this.initSource(source);
 
     if (this.mode === 'master') {
-      this.initMaster();
+      this.initMaster(extraToolbarItems);
     }
 
     if (this.mode === 'mirror') {
@@ -126,13 +130,14 @@ export class WhitePage {
   }
 
   /** 以 Master 模式启动 */
-  protected initMaster() {
+  protected initMaster(extraToolbarItems?: ToolbarItem[]) {
     if (this.whiteboard) {
       // 对于 WhitePage 中加载的 Drawboard，必须是传入自身可控的 Image 元素
       this.drawboard = new Drawboard(
         { imgEle: this.target },
         {
           page: this,
+          extraToolbarItems,
           onChange: ev => this.whiteboard!.emit(ev)
         }
       );

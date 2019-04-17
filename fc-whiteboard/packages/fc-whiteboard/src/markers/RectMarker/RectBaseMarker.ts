@@ -8,7 +8,7 @@ export class RectBaseMarker extends RectangularMarker {
   public static createMarker = (page?: WhitePage): RectBaseMarker => {
     const marker = new RectBaseMarker();
     marker.page = page;
-    marker.setup();
+    marker.init();
     return marker;
   };
 
@@ -25,8 +25,8 @@ export class RectBaseMarker extends RectangularMarker {
     }
   }
 
-  protected setup() {
-    super.setup();
+  protected init() {
+    super.init();
 
     this.markerRect = SvgHelper.createRect(this.width, this.height);
     this.addToRenderVisual(this.markerRect);

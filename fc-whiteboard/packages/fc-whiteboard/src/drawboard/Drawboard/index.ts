@@ -29,8 +29,9 @@ export class Drawboard extends Baseboard {
   }
   activeMarker: BaseMarker | null;
 
+  toolbarItems: ToolbarItem[];
+
   toolbar: Toolbar;
-  toolbars: ToolbarItem[];
   toolbarUI: HTMLElement;
 
   /** 回调 */
@@ -40,7 +41,12 @@ export class Drawboard extends Baseboard {
 
   constructor(
     source: Source,
-    { page, zIndex, onChange }: { page?: WhitePage; zIndex?: number; onChange?: onSyncFunc } = {}
+    {
+      page,
+      zIndex,
+      extraToolbarItems,
+      onChange
+    }: Partial<Drawboard> & { extraToolbarItems?: ToolbarItem[] } = {}
   ) {
     super(source);
 
@@ -54,7 +60,14 @@ export class Drawboard extends Baseboard {
 
     this.markers = [];
     this.activeMarker = null;
-    this.toolbars = getToolbars(page);
+
+    const toolbarItems = getToolbars(page);
+
+    if (extraToolbarItems) {
+      toolbarItems.push(...extraToolbarItems);
+    }
+
+    this.toolbarItems = toolbarItems;
 
     if (onChange) {
       this.onChange = onChange;
@@ -80,7 +93,7 @@ export class Drawboard extends Baseboard {
 
     window.addEventListener('resize', this.adjustUI);
 
-    if (this.page.mode === 'master') {
+    if ((this.page && this.page.mode === 'master') || !this.page) {
       this.showUI();
     }
   };
@@ -263,7 +276,7 @@ export class Drawboard extends Baseboard {
   };
 
   private showUI = () => {
-    this.toolbar = new Toolbar(this.toolbars, this.toolbarClick);
+    this.toolbar = new Toolbar(this.toolbarItems, this.toolbarClick);
     this.toolbar.zIndex = this.zIndex;
 
     this.toolbarUI = this.toolbar.getUI();
@@ -329,8 +342,11 @@ export class Drawboard extends Baseboard {
     this.boardCanvas.appendChild(editorStyleSheet);
   };
 
+  /** 处理 Toolbar 的点击事件 */
   private toolbarClick = (ev: MouseEvent, toolbarItem: ToolbarItem) => {
-    if (toolbarItem.markerType) {
+    if (toolbarItem.onClick) {
+      toolbarItem.onClick();
+    } else if (toolbarItem.markerType) {
       this.addMarker(toolbarItem.markerType);
     } else {
       // command button

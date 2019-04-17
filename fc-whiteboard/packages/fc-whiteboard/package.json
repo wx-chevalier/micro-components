@@ -7,7 +7,7 @@
     "react"
   ],
   "name": "fc-whiteboard",
-  "version": "0.0.1-alpha.5",
+  "version": "0.0.1-alpha.10",
   "repository": {
     "type": "git",
     "url": "https://github.com/wx-chevalier/fc-components"
@@ -31,7 +31,7 @@
     "clean": "rimraf dist",
     "copy": "copyfiles -u 1 './src/**/*.(less|svg)' dist/cjs/",
     "dev": "webpack-dev-server --config ./scripts/webpack/webpack.config.dev.js --hot",
-    "pub": "npm run build && npm publish",
+    "pub": "npm run clean && npm run build && npm publish",
     "start": "npm run dev"
   },
   "dependencies": {

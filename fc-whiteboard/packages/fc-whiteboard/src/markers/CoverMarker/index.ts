@@ -9,12 +9,12 @@ export class CoverMarker extends RectBaseMarker {
   public static createMarker = (page?: WhitePage): RectBaseMarker => {
     const marker = new CoverMarker();
     marker.page = page;
-    marker.setup();
+    marker.init();
     return marker;
   };
 
-  protected setup() {
-    super.setup();
+  protected init() {
+    super.init();
     SvgHelper.setAttributes(this.visual, [['class', 'cover-marker']]);
   }
 }

@@ -13,7 +13,7 @@ export class LinearMarker extends BaseMarker implements LinearBound {
   public static createMarker = (page?: WhitePage): LinearMarker => {
     const marker = new LinearMarker();
     marker.page = page;
-    marker.setup();
+    marker.init();
     return marker;
   };
 
@@ -78,8 +78,8 @@ export class LinearMarker extends BaseMarker implements LinearBound {
     this.controlBox.style.display = 'none';
   }
 
-  protected setup() {
-    super.setup();
+  protected init() {
+    super.init();
 
     this.markerBgLine = SvgHelper.createLine(0, 0, this.x2, 0, [
       ['stroke', 'transparent'],
@@ -143,11 +143,9 @@ export class LinearMarker extends BaseMarker implements LinearBound {
   }
 
   /** Init */
-
   private addControlBox = () => {
     this.controlBox = SvgHelper.createGroup([['class', 'fc-whiteboard-line-control-box']]);
     this.addToVisual(this.controlBox);
-
     this.addControlGrips();
   };
 
@@ -176,6 +174,10 @@ export class LinearMarker extends BaseMarker implements LinearBound {
     grip.visual.addEventListener('touchstart', this.onTouch, { passive: false });
     grip.visual.addEventListener('touchend', this.onTouch, { passive: false });
     grip.visual.addEventListener('touchmove', this.onTouch, { passive: false });
+
+    if (this.page && this.page.mode === 'mirror') {
+      grip.visual.style.visibility = 'hidden';
+    }
 
     return grip;
   };

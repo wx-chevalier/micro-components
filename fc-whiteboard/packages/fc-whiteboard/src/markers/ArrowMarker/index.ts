@@ -9,14 +9,14 @@ export class ArrowMarker extends LinearMarker {
   public static createMarker = (page?: WhitePage): LinearMarker => {
     const marker = new ArrowMarker();
     marker.page = page;
-    marker.setup();
+    marker.init();
     return marker;
   };
 
   private readonly ARROW_SIZE = 6;
 
-  protected setup() {
-    super.setup();
+  protected init() {
+    super.init();
     SvgHelper.setAttributes(this.visual, [['class', 'arrow-marker']]);
 
     const tip = SvgHelper.createPolygon(

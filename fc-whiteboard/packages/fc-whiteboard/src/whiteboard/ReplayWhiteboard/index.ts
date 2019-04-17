@@ -1,5 +1,5 @@
 import { MirrorWhiteboard } from '../MirrorWhiteboard';
-import { SyncEvent } from './../../event/SyncEvent';
+import { SyncEvent } from '../../event/SyncEvent';
 import { EventHub } from 'fc-whiteboard/src/event/EventHub';
 
 // 窗口大小为一分钟
@@ -70,7 +70,7 @@ export class ReplayWhiteboard extends MirrorWhiteboard {
       this.onLoad(startTime, endTime)
         .then(events => {
           this.loadedRelativeTime = this.currentRelativeTime;
-          this.leftEvents.push(...(events || []).sort((e1, e2) => e1.timestamp! - e2.timestamp!));
+          this.leftEvents.push(...(events || []));
         })
         .finally(() => {
           this.loadingLock = false;

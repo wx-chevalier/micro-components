@@ -6,8 +6,9 @@ import * as uuid from 'uuid/v1';
 import { SvgHelper } from '../../renderer/SvgHelper';
 import { MarkerSnap } from '../../whiteboard/AbstractWhiteboard/snap';
 import { Drawboard } from '../../drawboard/Drawboard/index';
+import { DomEventAware } from '../../renderer/DomEventAware/index';
 
-export class BaseMarker {
+export class BaseMarker extends DomEventAware {
   id: string = uuid();
   type: MarkerType = 'base';
   // 归属的 WhitePage
@@ -20,7 +21,7 @@ export class BaseMarker {
   public static createMarker = (page?: WhitePage): BaseMarker => {
     const marker = new BaseMarker();
     marker.page = page;
-    marker.setup();
+    marker.init();
     return marker;
   };
 
@@ -31,17 +32,12 @@ export class BaseMarker {
 
   public defs: SVGElement[] = [];
 
-  x: number = 0;
-  y: number = 0;
   width: number = 200;
   height: number = 50;
 
-  protected isActive: boolean = true;
-  protected isDragging: boolean = false;
-  protected isResizing: boolean = false;
-
-  protected previousMouseX: number = 0;
-  protected previousMouseY: number = 0;
+  isActive: boolean = true;
+  isDragging: boolean = false;
+  isResizing: boolean = false;
 
   public reactToManipulation(
     type: EventType,
@@ -163,20 +159,13 @@ export class BaseMarker {
     this.y = y;
   };
 
-  /** Init */
-  protected setup() {
+  /** Init base marker */
+  protected init() {
     this.visual = SvgHelper.createGroup();
     // translate
     this.visual.transform.baseVal.appendItem(SvgHelper.createTransform());
 
-    this.visual.addEventListener('mousedown', this.mouseDown);
-    this.visual.addEventListener('mouseup', this.mouseUp);
-    this.visual.addEventListener('mousemove', this.mouseMove);
-
-    this.visual.addEventListener('touchstart', this.onTouch, { passive: false });
-    this.visual.addEventListener('touchend', this.onTouch, { passive: false });
-    this.visual.addEventListener('touchmove', this.onTouch, { passive: false });
-
+    super.init(this.visual);
     this.renderVisual = SvgHelper.createGroup([['class', 'render-visual']]);
     this.visual.appendChild(this.renderVisual);
   }
@@ -189,49 +178,7 @@ export class BaseMarker {
     this.renderVisual.appendChild(el);
   };
 
-  /** 截获 Touch 事件，并且转发为 Mouse 事件 */
-  protected onTouch(ev: TouchEvent) {
-    ev.preventDefault();
-    const newEvt = document.createEvent('MouseEvents');
-    const touch = ev.changedTouches[0];
-    let type = null;
-
-    switch (ev.type) {
-      case 'touchstart':
-        type = 'mousedown';
-        break;
-      case 'touchmove':
-        type = 'mousemove';
-        break;
-      case 'touchend':
-        type = 'mouseup';
-        break;
-      default:
-        break;
-    }
-
-    newEvt.initMouseEvent(
-      type!,
-      true,
-      true,
-      window,
-      0,
-      touch.screenX,
-      touch.screenY,
-      touch.clientX,
-      touch.clientY,
-      ev.ctrlKey,
-      ev.altKey,
-      ev.shiftKey,
-      ev.metaKey,
-      0,
-      null
-    );
-
-    ev.target!.dispatchEvent(newEvt);
-  }
-
-  private mouseDown = (ev: MouseEvent) => {
+  protected onMouseDown = (ev: MouseEvent) => {
     ev.stopPropagation();
 
     if (this.page && this.page.mode === 'mirror') {
@@ -244,12 +191,12 @@ export class BaseMarker {
     this.previousMouseY = ev.screenY;
   };
 
-  private mouseUp = (ev: MouseEvent) => {
+  protected onMouseUp = (ev: MouseEvent) => {
     ev.stopPropagation();
     this.endManipulation();
   };
 
-  private mouseMove = (ev: MouseEvent) => {
+  protected onMouseMove = (ev: MouseEvent) => {
     ev.stopPropagation();
     this.manipulate(ev);
   };

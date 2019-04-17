@@ -14,9 +14,9 @@ fractal-components 中包含了可复用的组件，还有很多纯界面化展�
 
 # Nav | 导航
 
-| Name / 名称   | Description / 描述                                  | 链接                                                                  |
-| ------------- | --------------------------------------------------- | --------------------------------------------------------------------- |
-| fc-whiteboard | Electronic Whiteboard for screen sharing / 电子白板 | [Demo](https://n3x0o9wkj.codesandbox.io/) / [Source](./fc-whiteboard) |
+| Name / 名称   | Description / 描述                                  | Links / 链接                                                           |
+| ------------- | --------------------------------------------------- | ---------------------------------------------------------------------- |
+| fc-whiteboard | Electronic Whiteboard for screen sharing / 电子白板 | [Demo](https://3q1z35q53p.codesandbox.io/) / [Source](./fc-whiteboard) |
 
 # About
 

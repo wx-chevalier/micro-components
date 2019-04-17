@@ -71,12 +71,4 @@ export class Baseboard {
     this.boardHolder.style.top = this.targetRect.top + 'px';
     this.boardHolder.style.left = this.targetRect.left + 'px';
   };
-
-  protected initEmbeddingToolbar = () => {};
-
-  protected positionEmbeddingToolbar = () => {};
-
-  protected initFloatingToolbar = () => {};
-
-  protected positionFloatingToolbar = () => {};
 }

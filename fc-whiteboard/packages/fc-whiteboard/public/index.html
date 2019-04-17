@@ -14,27 +14,27 @@
         margin-left: 16px;
       }
 
-      #root {
+      #root-wrapper {
         width: 500px;
+        height: 600px;
+        top: 50px;
+        position: absolute;
+      }
+
+      #root {
         height: 500px;
-        top: 100px;
+      }
+
+      #root-mirror-wrapper {
+        width: 500px;
+        height: 600px;
+        top: 50px;
+        right: 16px;
         position: absolute;
       }
 
       #root-mirror {
-        width: 500px;
         height: 500px;
-        top: 100px;
-        right: 16px;
-        position: absolute;
-      }
-
-      #root-random-mirror {
-        width: 500px;
-        height: 500px;
-        top: 600px;
-        right: 16px;
-        position: absolute;
       }
     </style>
   </head>
@@ -46,9 +46,14 @@
         <a href="./drawboard.html">Drawboard</a>
         <a href="./whiteboard-replay.html">Whiteboard Replay</a>
       </div>
-      <div id="root"></div>
-      <div id="root-mirror"></div>
-      <div id="root-random-mirror"></div>
+      <div id="root-wrapper">
+        <h1>Presentation Screen</h1>
+        <div id="root"></div>
+      </div>
+      <div id="root-mirror-wrapper">
+        <h1>Audience Screen</h1>
+        <div id="root-mirror"></div>
+      </div>
 
       <script>
         window.__DEV_APP__ = {};

@@ -2,6 +2,7 @@ import { WhitePage } from '../WhitePage/index';
 import { createDivWithClassName } from '../../utils/dom';
 import { AbstractWhiteboard } from '../AbstractWhiteboard/index';
 import { Mode } from '../../utils/types';
+import { separatorToolbarItem } from '../../toolbar/toolbar-items';
 
 const LeftArrowIcon = require('../../assets/bx-left-arrow.svg');
 const RightArrowIcon = require('../../assets/bx-right-arrow.svg');
@@ -25,6 +26,30 @@ export class Whiteboard extends AbstractWhiteboard {
 
   /** 以主模式启动 */
   private initMaster() {
+    // 初始化控制节点
+    const prevToolbarItem = {
+      icon: LeftArrowIcon,
+      name: 'prev-flip-arrow',
+      tooltipText: 'Prev',
+      onClick: () => {
+        const nextPageIndex =
+          this.visiblePageIndex + 1 > this.pages.length - 1 ? 0 : this.visiblePageIndex + 1;
+        this.onPageChange(nextPageIndex);
+      }
+    };
+
+    const nextToolbarItem = {
+      icon: RightArrowIcon,
+      name: 'next-flip-arrow',
+      tooltipText: 'Next',
+      onClick: () => {
+        const nextPageIndex =
+          this.visiblePageIndex - 1 < 0 ? this.pages.length - 1 : this.visiblePageIndex - 1;
+
+        this.onPageChange(nextPageIndex);
+      }
+    };
+
     // 初始化所有的 WhitePages
     this.sources.forEach(source => {
       const page = new WhitePage(
@@ -32,7 +57,8 @@ export class Whiteboard extends AbstractWhiteboard {
         {
           mode: this.mode,
           whiteboard: this,
-          parentContainer: this.pagesContainer
+          parentContainer: this.pagesContainer,
+          extraToolbarItems: [separatorToolbarItem, prevToolbarItem, nextToolbarItem]
         }
       );
 
@@ -43,27 +69,6 @@ export class Whiteboard extends AbstractWhiteboard {
     });
 
     this.initSiema();
-
-    // 初始化控制节点
-    const controller = createDivWithClassName(`${prefix}-controller`, this.target);
-
-    const prevEle = createDivWithClassName(`${prefix}-flip-arrow`, controller);
-    prevEle.innerHTML = LeftArrowIcon;
-
-    const nextEle = createDivWithClassName(`${prefix}-flip-arrow`, controller);
-    nextEle.innerHTML = RightArrowIcon;
-
-    nextEle!.addEventListener('click', () => {
-      const nextPageIndex =
-        this.visiblePageIndex + 1 > this.pages.length - 1 ? 0 : this.visiblePageIndex + 1;
-      this.onPageChange(nextPageIndex);
-    });
-    prevEle!.addEventListener('click', () => {
-      const nextPageIndex =
-        this.visiblePageIndex - 1 < 0 ? this.pages.length - 1 : this.visiblePageIndex - 1;
-
-      this.onPageChange(nextPageIndex);
-    });
   }
 
   /** 响应页面切换的事件 */

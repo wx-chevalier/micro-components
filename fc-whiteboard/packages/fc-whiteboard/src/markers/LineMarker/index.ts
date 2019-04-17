@@ -9,12 +9,12 @@ export class LineMarker extends LinearMarker {
   public static createMarker = (page?: WhitePage): LinearMarker => {
     const marker = new LineMarker();
     marker.page = page;
-    marker.setup();
+    marker.init();
     return marker;
   };
 
-  protected setup() {
-    super.setup();
+  protected init() {
+    super.init();
     SvgHelper.setAttributes(this.visual, [['class', 'line-marker']]);
   }
 }

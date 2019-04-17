@@ -9,12 +9,12 @@ export class RectMarker extends RectBaseMarker {
   public static createMarker = (page?: WhitePage): RectBaseMarker => {
     const marker = new RectMarker();
     marker.page = page;
-    marker.setup();
+    marker.init();
     return marker;
   };
 
-  protected setup() {
-    super.setup();
+  protected init() {
+    super.init();
     SvgHelper.setAttributes(this.visual, [['class', 'rect-marker']]);
   }
 }

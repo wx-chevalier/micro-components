@@ -1,5 +1,6 @@
 import { ToolbarItem } from './ToolbarItem';
 
+/** 工作栏按钮 */
 export class ToolbarButton {
   private toolbarItem: ToolbarItem;
   private clickHandler: (ev: MouseEvent, toolbarItem: ToolbarItem) => void;

@@ -14,7 +14,7 @@ export class TextMarker extends RectangularMarker {
   public static createMarker = (page?: WhitePage): TextMarker => {
     const marker = new TextMarker();
     marker.page = page;
-    marker.setup();
+    marker.init();
     return marker;
   };
 
@@ -51,8 +51,8 @@ export class TextMarker extends RectangularMarker {
     }
   }
 
-  protected setup() {
-    super.setup();
+  protected init() {
+    super.init();
     this.textElement = SvgHelper.createText();
     this.addToRenderVisual(this.textElement);
     SvgHelper.setAttributes(this.visual, [['class', 'text-marker']]);

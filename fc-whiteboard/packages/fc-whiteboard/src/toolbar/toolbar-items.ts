@@ -12,6 +12,12 @@ const DeleteIcon = require('../assets/eraser.svg');
 const PointerIcon = require('../assets/mouse-pointer.svg');
 const CloseIcon = require('../assets/times.svg');
 
+export const dragToolbarItem = new ToolbarItem({
+  name: 'drag',
+  tooltipText: 'Drag',
+  icon: require('../assets/drag.svg')
+});
+
 export const highlightMarkerToolbarItem = new ToolbarItem({
   name: 'cover-marker',
   tooltipText: 'Cover',
@@ -54,6 +60,14 @@ export const lineMarkerToolbarItem = new ToolbarItem({
   markerType: LineMarker
 });
 
+export const closeToolbarItem = new ToolbarItem({
+  icon: CloseIcon,
+  name: 'close',
+  tooltipText: 'Close'
+});
+
+export const separatorToolbarItem = new ToolbarItem({ name: 'separator', tooltipText: '' });
+
 export function getToolbars(page?: WhitePage) {
   const toolbars = [
     {
@@ -66,20 +80,12 @@ export function getToolbars(page?: WhitePage) {
       name: 'delete',
       tooltipText: 'Delete'
     },
-    {
-      name: 'separator',
-      tooltipText: ''
-    },
     rectMarkerToolbarItem,
     coverMarkerToolbarItem,
     highlightMarkerToolbarItem,
     lineMarkerToolbarItem,
     arrowMarkerToolbarItem,
-    textMarkerToolbarItem,
-    {
-      name: 'separator',
-      tooltipText: ''
-    }
+    textMarkerToolbarItem
   ];
 
   if (!page) {
@@ -93,12 +99,6 @@ export function getToolbars(page?: WhitePage) {
       ]
     );
   }
-
-  toolbars.push({
-    icon: CloseIcon,
-    name: 'close',
-    tooltipText: 'Close'
-  });
 
   return toolbars;
 }
