@@ -5,7 +5,8 @@ const devConfig = require('../../../../scripts/webpack/webpack.config.dev');
 
 module.exports = merge(devConfig, {
   entry: {
-    whiteboard: path.resolve(__dirname, '../../example/whiteboard/index.ts')
+    whiteboard: path.resolve(__dirname, '../../example/whiteboard/index.ts'),
+    'whiteboard-replay': path.resolve(__dirname, '../../example/whiteboard-replay/index.ts')
   },
   devServer: {
     contentBase: path.resolve(__dirname, '../../public')

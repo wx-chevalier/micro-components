@@ -4,10 +4,12 @@ import { Whiteboard } from '../src/whiteboard/Whiteboard/index';
 import { MirrorWhiteboard } from '../src/whiteboard/MirrorWhiteboard/index';
 
 const eventHub = new EventHub();
+const events: SyncEvent[] = [];
 
 eventHub.on('sync', (changeEv: SyncEvent) => {
   // if (changeEv.event === 'borderSnap') {
-  console.log(changeEv);
+  events.push(changeEv);
+  console.log(JSON.stringify(events));
   // }
 });
 

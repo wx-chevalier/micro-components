@@ -66,7 +66,7 @@ export class MirrorWhiteboard extends AbstractWhiteboard {
 
   /** 响应获取到的快照事件 */
   private applySnap(snap: WhiteboardSnap) {
-    const { id, sources, pageIds, visiblePageIndex } = snap;
+    const { id, sources, pageIds } = snap;
 
     if (!this.isInitialized && !this.isSyncing) {
       this.id = id;
@@ -96,7 +96,6 @@ export class MirrorWhiteboard extends AbstractWhiteboard {
       this.initSiema();
       this.isInitialized = true;
       this.isSyncing = false;
-      this.onPageChange(visiblePageIndex);
     }
 
     // 如果已经初始化完毕，则进行状态同步

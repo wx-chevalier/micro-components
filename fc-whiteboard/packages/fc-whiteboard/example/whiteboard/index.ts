@@ -1,10 +1,14 @@
-import { EventHub } from '../../src/event/EventHub';
+import { SyncEvent } from './../../src/event/SyncEvent';
+import { EventHub } from './../../src/event/EventHub';
 import { Whiteboard } from '../../src/whiteboard/Whiteboard/index';
+import { MirrorWhiteboard } from '../../src/whiteboard/MirrorWhiteboard/index';
 
 const eventHub = new EventHub();
 
 eventHub.on('sync', (changeEv: SyncEvent) => {
+  // if (changeEv.event === 'borderSnap') {
   console.log(changeEv);
+  // }
 });
 
 const images = [
@@ -15,14 +19,19 @@ const images = [
 
 const whiteboard = new Whiteboard(document.getElementById('root') as HTMLDivElement, {
   sources: images,
-  eventHub
+  eventHub,
+  // Enable this option to disable incremental sync, just use full sync
+  onlyEmitSnap: false
 });
+
 whiteboard.open();
 
-const mirrorWhiteboard = new Whiteboard(document.getElementById('root-mirror') as HTMLDivElement, {
-  sources: images,
-  eventHub,
-  mode: 'mirror'
-});
+const mirrorWhiteboard = new MirrorWhiteboard(
+  document.getElementById('root-mirror') as HTMLDivElement,
+  {
+    sources: images,
+    eventHub
+  }
+);
 
 mirrorWhiteboard.open();

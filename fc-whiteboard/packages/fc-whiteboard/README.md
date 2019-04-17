@@ -13,8 +13,8 @@ Web whiteboard screencasting(both live and playback mode) with background slides
 - [x] 结构化事件信息，添加绝对时间戳以适应重放的需求；将 WhitePage 中的事件响应统一提取到 Whiteboard 中。
 - [x] 引入全量的状态订正，每 5 秒订正一次，设置线性 Marker 的全量同步规则
 - [x] 设置矩形类 Marker 的全量同步规则，设置仅全量同步模式
-- [ ] 将白板划分为 Whiteboard, MirrorWhiteboard, ReplayWhiteboard 三种模式，开始编写录播模式，修复增量同步与全量同步冲突的问题。
-- [ ] 根据获得到的事件的时间进行重播，完善录播模式功能。
+- [x] 将白板划分为 Whiteboard, MirrorWhiteboard, ReplayWhiteboard 三种模式，开始编写录播模式，修复增量同步与全量同步冲突的问题。
+- [x] 根据获得到的事件的时间进行重播，完善录播模式功能。
 - [ ] 优化 Toolbar 样式，增加拖拽绘制功能
 - [ ] 添加 Whiteboard 的 Loading 界面
 - [ ] 添加全屏的绘制功能

@@ -1,28 +1,17 @@
-import { EventHub } from '../../src/event/EventHub';
-import { Whiteboard } from '../../src/whiteboard/Whiteboard/index';
+import { ReplayWhiteboard } from 'fc-whiteboard/src/whiteboard/ReplayWhiteboard';
+import * as events from './events.json';
 
-const eventHub = new EventHub();
+let hasSend = false;
 
-eventHub.on('sync', (changeEv: SyncEvent) => {
-  console.log(changeEv);
-});
+const whiteboard = new ReplayWhiteboard(document.getElementById('root') as HTMLDivElement);
 
-const images = [
-  'https://upload-images.jianshu.io/upload_images/1647496-6bede989c09af527.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240',
-  'http://upload-images.jianshu.io/upload_images/1647496-d281090a702045e5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240',
-  'http://upload-images.jianshu.io/upload_images/1647496-611a416be07d7ca3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240'
-];
+whiteboard.setContext(events[0].timestamp, async (t1, t2) => {
+  if (!hasSend) {
+    hasSend = true;
+    return events as any;
+  }
 
-const whiteboard = new Whiteboard(document.getElementById('root') as HTMLDivElement, {
-  sources: images,
-  eventHub
+  return [];
 });
 
 whiteboard.open();
-
-const mirrorWhiteboard = new Whiteboard(document.getElementById('root-mirror') as HTMLDivElement, {
-  sources: images,
-  eventHub
-});
-
-mirrorWhiteboard.open();
