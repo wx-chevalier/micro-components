@@ -8,3 +8,7 @@ export type Source = {
   // 需要展示的图片地址
   imgSrc?: string;
 };
+
+export function isNil(mayBeNil: any) {
+  return mayBeNil === null || mayBeNil === undefined;
+}

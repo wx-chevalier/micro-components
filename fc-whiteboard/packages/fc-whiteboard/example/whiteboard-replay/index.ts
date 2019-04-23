@@ -1,5 +1,5 @@
 import { ReplayWhiteboard } from 'fc-whiteboard/src/whiteboard/ReplayWhiteboard';
-import * as events from './events.json';
+import * as events from './events-line.json';
 
 let hasSend = false;
 

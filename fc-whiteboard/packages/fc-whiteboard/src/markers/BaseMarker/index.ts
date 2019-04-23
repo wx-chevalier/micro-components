@@ -7,6 +7,7 @@ import { SvgHelper } from '../../renderer/SvgHelper';
 import { MarkerSnap } from '../../whiteboard/AbstractWhiteboard/snap';
 import { Drawboard } from '../../drawboard/Drawboard/index';
 import { DomEventAware } from '../../renderer/DomEventAware/index';
+import { isNil } from '../../utils/types';
 
 export class BaseMarker extends DomEventAware {
   id: string = uuid();
@@ -44,19 +45,19 @@ export class BaseMarker extends DomEventAware {
     { dx, dy, pos }: { dx?: number; dy?: number; pos?: PositionType } = {}
   ) {
     if (type === 'moveMarker') {
-      if (!dx || !dy) {
+      if (isNil(dx) || isNil(dy)) {
         return;
       }
 
-      this.move(dx, dy);
+      this.move(dx!, dy!);
     }
 
     if (type === 'resizeMarker') {
-      if (!dx || !dy) {
+      if (isNil(dx) || isNil(dy)) {
         return;
       }
 
-      this.resizeByEvent(dx, dy, pos);
+      this.resizeByEvent(dx!, dy!, pos);
     }
   }
 

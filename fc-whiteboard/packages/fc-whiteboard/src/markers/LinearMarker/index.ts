@@ -138,7 +138,6 @@ export class LinearMarker extends BaseMarker implements LinearBound {
     } else {
       this.activeGrip = this.controlGrips.right;
     }
-
     this.resize(x, y);
   }
 

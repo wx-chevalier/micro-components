@@ -3,10 +3,13 @@ import { EventHub } from './../src/event/EventHub';
 import { Whiteboard } from '../src/whiteboard/Whiteboard/index';
 import { MirrorWhiteboard } from '../src/whiteboard/MirrorWhiteboard/index';
 
-const eventHub = new EventHub();
+const events: SyncEvent[] = [];
 
+const eventHub = new EventHub();
 eventHub.on('sync', (changeEv: SyncEvent) => {
-  console.log(changeEv);
+  if (changeEv.event !== 'borderSnap') {
+    events.push(changeEv);
+  }
 });
 
 const images = [
