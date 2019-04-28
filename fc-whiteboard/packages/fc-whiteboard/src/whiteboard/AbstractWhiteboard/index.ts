@@ -19,6 +19,7 @@ export abstract class AbstractWhiteboard {
   /** 元素 */
   // 如果传入的是图片地址，则需要挂载到该 Target 元素下
   target: HTMLDivElement;
+  imgEles: HTMLImageElement[] = [];
   imgsContainer: HTMLDivElement;
   pagesContainer: HTMLDivElement;
 
@@ -169,6 +170,7 @@ export abstract class AbstractWhiteboard {
       imgEle.src = source;
       imgEle.alt = 'Siema image';
 
+      this.imgEles.push(imgEle);
       this.imgsContainer.appendChild(imgEle);
     });
 

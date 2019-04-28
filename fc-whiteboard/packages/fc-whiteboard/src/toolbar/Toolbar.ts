@@ -1,3 +1,5 @@
+import interact from 'interactjs';
+
 import { ToolbarButton } from './ToolbarButton';
 import { ToolbarItem } from './ToolbarItem';
 import { uuid } from '../utils/uuid';
@@ -5,6 +7,7 @@ import { uuid } from '../utils/uuid';
 import './index.less';
 import { DomEventAware } from '../renderer/DomEventAware/index';
 import { dragToolbarItem } from './toolbar-items';
+import { Drawboard } from '../drawboard/Drawboard/index';
 
 export type MouseHandler = (ev: MouseEvent) => void;
 
@@ -14,7 +17,7 @@ export class Toolbar extends DomEventAware {
 
   toolbarItems: ToolbarItem[];
   toolbarUI: HTMLElement;
-  isDragging: boolean = false;
+  toolbarButtons: ToolbarButton[] = [];
 
   clickHandler: (ev: MouseEvent, toolbarItem: ToolbarItem) => void;
 
@@ -29,19 +32,24 @@ export class Toolbar extends DomEventAware {
   }
 
   /** 获取 UI 元素 */
-  public getUI = (): HTMLElement => {
+  public getUI = (drawboard: Drawboard): HTMLElement => {
     this.toolbarUI = document.createElement('div');
     this.toolbarUI.id = `fcw-toolbar-${this.id}`;
     this.toolbarUI.className = 'fc-whiteboard-toolbar';
 
     for (const toolbarItem of this.toolbarItems) {
       const toolbarButton = new ToolbarButton(toolbarItem, this.clickHandler);
+      toolbarButton.drawboard = drawboard;
       this.toolbarUI.appendChild(toolbarButton.getElement());
+
+      this.toolbarButtons.push(toolbarButton);
     }
 
     super.init(this.toolbarUI);
-    window.addEventListener('mousemove', this.onMouseMove);
-    window.addEventListener('mouseup', this.onMouseUp);
+
+    interact('#drag-handler').draggable({
+      onmove: this.onDragMove
+    });
 
     return this.toolbarUI;
   };
@@ -56,52 +64,24 @@ export class Toolbar extends DomEventAware {
     this.toolbarUI.style.zIndex = `${this.zIndex}`;
   }
 
-  protected onMouseDown = (downEv: MouseEvent) => {
-    downEv.stopPropagation();
-
-    this.previousMouseX = downEv.screenX;
-    this.previousMouseY = downEv.screenY;
-
-    if (downEv.target && downEv.target['id'] === 'drag') {
-      this.isDragging = true;
-
-      this._trackDrag(
-        e => {
-          if (this.isDragging && e.target && e.target['id'] === 'drag') {
-            const dx = e.screenX - this.previousMouseX;
-            const dy = e.screenY - this.previousMouseY;
-            const rect = this.toolbarUI.getBoundingClientRect();
-
-            this.toolbarUI.style.left = `${rect.left + dx}px`;
-            this.toolbarUI.style.top = `${rect.top + dy}px`;
-          }
-          this.previousMouseX = e.screenX;
-          this.previousMouseY = e.screenY;
-        },
-        e => {
-          this.isDragging = false;
-        }
-      );
-    }
-  };
+  protected onMouseDown = (downEv: MouseEvent) => {};
 
   protected onMouseUp = (ev: MouseEvent) => {};
 
   protected onMouseMove = (ev: MouseEvent) => {};
 
-  _trackDrag(onMouseMove: MouseHandler, onMouseUp: MouseHandler) {
-    function onDragEnd(e: MouseEvent) {
-      // Remove event listerners
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onDragEnd);
+  protected onDragMove = (event: any) => {
+    var target = this.toolbarUI;
 
-      if (onMouseUp) {
-        onMouseUp(e);
-      }
-    }
+    // keep the dragged position in the data-x/data-y attributes
+    var x = ((parseFloat(target.getAttribute('data-x') as string) || 0) + event.dx) as any;
+    var y = ((parseFloat(target.getAttribute('data-y') as string) || 0) + event.dy) as any;
 
-    // Add event listeners to window
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onDragEnd);
-  }
+    // translate the element
+    target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+
+    // update the posiion attributes
+    target.setAttribute('data-x', x);
+    target.setAttribute('data-y', y);
+  };
 }

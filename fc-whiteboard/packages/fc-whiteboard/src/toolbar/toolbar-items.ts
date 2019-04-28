@@ -73,7 +73,8 @@ export function getToolbars(page?: WhitePage) {
     {
       icon: PointerIcon,
       name: 'pointer',
-      tooltipText: 'Pointer'
+      tooltipText: 'Pointer',
+      draggable: true
     },
     {
       icon: DeleteIcon,

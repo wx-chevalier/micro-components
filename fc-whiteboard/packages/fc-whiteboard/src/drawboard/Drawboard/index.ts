@@ -279,12 +279,31 @@ export class Drawboard extends Baseboard {
     this.toolbar = new Toolbar(this.toolbarItems, this.toolbarClick);
     this.toolbar.zIndex = this.zIndex;
 
-    this.toolbarUI = this.toolbar.getUI();
+    this.toolbarUI = this.toolbar.getUI(this);
 
     document.body.appendChild(this.toolbarUI);
     this.toolbarUI.style.position = 'absolute';
 
     this.positionToolbar();
+
+    // 处理元素的拖拽事件
+    this.toolbar.toolbarButtons.forEach(button => {
+      if (button.toolbarItem.draggable) {
+        button.container.draggable = true;
+        button.container.ondragstart = ev => {
+          if (ev) {
+            ev.dataTransfer!.setData('id', button.id);
+          }
+        };
+      }
+    });
+
+    this.boardCanvas.ondragover = ev => {
+      ev.preventDefault();
+    };
+    this.boardCanvas.ondrop = ev => {
+      console.log(ev);
+    };
   };
 
   private setStyles = () => {

@@ -119,6 +119,80 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
+"@interactjs/actions@1.4.0-rc.13":
+  version "1.4.0-rc.13"
+  resolved "https://registry.npm.taobao.org/@interactjs/actions/download/@interactjs/actions-1.4.0-rc.13.tgz#8ce8e6d855d3d961bba38043ab462777c54373d9"
+  integrity sha1-jOjm2FXT2WG7o4BDq0Ynd8VDc9k=
+
+"@interactjs/auto-scroll@1.4.0-rc.13":
+  version "1.4.0-rc.13"
+  resolved "https://registry.npm.taobao.org/@interactjs/auto-scroll/download/@interactjs/auto-scroll-1.4.0-rc.13.tgz#576cf2ab5986f4d628bd125abbd9c4bf4bfb79b6"
+  integrity sha1-V2zyq1mG9NYovRJau9nEv0v7ebY=
+
+"@interactjs/auto-start@1.4.0-rc.13":
+  version "1.4.0-rc.13"
+  resolved "https://registry.npm.taobao.org/@interactjs/auto-start/download/@interactjs/auto-start-1.4.0-rc.13.tgz#769884eadf07d88e3c7e4eed404c38202ecf8650"
+  integrity sha1-dpiE6t8H2I48fk7tQEw4IC7PhlA=
+
+"@interactjs/core@1.4.0-rc.13":
+  version "1.4.0-rc.13"
+  resolved "https://registry.npm.taobao.org/@interactjs/core/download/@interactjs/core-1.4.0-rc.13.tgz#da491c7b4e9e019c3ee945dfc68b5191e8891b0e"
+  integrity sha1-2kkce06eAZw+6UXfxotRkeiJGw4=
+
+"@interactjs/dev-tools@1.4.0-rc.13":
+  version "1.4.0-rc.13"
+  resolved "https://registry.npm.taobao.org/@interactjs/dev-tools/download/@interactjs/dev-tools-1.4.0-rc.13.tgz#8de617b84a1874a3dd8f098380a50132e16c5d8d"
+  integrity sha1-jeYXuEoYdKPdjwmDgKUBMuFsXY0=
+  dependencies:
+    "@interactjs/utils" "1.4.0-rc.13"
+
+"@interactjs/inertia@1.4.0-rc.13":
+  version "1.4.0-rc.13"
+  resolved "https://registry.npm.taobao.org/@interactjs/inertia/download/@interactjs/inertia-1.4.0-rc.13.tgz#54ebd4b42dcb82c8868b0a2d65414307533ad910"
+  integrity sha1-VOvUtC3LgsiGiwotZUFDB1M62RA=
+
+"@interactjs/interact@1.4.0-rc.13":
+  version "1.4.0-rc.13"
+  resolved "https://registry.npm.taobao.org/@interactjs/interact/download/@interactjs/interact-1.4.0-rc.13.tgz#38c69d4171f54dec27784ebf21a65af87cd736ad"
+  integrity sha1-OMadQXH1TewneE6/IaZa+HzXNq0=
+
+"@interactjs/modifiers@1.4.0-rc.13":
+  version "1.4.0-rc.13"
+  resolved "https://registry.npm.taobao.org/@interactjs/modifiers/download/@interactjs/modifiers-1.4.0-rc.13.tgz#9a00427966339583ed9a2c98f2a2929ab2e3ddb9"
+  integrity sha1-mgBCeWYzlYPtmiyY8qKSmrLj3bk=
+
+"@interactjs/pointer-events@1.4.0-rc.13":
+  version "1.4.0-rc.13"
+  resolved "https://registry.npm.taobao.org/@interactjs/pointer-events/download/@interactjs/pointer-events-1.4.0-rc.13.tgz#8be305a0b08730b51600501210fa48cd3955ef12"
+  integrity sha1-i+MFoLCHMLUWAFASEPpIzTlV7xI=
+
+"@interactjs/reflow@1.4.0-rc.13":
+  version "1.4.0-rc.13"
+  resolved "https://registry.npm.taobao.org/@interactjs/reflow/download/@interactjs/reflow-1.4.0-rc.13.tgz#d86ace7b8eace638b2152fd08ad61432532439c0"
+  integrity sha1-2GrOe46s5jiyFS/QitYUMlMkOcA=
+
+"@interactjs/types@1.4.0-rc.13":
+  version "1.4.0-rc.13"
+  resolved "https://registry.npm.taobao.org/@interactjs/types/download/@interactjs/types-1.4.0-rc.13.tgz#41e8ae324887452a024139e011e6e775e85bafc8"
+  integrity sha1-QeiuMkiHRSoCQTngEebndehbr8g=
+  dependencies:
+    "@interactjs/actions" "1.4.0-rc.13"
+    "@interactjs/auto-scroll" "1.4.0-rc.13"
+    "@interactjs/auto-start" "1.4.0-rc.13"
+    "@interactjs/core" "1.4.0-rc.13"
+    "@interactjs/dev-tools" "1.4.0-rc.13"
+    "@interactjs/inertia" "1.4.0-rc.13"
+    "@interactjs/interact" "1.4.0-rc.13"
+    "@interactjs/modifiers" "1.4.0-rc.13"
+    "@interactjs/pointer-events" "1.4.0-rc.13"
+    "@interactjs/reflow" "1.4.0-rc.13"
+    "@interactjs/utils" "1.4.0-rc.13"
+
+"@interactjs/utils@1.4.0-rc.13":
+  version "1.4.0-rc.13"
+  resolved "https://registry.npm.taobao.org/@interactjs/utils/download/@interactjs/utils-1.4.0-rc.13.tgz#7e3a142a955bb47b34676826a1b44a18da7ff617"
+  integrity sha1-fjoUKpVbtHs0Z2gmobRKGNp/9hc=
+
 "@lerna/add@3.13.1":
   version "3.13.1"
   resolved "http://registry.npm.taobao.org/@lerna/add/download/@lerna/add-3.13.1.tgz#2cd7838857edb3b43ed73e3c21f69a20beb9b702"
@@ -5021,6 +5095,13 @@ inspectpack@^3.0.1:
     io-ts-reporters "^0.0.20"
     pify "^3.0.0"
     yargs "^11.0.0"
+
+interactjs@^1.4.0-rc.13:
+  version "1.4.0-rc.13"
+  resolved "https://registry.npm.taobao.org/interactjs/download/interactjs-1.4.0-rc.13.tgz#7c29b7b2a267190573e88b3e0f7e0c64e0ce4a2c"
+  integrity sha1-fCm3sqJnGQVz6Is+D34MZODOSiw=
+  dependencies:
+    "@interactjs/types" "1.4.0-rc.13"
 
 internal-ip@^4.2.0:
   version "4.2.0"

@@ -1,9 +1,15 @@
+import { uuid } from './../utils/uuid';
 import { ToolbarItem } from './ToolbarItem';
+import { Drawboard } from '../drawboard/Drawboard';
 
 /** 工作栏按钮 */
 export class ToolbarButton {
-  private toolbarItem: ToolbarItem;
-  private clickHandler: (ev: MouseEvent, toolbarItem: ToolbarItem) => void;
+  id = uuid();
+  drawboard: Drawboard;
+  toolbarItem: ToolbarItem;
+  container: HTMLDivElement;
+
+  clickHandler: (ev: MouseEvent, toolbarItem: ToolbarItem) => void;
 
   constructor(
     toolbarItem: ToolbarItem,
@@ -18,8 +24,10 @@ export class ToolbarButton {
 
   public getElement = (): HTMLElement => {
     const div = document.createElement('div');
+
     if (this.toolbarItem.name !== 'separator') {
       div.className = 'fc-whiteboard-toolbar-button';
+
       if (this.clickHandler) {
         div.addEventListener('click', (ev: MouseEvent) => {
           if (this.clickHandler) {
@@ -29,14 +37,16 @@ export class ToolbarButton {
       }
 
       if (this.toolbarItem.icon) {
-        div.title = this.toolbarItem.tooltipText;
+        div.title = this.toolbarItem.tooltipText || '';
         div.innerHTML = this.toolbarItem.icon;
       } else {
-        div.innerText = this.toolbarItem.tooltipText;
+        div.innerText = this.toolbarItem.tooltipText || '';
       }
     } else {
       div.className = 'fc-whiteboard-toolbar-separator';
     }
+
+    this.container = div;
 
     return div;
   };
