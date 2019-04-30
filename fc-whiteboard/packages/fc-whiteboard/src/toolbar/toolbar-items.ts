@@ -22,42 +22,48 @@ export const highlightMarkerToolbarItem = new ToolbarItem({
   name: 'cover-marker',
   tooltipText: 'Cover',
   icon: require('../assets/highlight.svg'),
-  markerType: HighlightMarker
+  markerType: HighlightMarker,
+  draggable: true
 });
 
 export const arrowMarkerToolbarItem = new ToolbarItem({
   name: 'arrow-marker',
   tooltipText: 'Arrow',
   icon: require('../assets/arrow.svg'),
-  markerType: ArrowMarker
+  markerType: ArrowMarker,
+  draggable: true
 });
 
 export const textMarkerToolbarItem = new ToolbarItem({
   name: 'text-marker',
   tooltipText: 'Text',
   icon: require('../assets/text.svg'),
-  markerType: TextMarker
+  markerType: TextMarker,
+  draggable: true
 });
 
 export const coverMarkerToolbarItem = new ToolbarItem({
   name: 'cover-marker',
   tooltipText: 'Cover',
   icon: require('../assets/cover.svg'),
-  markerType: CoverMarker
+  markerType: CoverMarker,
+  draggable: true
 });
 
 export const rectMarkerToolbarItem = new ToolbarItem({
   name: 'rect-marker',
   tooltipText: 'Rectangle',
   icon: require('../assets/rect.svg'),
-  markerType: RectMarker
+  markerType: RectMarker,
+  draggable: true
 });
 
 export const lineMarkerToolbarItem = new ToolbarItem({
   name: 'line-marker',
   tooltipText: 'Line',
   icon: require('../assets/line.svg'),
-  markerType: LineMarker
+  markerType: LineMarker,
+  draggable: true
 });
 
 export const closeToolbarItem = new ToolbarItem({
@@ -73,8 +79,7 @@ export function getToolbars(page?: WhitePage) {
     {
       icon: PointerIcon,
       name: 'pointer',
-      tooltipText: 'Pointer',
-      draggable: true
+      tooltipText: 'Pointer'
     },
     {
       icon: DeleteIcon,

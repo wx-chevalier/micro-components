@@ -19,6 +19,16 @@ export class Toolbar extends DomEventAware {
   toolbarUI: HTMLElement;
   toolbarButtons: ToolbarButton[] = [];
 
+  get toolbarButtonMap(): Record<string, ToolbarButton> {
+    const buttonMap = {};
+
+    this.toolbarButtons.forEach(b => {
+      buttonMap[b.id] = b;
+    });
+
+    return buttonMap;
+  }
+
   clickHandler: (ev: MouseEvent, toolbarItem: ToolbarItem) => void;
 
   constructor(

@@ -10,6 +10,7 @@ import { Toolbar } from '../../toolbar/Toolbar';
 import { ToolbarItem } from '../../toolbar/ToolbarItem';
 
 import './index.less';
+import { rectContains } from '../../utils/layout';
 
 export class Drawboard extends Baseboard {
   /** Options */
@@ -145,7 +146,10 @@ export class Drawboard extends Baseboard {
   };
 
   /** 添加某个 Marker */
-  public addMarker = (markerType: typeof BaseMarker, { id }: { id?: string } = {}) => {
+  public addMarker = (
+    markerType: typeof BaseMarker,
+    { id, originX, originY }: { id?: string; originX?: number; originY?: number } = {}
+  ) => {
     // 假如 Drawboard 存在 Page 引用，则传导给 Marker
     const marker = markerType.createMarker(this.page);
 
@@ -165,22 +169,30 @@ export class Drawboard extends Baseboard {
       }
     }
 
+    this.markers.push(marker);
+    this.selectMarker(marker);
+    this.boardCanvas.appendChild(marker.visual);
+
+    let x;
+    let y;
+
+    if (originX && originY) {
+      x = originX;
+      y = originY;
+    } else {
+      // 默认居中
+      const bbox = marker.visual.getBBox();
+      x = this.width / 2 / this.scale - bbox.width / 2;
+      y = this.height / 2 / this.scale - bbox.height / 2;
+    }
+
     // 触发事件流
     this.onChange({
       target: 'marker',
       parentId: this.page ? this.page.id : this.id,
       event: 'addMarker',
-      marker: { type: marker.type, id: marker.id }
+      marker: { type: marker.type, id: marker.id, dx: x, dy: y }
     });
-
-    this.markers.push(marker);
-    this.selectMarker(marker);
-    this.boardCanvas.appendChild(marker.visual);
-
-    // 默认居中
-    const bbox = marker.visual.getBBox();
-    const x = this.width / 2 / this.scale - bbox.width / 2;
-    const y = this.height / 2 / this.scale - bbox.height / 2;
 
     marker.moveTo(x, y);
 
@@ -302,7 +314,23 @@ export class Drawboard extends Baseboard {
       ev.preventDefault();
     };
     this.boardCanvas.ondrop = ev => {
-      console.log(ev);
+      const markerX = ev.x;
+      const markerY = ev.y;
+
+      const rect = this.boardHolder.getBoundingClientRect();
+
+      if (rectContains(rect, { x: markerX, y: markerY })) {
+        const buttonId = ev.dataTransfer!.getData('id');
+
+        const button = this.toolbar.toolbarButtonMap[buttonId];
+
+        if (button.toolbarItem.markerType) {
+          this.addMarker(button.toolbarItem.markerType, {
+            originX: markerX - rect.left,
+            originY: markerY - rect.top
+          });
+        }
+      }
     };
   };
 

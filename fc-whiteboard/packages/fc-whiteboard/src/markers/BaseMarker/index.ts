@@ -151,6 +151,7 @@ export class BaseMarker extends DomEventAware {
     this.y += dy;
   };
 
+  /** Move to relative position */
   public moveTo = (x: number, y: number) => {
     const translate = this.visual.transform.baseVal.getItem(0);
     translate.setMatrix(translate.matrix.translate(x - this.x, y - this.y));

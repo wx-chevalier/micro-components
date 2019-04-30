@@ -30,12 +30,7 @@ const config = {
       {
         test: /\.less$/,
         exclude: /node_modules/,
-        use: [
-          'style-loader',
-          baseConfig.extra.moduleCSSLoader,
-          'postcss-loader',
-          baseConfig.extra.lessLoader
-        ]
+        use: ['style-loader', 'css-loader', 'postcss-loader', baseConfig.extra.lessLoader]
       },
       {
         test: /\.less$/,

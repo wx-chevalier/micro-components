@@ -185,7 +185,11 @@ export class WhitePage {
     if (ev.event === 'addMarker' && ev.parentId === this.id) {
       const marker = this.drawboard.markerMap[id!];
       if (!marker) {
-        this.drawboard.addMarker(getMarkerByType(ev.marker.type!), { id: ev.marker.id });
+        this.drawboard.addMarker(getMarkerByType(ev.marker.type!), {
+          id: ev.marker.id,
+          originX: ev.marker.dx,
+          originY: ev.marker.dy
+        });
       }
     }
 
