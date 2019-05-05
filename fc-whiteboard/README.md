@@ -2,7 +2,7 @@
 
 Web whiteboard screencasting(both live and playback mode) with background slides, can be used as a graphics tablet for online tutoring or remote collaboration.
 
-![](https://i.postimg.cc/CLG53MF8/image.png)
+[![](https://i.postimg.cc/CLG53MF8/image.png)](https://codesandbox.io/s/3q1z35q53p?fontsize=14)
 
 # Usage
 
@@ -10,7 +10,7 @@ Web whiteboard screencasting(both live and playback mode) with background slides
 
 ![](https://i.postimg.cc/65t7MNBQ/Kapture-2019-04-17-at-13-47-52.gif)
 
-Source code can be found in [Code Sandbox](https://codesandbox.io/s/3q1z35q53p) or [Demo](https://3q1z35q53p.codesandbox.io/);
+Source code can be found in [Code Sandbox](https://codesandbox.io/s/3q1z35q53p?fontsize=14) or [Demo](https://codesandbox.io/s/3q1z35q53p?fontsize=14);
 
 ```ts
 import { EventHub, Whiteboard, MirrorWhiteboard } from 'fc-whiteboard';
