@@ -13,3 +13,5 @@ declare module '*.svg' {
 }
 
 declare module 'siema';
+
+declare module 'lodash.debounce';

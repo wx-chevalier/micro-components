@@ -69,7 +69,6 @@ export class BaseMarker extends DomEventAware {
 
     // 如果在拖拽
     if (this.isDragging) {
-      this.onChange({ target: 'marker', id: this.id, event: 'moveMarker', marker: { dx, dy } });
       this.move(dx, dy);
     }
 
@@ -149,6 +148,8 @@ export class BaseMarker extends DomEventAware {
 
     this.x += dx;
     this.y += dy;
+
+    this.onChange({ target: 'marker', id: this.id, event: 'moveMarker', marker: { dx, dy } });
   };
 
   /** Move to relative position */

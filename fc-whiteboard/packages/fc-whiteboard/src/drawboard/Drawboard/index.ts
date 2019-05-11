@@ -1,3 +1,6 @@
+import { HotkeysListener, KEY_ALL } from 'fc-hotkeys';
+import * as debounce from 'lodash.debounce';
+
 import { Source } from './../../utils/types';
 import { Baseboard } from './../Baseboard/index';
 import { BaseMarker } from './../../markers/BaseMarker/index';
@@ -16,9 +19,11 @@ export class Drawboard extends Baseboard {
   /** Options */
   scale = 1.0;
   zIndex: number = 999;
+  allowKeyboard? = true;
 
   /** 句柄 */
   page: WhitePage;
+  listener: HotkeysListener;
 
   markers: BaseMarker[];
   get markerMap(): { [key: string]: BaseMarker } {
@@ -43,6 +48,7 @@ export class Drawboard extends Baseboard {
   constructor(
     source: Source,
     {
+      allowKeyboard = true,
       page,
       zIndex,
       extraToolbarItems,
@@ -59,6 +65,8 @@ export class Drawboard extends Baseboard {
       this.zIndex = zIndex;
     }
 
+    this.allowKeyboard = allowKeyboard;
+
     this.markers = [];
     this.activeMarker = null;
 
@@ -72,6 +80,11 @@ export class Drawboard extends Baseboard {
 
     if (onChange) {
       this.onChange = onChange;
+    }
+
+    if (allowKeyboard && this.page && this.page.mode === 'master') {
+      this.listener = new HotkeysListener();
+      this.listener.on(KEY_ALL, debounce(this.onKeyboard, 150));
     }
   }
 
@@ -129,8 +142,13 @@ export class Drawboard extends Baseboard {
     if (this.toolbarUI) {
       document.body.removeChild(this.toolbarUI);
     }
+
     if (this.boardCanvas) {
       document.body.removeChild(this.boardHolder);
+    }
+
+    if (this.listener) {
+      this.listener.reset();
     }
   };
 
@@ -252,6 +270,29 @@ export class Drawboard extends Baseboard {
   private mouseUp = (ev: MouseEvent) => {
     if (this.activeMarker) {
       this.activeMarker.endManipulation();
+    }
+  };
+
+  private onKeyboard = (e: any, { hotkey }: { hotkey: string }) => {
+    if (!this.activeMarker) {
+      return;
+    }
+
+    switch (hotkey) {
+      case 'UP':
+        this.activeMarker.move(0, -10);
+        return;
+      case 'LEFT':
+        this.activeMarker.move(-10, 0);
+        return;
+      case 'RIGHT':
+        this.activeMarker.move(10, 0);
+        return;
+      case 'DOWN':
+        this.activeMarker.move(0, 10);
+        return;
+      default:
+        return;
     }
   };
 
