@@ -33,3 +33,18 @@ listener.on('Command+A', (e, { hotkey }) => {
 ```
 
 ## fc-hotkeys-react
+
+# Development
+
+Use eslint as linter:
+
+```json
+{
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    { "language": "typescript", "autoFix": true },
+    { "language": "typescriptreact", "autoFix": true }
+  ]
+}
+```
