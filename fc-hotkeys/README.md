@@ -1,6 +1,6 @@
 # fc-hotkeys
 
-fc-hotkeys 提供了
+fc-hotkeys 提供了快捷地热键绑定、热键监听与可视化输入。
 
 # Usage
 
