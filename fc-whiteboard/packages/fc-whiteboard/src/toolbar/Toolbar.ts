@@ -51,7 +51,6 @@ export class Toolbar extends DomEventAware {
       const toolbarButton = new ToolbarButton(toolbarItem, this.clickHandler);
       toolbarButton.drawboard = drawboard;
       this.toolbarUI.appendChild(toolbarButton.getElement());
-
       this.toolbarButtons.push(toolbarButton);
     }
 

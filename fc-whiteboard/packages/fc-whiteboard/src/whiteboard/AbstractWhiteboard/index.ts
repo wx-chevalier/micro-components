@@ -158,6 +158,24 @@ export abstract class AbstractWhiteboard {
     };
   }
 
+  /** 销毁操作操作 */
+  public destroy(): void {
+    if (this.emitInterval) {
+      clearInterval(this.emitInterval);
+    }
+
+    if (this.eventHub) {
+      this.eventHub.removeAllListeners();
+    }
+
+    if (this.siema) {
+      this.siema.destory();
+    }
+
+    this.imgsContainer.remove();
+    this.pagesContainer.remove();
+  }
+
   /** 初始化操作 */
   protected abstract init(): void;
 

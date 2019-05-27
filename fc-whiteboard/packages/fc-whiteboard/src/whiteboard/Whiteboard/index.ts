@@ -1,3 +1,4 @@
+import { ToolbarItem } from './../../toolbar/ToolbarItem';
 import { WhitePage } from '../WhitePage/index';
 import { createDivWithClassName } from '../../utils/dom';
 import { AbstractWhiteboard } from '../AbstractWhiteboard/index';
@@ -11,6 +12,11 @@ const prefix = 'fcw-board';
 
 export class Whiteboard extends AbstractWhiteboard {
   mode: Mode = 'master';
+
+  /** 销毁操作 */
+  public destroy() {
+    super.destroy();
+  }
 
   /** 初始化操作 */
   protected init() {
@@ -33,9 +39,28 @@ export class Whiteboard extends AbstractWhiteboard {
       tooltipText: 'Prev',
       onClick: () => {
         const nextPageIndex =
-          this.visiblePageIndex + 1 > this.pages.length - 1 ? 0 : this.visiblePageIndex + 1;
+          this.visiblePageIndex - 1 < 0 ? this.pages.length - 1 : this.visiblePageIndex - 1;
+
+        document.querySelectorAll(".indicator-current'").forEach(e => {
+          e.innerHTML = `${nextPageIndex + 1}`;
+        });
+
         this.onPageChange(nextPageIndex);
       }
+    };
+
+    const indicatorContainer = document.createElement('div');
+    indicatorContainer.className = 'fc-whiteboard-indicator-container';
+    const indicatorCurrent = document.createElement('span');
+    indicatorCurrent.className = 'fc-whiteboard-indicator-current';
+    indicatorCurrent.innerHTML = `${this.visiblePageIndex + 1}`;
+
+    indicatorContainer.appendChild(indicatorCurrent);
+    indicatorContainer.appendChild(document.createTextNode(` / ${this.sources.length}`));
+
+    const indicatorItem: ToolbarItem = {
+      name: 'indicator',
+      onRender: () => indicatorContainer
     };
 
     const nextToolbarItem = {
@@ -44,7 +69,11 @@ export class Whiteboard extends AbstractWhiteboard {
       tooltipText: 'Next',
       onClick: () => {
         const nextPageIndex =
-          this.visiblePageIndex - 1 < 0 ? this.pages.length - 1 : this.visiblePageIndex - 1;
+          this.visiblePageIndex + 1 > this.pages.length - 1 ? 0 : this.visiblePageIndex + 1;
+
+        document.querySelectorAll('.fc-whiteboard-indicator-current').forEach(e => {
+          e.innerHTML = `${nextPageIndex + 1}`;
+        });
 
         this.onPageChange(nextPageIndex);
       }
@@ -58,7 +87,7 @@ export class Whiteboard extends AbstractWhiteboard {
           mode: this.mode,
           whiteboard: this,
           parentContainer: this.pagesContainer,
-          extraToolbarItems: [separatorToolbarItem, prevToolbarItem, nextToolbarItem]
+          extraToolbarItems: [separatorToolbarItem, prevToolbarItem, indicatorItem, nextToolbarItem]
         }
       );
 

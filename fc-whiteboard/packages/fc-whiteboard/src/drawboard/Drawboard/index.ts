@@ -354,6 +354,7 @@ export class Drawboard extends Baseboard {
     this.boardCanvas.ondragover = ev => {
       ev.preventDefault();
     };
+
     this.boardCanvas.ondrop = ev => {
       const markerX = ev.x;
       const markerY = ev.y;

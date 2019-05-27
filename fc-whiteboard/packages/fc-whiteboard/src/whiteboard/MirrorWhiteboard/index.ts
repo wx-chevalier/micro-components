@@ -38,6 +38,8 @@ export class MirrorWhiteboard extends AbstractWhiteboard {
     });
   }
 
+  public destroy() {}
+
   /** 响应页面切换的事件 */
   private onPageChange(nextPageIndex: number) {
     if (this.visiblePageIndex === nextPageIndex) {

@@ -16,9 +16,11 @@ Web whiteboard screencasting(both live and playback mode) with background slides
 - [x] 将白板划分为 Whiteboard, MirrorWhiteboard, ReplayWhiteboard 三种模式，开始编写录播模式，修复增量同步与全量同步冲突的问题。
 - [x] 根据获得到的事件的时间进行重播，完善录播模式功能。
 - [x] 优化 Toolbar 样式
-- [ ] 增加拖拽绘制功能
+- [x] 增加拖拽绘制功能
 - [ ] 添加全屏的绘制功能，全屏绘制会基于新的全局 div 元素，而非直接将当前元素扩大化
 - [ ] 添加 Whiteboard 的 Loading 界面
 - [ ] 支持编辑中途的缩放能力，将全屏的画板与局部画板的事件达到同步
+- [ ] 工具栏优化：添加取色器，添加当前页标记，添加结束的按钮
+- [ ] 添加 destroy 事件
 
 # Motivation & Credits

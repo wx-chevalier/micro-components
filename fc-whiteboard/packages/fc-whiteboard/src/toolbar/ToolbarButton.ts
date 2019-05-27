@@ -23,6 +23,11 @@ export class ToolbarButton {
   }
 
   public getElement = (): HTMLElement => {
+    if (this.toolbarItem.onRender) {
+      this.container = this.toolbarItem.onRender().cloneNode(true) as HTMLDivElement;
+      return this.container;
+    }
+
     const div = document.createElement('div');
 
     if (this.toolbarItem.name !== 'separator') {
