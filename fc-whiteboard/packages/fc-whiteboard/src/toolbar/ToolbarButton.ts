@@ -51,6 +51,8 @@ export class ToolbarButton {
       div.className = 'fc-whiteboard-toolbar-separator';
     }
 
+    div.id = `fc-whiteboard-toolbar-${this.toolbarItem.name}`;
+
     this.container = div;
 
     return div;

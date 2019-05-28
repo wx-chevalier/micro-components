@@ -19,7 +19,7 @@ export abstract class AbstractWhiteboard {
   /** 元素 */
   // 如果传入的是图片地址，则需要挂载到该 Target 元素下
   target: HTMLDivElement;
-  imgEles: HTMLImageElement[] = [];
+  imgEles: HTMLDivElement[] = [];
   imgsContainer: HTMLDivElement;
   pagesContainer: HTMLDivElement;
 
@@ -183,10 +183,9 @@ export abstract class AbstractWhiteboard {
   protected initSiema() {
     // 初始化所有的占位图片，用于给 Siema 播放使用
     this.sources.forEach(source => {
-      const imgEle = document.createElement('img');
-      addClassName(imgEle, `${prefix}-img`);
-      imgEle.src = source;
-      imgEle.alt = 'Siema image';
+      const imgEle = document.createElement('div');
+      addClassName(imgEle, `${prefix}-img-wrapper`);
+      imgEle.style.backgroundImage = `url(${source})`;
 
       this.imgEles.push(imgEle);
       this.imgsContainer.appendChild(imgEle);
