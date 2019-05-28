@@ -17,7 +17,7 @@ Web whiteboard screencasting(both live and playback mode) with background slides
 - [x] 根据获得到的事件的时间进行重播，完善录播模式功能。
 - [x] 优化 Toolbar 样式
 - [x] 增加拖拽绘制功能
-- [ ] 工具栏优化：添加 destroy API，添加当前页标记
+- [x] 工具栏优化：添加 destroy API，添加当前页与全部页指示
 - [ ] 优化图片的缩放情况，添加结束的按钮
 - [ ] 添加取色器，
 - [ ] 添加全屏的绘制功能，全屏绘制会基于新的全局 div 元素，而非直接将当前元素扩大化

@@ -7,6 +7,7 @@ import { separatorToolbarItem } from '../../toolbar/toolbar-items';
 
 const LeftArrowIcon = require('../../assets/bx-left-arrow.svg');
 const RightArrowIcon = require('../../assets/bx-right-arrow.svg');
+const FinishIcon = require('../../assets/finish.svg');
 
 const prefix = 'fcw-board';
 
@@ -41,7 +42,7 @@ export class Whiteboard extends AbstractWhiteboard {
         const nextPageIndex =
           this.visiblePageIndex - 1 < 0 ? this.pages.length - 1 : this.visiblePageIndex - 1;
 
-        document.querySelectorAll(".indicator-current'").forEach(e => {
+        document.querySelectorAll('.fc-whiteboard-indicator-current').forEach(e => {
           e.innerHTML = `${nextPageIndex + 1}`;
         });
 
@@ -79,6 +80,19 @@ export class Whiteboard extends AbstractWhiteboard {
       }
     };
 
+    const finishItem: ToolbarItem = {
+      icon: FinishIcon,
+      name: 'finish',
+      tooltipText: 'Finish',
+      onClick: () => {
+        this.emit({
+          event: 'finish',
+          id: this.id,
+          target: 'whiteboard'
+        });
+      }
+    };
+
     // 初始化所有的 WhitePages
     this.sources.forEach(source => {
       const page = new WhitePage(
@@ -87,7 +101,14 @@ export class Whiteboard extends AbstractWhiteboard {
           mode: this.mode,
           whiteboard: this,
           parentContainer: this.pagesContainer,
-          extraToolbarItems: [separatorToolbarItem, prevToolbarItem, indicatorItem, nextToolbarItem]
+          extraToolbarItems: [
+            separatorToolbarItem,
+            prevToolbarItem,
+            indicatorItem,
+            nextToolbarItem,
+            separatorToolbarItem,
+            finishItem
+          ]
         }
       );
 

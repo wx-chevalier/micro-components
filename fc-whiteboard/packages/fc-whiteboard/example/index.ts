@@ -10,6 +10,7 @@ eventHub.on('sync', (changeEv: SyncEvent) => {
   if (changeEv.event !== 'borderSnap') {
     events.push(changeEv);
   }
+  console.log(changeEv);
 });
 
 const images = [
