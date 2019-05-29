@@ -58,7 +58,7 @@ export class WhitePage {
     }
   }
 
-  /** LifeCycle open - close */
+  /** LifeCycle open - destroy */
   public open() {
     this.drawboard.open();
   }
@@ -71,8 +71,8 @@ export class WhitePage {
     this.drawboard.show();
   }
 
-  public close() {
-    this.drawboard.close();
+  public destroy() {
+    this.drawboard.destroy();
   }
 
   /** 生成快照 */

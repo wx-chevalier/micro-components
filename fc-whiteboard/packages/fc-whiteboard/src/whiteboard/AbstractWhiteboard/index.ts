@@ -169,11 +169,15 @@ export abstract class AbstractWhiteboard {
     }
 
     if (this.siema) {
-      this.siema.destory();
+      this.siema.destroy();
     }
 
     this.imgsContainer.remove();
     this.pagesContainer.remove();
+
+    this.pages.forEach(page => {
+      page.destroy();
+    });
   }
 
   /** 初始化操作 */

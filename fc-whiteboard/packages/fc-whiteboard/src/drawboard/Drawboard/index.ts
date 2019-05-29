@@ -138,7 +138,7 @@ export class Drawboard extends Baseboard {
     }
   };
 
-  public close = () => {
+  public destroy = () => {
     if (this.toolbarUI) {
       document.body.removeChild(this.toolbarUI);
     }
@@ -485,7 +485,7 @@ export class Drawboard extends Baseboard {
   };
 
   private cancel = () => {
-    this.close();
+    this.destroy();
     if (this.onCancel) {
       this.onCancel();
     }
@@ -496,7 +496,7 @@ export class Drawboard extends Baseboard {
   };
 
   private renderFinishedClose = (dataUrl: string) => {
-    this.close();
+    this.destroy();
     this.onComplete(dataUrl);
   };
 }
