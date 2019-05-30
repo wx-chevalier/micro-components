@@ -3,6 +3,8 @@ import { EventHub } from './../src/event/EventHub';
 import { Whiteboard } from '../src/whiteboard/Whiteboard/index';
 import { MirrorWhiteboard } from '../src/whiteboard/MirrorWhiteboard/index';
 
+let whiteboard: Whiteboard;
+
 const events: SyncEvent[] = [];
 
 const eventHub = new EventHub();
@@ -11,6 +13,10 @@ eventHub.on('sync', (changeEv: SyncEvent) => {
     events.push(changeEv);
   }
   console.log(changeEv);
+
+  if (changeEv.event === 'finish') {
+    whiteboard.destroy();
+  }
 });
 
 const images = [
@@ -19,7 +25,7 @@ const images = [
   'https://i.postimg.cc/VN6K0rH3/image.png'
 ];
 
-const whiteboard = new Whiteboard(document.getElementById('root') as HTMLDivElement, {
+whiteboard = new Whiteboard(document.getElementById('root') as HTMLDivElement, {
   sources: images,
   eventHub,
   // Enable this option to disable incremental sync, just use full sync

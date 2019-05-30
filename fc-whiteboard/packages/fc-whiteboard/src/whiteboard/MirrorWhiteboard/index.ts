@@ -35,10 +35,16 @@ export class MirrorWhiteboard extends AbstractWhiteboard {
           this.onPageChange(ev.border.visiblePageIndex);
         }
       }
+
+      if (ev.event === 'finish' && ev.id === this.id) {
+        this.destroy();
+      }
     });
   }
 
-  public destroy() {}
+  public destroy() {
+    super.destroy();
+  }
 
   /** 响应页面切换的事件 */
   private onPageChange(nextPageIndex: number) {
