@@ -41,6 +41,8 @@ export class Baseboard {
     // init holder
     this.boardHolder = document.createElement('div');
     this.boardHolder.id = `fcw-board-holder-${this.id}`;
+    this.boardHolder.className = `fcw-board-holder`;
+    this.boardHolder.style.zIndex = '999';
     // fix for Edge's touch behavior
     this.boardHolder.style.setProperty('touch-action', 'none');
     this.boardHolder.style.setProperty('-ms-touch-action', 'none');
