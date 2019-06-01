@@ -44,6 +44,8 @@
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "siema": "^1.5.1",
+    "tippy.js": "^4.3.1",
+    "tooltip.js": "^1.3.2",
     "uuid": "^3.3.2"
   },
   "devDependencies": {

@@ -1,5 +1,7 @@
-import { uuid } from './../utils/uuid';
+import tippy from 'tippy.js';
+
 import { ToolbarItem } from './ToolbarItem';
+import { uuid } from '../utils/uuid';
 import { Drawboard } from '../drawboard/Drawboard';
 
 /** 工作栏按钮 */
@@ -46,6 +48,14 @@ export class ToolbarButton {
         div.innerHTML = this.toolbarItem.icon;
       } else {
         div.innerText = this.toolbarItem.tooltipText || '';
+      }
+
+      if (this.toolbarItem.tooltipText) {
+        tippy(div, {
+          content: this.toolbarItem.shortcut
+            ? `${this.toolbarItem.tooltipText} ${this.toolbarItem.shortcut}`
+            : this.toolbarItem.tooltipText
+        });
       }
     } else {
       div.className = 'fc-whiteboard-toolbar-separator';

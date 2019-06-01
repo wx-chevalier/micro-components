@@ -14,6 +14,12 @@ import { ToolbarItem } from '../../toolbar/ToolbarItem';
 
 import './index.less';
 import { rectContains } from '../../utils/layout';
+import { RectMarker } from '../../markers/RectMarker/index';
+import { HighlightMarker } from '../../markers/HighlightMarker/index';
+import { CoverMarker } from '../../markers/CoverMarker/index';
+import { LineMarker } from '../../markers/LineMarker/index';
+import { ArrowMarker } from '../../markers/ArrowMarker/index';
+import { TextMarker } from '../../markers/TextMarker/index';
 
 export class Drawboard extends Baseboard {
   /** Options */
@@ -274,6 +280,30 @@ export class Drawboard extends Baseboard {
   };
 
   private onKeyboard = (e: any, { hotkey }: { hotkey: string }) => {
+    console.log(hotkey);
+
+    switch (hotkey) {
+      case 'Shift+R':
+        this.addMarker(RectMarker);
+        return;
+      case 'Shift+H':
+        this.addMarker(HighlightMarker);
+        return;
+      case 'Shift+C':
+        this.addMarker(CoverMarker);
+        return;
+      case 'Shift+L':
+        this.addMarker(LineMarker);
+        return;
+      case 'Shift+A':
+        this.addMarker(ArrowMarker);
+        return;
+      case 'Shift+T':
+        this.addMarker(TextMarker);
+        return;
+      default:
+        break;
+    }
     if (!this.activeMarker) {
       return;
     }
@@ -290,6 +320,9 @@ export class Drawboard extends Baseboard {
         return;
       case 'DOWN':
         this.activeMarker.move(0, 10);
+        return;
+      case 'BACKSPACE':
+        this.deleteActiveMarker();
         return;
       default:
         return;
@@ -322,10 +355,12 @@ export class Drawboard extends Baseboard {
   };
 
   private positionToolbar = () => {
-    this.toolbarUI.style.left = `${this.targetRect.left +
-      this.target.offsetWidth -
-      this.toolbarUI.clientWidth}px`;
-    this.toolbarUI.style.top = `${this.targetRect.top - this.toolbarUI.clientHeight}px`;
+    if (this.toolbarUI && this.targetRect) {
+      this.toolbarUI.style.left = `${this.targetRect.left +
+        this.target.offsetWidth -
+        this.toolbarUI.clientWidth}px`;
+      this.toolbarUI.style.top = `${this.targetRect.top - this.toolbarUI.clientHeight}px`;
+    }
   };
 
   private showUI = () => {
@@ -366,7 +401,7 @@ export class Drawboard extends Baseboard {
 
         const button = this.toolbar.toolbarButtonMap[buttonId];
 
-        if (button.toolbarItem.markerType) {
+        if (button.toolbarItem && button.toolbarItem.markerType) {
           this.addMarker(button.toolbarItem.markerType, {
             originX: markerX - rect.left,
             originY: markerY - rect.top

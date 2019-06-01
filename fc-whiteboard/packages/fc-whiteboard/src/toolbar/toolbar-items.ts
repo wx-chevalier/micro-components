@@ -20,7 +20,8 @@ export const dragToolbarItem = new ToolbarItem({
 
 export const highlightMarkerToolbarItem = new ToolbarItem({
   name: 'cover-marker',
-  tooltipText: 'Cover',
+  tooltipText: 'Hightlight',
+  shortcut: 'Shift+H',
   icon: require('../assets/highlight.svg'),
   markerType: HighlightMarker,
   draggable: true
@@ -29,6 +30,7 @@ export const highlightMarkerToolbarItem = new ToolbarItem({
 export const arrowMarkerToolbarItem = new ToolbarItem({
   name: 'arrow-marker',
   tooltipText: 'Arrow',
+  shortcut: 'Shift+A',
   icon: require('../assets/arrow.svg'),
   markerType: ArrowMarker,
   draggable: true
@@ -37,6 +39,7 @@ export const arrowMarkerToolbarItem = new ToolbarItem({
 export const textMarkerToolbarItem = new ToolbarItem({
   name: 'text-marker',
   tooltipText: 'Text',
+  shortcut: 'Shift+T',
   icon: require('../assets/text.svg'),
   markerType: TextMarker,
   draggable: true
@@ -45,6 +48,7 @@ export const textMarkerToolbarItem = new ToolbarItem({
 export const coverMarkerToolbarItem = new ToolbarItem({
   name: 'cover-marker',
   tooltipText: 'Cover',
+  shortcut: 'Shift+C',
   icon: require('../assets/cover.svg'),
   markerType: CoverMarker,
   draggable: true
@@ -61,6 +65,7 @@ export const rectMarkerToolbarItem = new ToolbarItem({
 export const lineMarkerToolbarItem = new ToolbarItem({
   name: 'line-marker',
   tooltipText: 'Line',
+  shortcut: 'Shift+L',
   icon: require('../assets/line.svg'),
   markerType: LineMarker,
   draggable: true
