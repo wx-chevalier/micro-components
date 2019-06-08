@@ -9,7 +9,6 @@ import { LineMarker } from '../markers/LineMarker';
 
 const OkIcon = require('../assets/check.svg');
 const DeleteIcon = require('../assets/eraser.svg');
-const PointerIcon = require('../assets/mouse-pointer.svg');
 const CloseIcon = require('../assets/times.svg');
 
 export const dragToolbarItem = new ToolbarItem({
@@ -57,6 +56,7 @@ export const coverMarkerToolbarItem = new ToolbarItem({
 export const rectMarkerToolbarItem = new ToolbarItem({
   name: 'rect-marker',
   tooltipText: 'Rectangle',
+  shortcut: 'Shift+R',
   icon: require('../assets/rect.svg'),
   markerType: RectMarker,
   draggable: true
@@ -81,11 +81,11 @@ export const separatorToolbarItem = new ToolbarItem({ name: 'separator', tooltip
 
 export function getToolbars(page?: WhitePage) {
   const toolbars = [
-    {
-      icon: PointerIcon,
-      name: 'pointer',
-      tooltipText: 'Pointer'
-    },
+    // {
+    //   icon: PointerIcon,
+    //   name: 'pointer',
+    //   tooltipText: 'Pointer'
+    // },
     {
       icon: DeleteIcon,
       name: 'delete',

@@ -80,14 +80,15 @@ export class Toolbar extends DomEventAware {
   protected onMouseMove = (ev: MouseEvent) => {};
 
   protected onDragMove = (event: any) => {
-    var target = this.toolbarUI;
+    let target = this.toolbarUI;
 
     // keep the dragged position in the data-x/data-y attributes
-    var x = ((parseFloat(target.getAttribute('data-x') as string) || 0) + event.dx) as any;
-    var y = ((parseFloat(target.getAttribute('data-y') as string) || 0) + event.dy) as any;
+    let x = ((parseFloat(target.getAttribute('data-x') as string) || 0) + event.dx) as any;
+    let y = ((parseFloat(target.getAttribute('data-y') as string) || 0) + event.dy) as any;
 
     // translate the element
     target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+    target.style.zIndex = `${this.zIndex}`;
 
     // update the posiion attributes
     target.setAttribute('data-x', x);

@@ -23,6 +23,7 @@ import { TextMarker } from '../../markers/TextMarker/index';
 
 export class Drawboard extends Baseboard {
   /** Options */
+  mountContainer = document.body;
   scale = 1.0;
   zIndex: number = 999;
   allowKeyboard? = true;
@@ -55,9 +56,10 @@ export class Drawboard extends Baseboard {
     source: Source,
     {
       allowKeyboard = true,
+      extraToolbarItems,
+      mountContainer,
       page,
       zIndex,
-      extraToolbarItems,
       onChange
     }: Partial<Drawboard> & { extraToolbarItems?: ToolbarItem[] } = {}
   ) {
@@ -92,6 +94,10 @@ export class Drawboard extends Baseboard {
       this.listener = new HotkeysListener();
       this.listener.on(KEY_ALL, debounce(this.onKeyboard, 150));
     }
+
+    if (mountContainer) {
+      this.mountContainer = mountContainer;
+    }
   }
 
   /** @region LifeCycle open - hide - show - ... - close */
@@ -107,7 +113,7 @@ export class Drawboard extends Baseboard {
 
     this.setTargetRect();
 
-    this.initBoard();
+    this.initBoard(this.mountContainer);
     this.attachEvents();
     this.setStyles();
 
@@ -146,11 +152,11 @@ export class Drawboard extends Baseboard {
 
   public destroy = () => {
     if (this.toolbarUI) {
-      document.body.removeChild(this.toolbarUI);
+      this.mountContainer.removeChild(this.toolbarUI);
     }
 
     if (this.boardCanvas) {
-      document.body.removeChild(this.boardHolder);
+      this.mountContainer.removeChild(this.boardHolder);
     }
 
     if (this.listener) {
@@ -241,6 +247,7 @@ export class Drawboard extends Baseboard {
   private setTargetRect = () => {
     const targetRect = this.target.getBoundingClientRect() as DOMRect;
     const bodyRect = document.body.parentElement!.getBoundingClientRect();
+
     this.targetRect = {
       left: targetRect.left - bodyRect.left,
       top: targetRect.top - bodyRect.top
@@ -280,8 +287,6 @@ export class Drawboard extends Baseboard {
   };
 
   private onKeyboard = (e: any, { hotkey }: { hotkey: string }) => {
-    console.log(hotkey);
-
     switch (hotkey) {
       case 'Shift+R':
         this.addMarker(RectMarker);
@@ -365,14 +370,15 @@ export class Drawboard extends Baseboard {
 
   private showUI = () => {
     this.toolbar = new Toolbar(this.toolbarItems, this.toolbarClick);
-    this.toolbar.zIndex = this.zIndex;
+    this.toolbar.zIndex = this.zIndex + 1;
 
     this.toolbarUI = this.toolbar.getUI(this);
 
-    document.body.appendChild(this.toolbarUI);
+    this.boardHolder.appendChild(this.toolbarUI);
     this.toolbarUI.style.position = 'absolute';
 
     this.positionToolbar();
+    this.toolbar.show();
 
     // 处理元素的拖拽事件
     this.toolbar.toolbarButtons.forEach(button => {

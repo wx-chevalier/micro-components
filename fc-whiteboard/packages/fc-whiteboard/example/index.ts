@@ -12,7 +12,7 @@ eventHub.on('sync', (changeEv: SyncEvent) => {
   if (changeEv.event !== 'borderSnap') {
     events.push(changeEv);
   }
-  console.log(changeEv);
+  // console.log(changeEv);
 
   if (changeEv.event === 'finish') {
     whiteboard.destroy();

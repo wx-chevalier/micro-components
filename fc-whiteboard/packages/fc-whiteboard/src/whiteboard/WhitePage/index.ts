@@ -136,13 +136,17 @@ export class WhitePage {
       this.drawboard = new Drawboard(
         { imgEle: this.target },
         {
-          page: this,
           extraToolbarItems,
+          mountContainer: this.whiteboard!.target,
+          page: this,
           onChange: ev => this.whiteboard!.emit(ev)
         }
       );
     } else {
-      this.drawboard = new Drawboard({ imgEle: this.target }, { page: this });
+      this.drawboard = new Drawboard(
+        { imgEle: this.target },
+        { page: this, mountContainer: this.whiteboard!.target }
+      );
     }
   }
 
@@ -152,7 +156,10 @@ export class WhitePage {
       throw new Error('Invalid whiteboard');
     }
 
-    this.drawboard = new Drawboard({ imgEle: this.target }, { page: this });
+    this.drawboard = new Drawboard(
+      { imgEle: this.target },
+      { page: this, mountContainer: this.whiteboard!.target }
+    );
 
     this.whiteboard!.eventHub!.on('sync', (ev: SyncEvent) => {
       try {

@@ -37,7 +37,7 @@ export class Baseboard {
     // 如果仅传入图片地址或者 Blob，则必须为全屏模式
   }
 
-  protected initBoard = () => {
+  protected initBoard = (mountContainer: HTMLElement) => {
     // init holder
     this.boardHolder = document.createElement('div');
     this.boardHolder.id = `fcw-board-holder-${this.id}`;
@@ -46,7 +46,8 @@ export class Baseboard {
     // fix for Edge's touch behavior
     this.boardHolder.style.setProperty('touch-action', 'none');
     this.boardHolder.style.setProperty('-ms-touch-action', 'none');
-    document.body.appendChild(this.boardHolder);
+
+    mountContainer.appendChild(this.boardHolder);
 
     // init canvas
     this.boardCanvas = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -58,7 +59,7 @@ export class Baseboard {
       '0 0 ' + this.width.toString() + ' ' + this.height.toString()
     );
 
-    this.boardHolder.style.position = 'absolute';
+    this.boardHolder.style.position = 'fixed';
     this.boardHolder.style.width = `${this.width}px`;
     this.boardHolder.style.height = `${this.height}px`;
     this.boardHolder.style.transformOrigin = 'top left';
