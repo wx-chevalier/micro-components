@@ -134,6 +134,8 @@ export abstract class AbstractWhiteboard {
       }
     }
 
+    // 判断是否进行了元素的增加或者删除
+
     borderEvent.timestamp = Math.floor(Date.now() / 1000);
     this.eventHub.emit('sync', borderEvent);
   }
