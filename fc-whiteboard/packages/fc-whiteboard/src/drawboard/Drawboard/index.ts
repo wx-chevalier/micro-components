@@ -495,6 +495,11 @@ export class Drawboard extends Baseboard {
       // command button
       switch (toolbarItem.name) {
         case 'delete': {
+          // 判断是否存在 Active Marker，不存在则提示
+          if (!this.activeMarker) {
+            alert('Please select marker first!');
+            return;
+          }
           this.deleteActiveMarker();
           break;
         }
