@@ -29,6 +29,7 @@ export class WhitePage {
   /** Handlers */
   drawboard: Drawboard;
   whiteboard?: AbstractWhiteboard;
+  mountContainer: HTMLElement;
 
   constructor(
     source: Source,
@@ -55,6 +56,11 @@ export class WhitePage {
 
     if (this.mode === 'mirror') {
       this.initMirror();
+    }
+
+    if (whiteboard) {
+      this.mountContainer =
+        whiteboard.drawboardMountPoint === 'body' ? document.body : this.whiteboard!.target;
     }
   }
 
@@ -150,7 +156,7 @@ export class WhitePage {
         { imgEle: this.target },
         {
           extraToolbarItems,
-          mountContainer: this.whiteboard!.target,
+          mountContainer: this.mountContainer,
           page: this,
           onChange: ev => this.whiteboard!.emit(ev)
         }
@@ -158,7 +164,7 @@ export class WhitePage {
     } else {
       this.drawboard = new Drawboard(
         { imgEle: this.target },
-        { page: this, mountContainer: this.whiteboard!.target }
+        { page: this, mountContainer: this.mountContainer }
       );
     }
   }
@@ -171,7 +177,7 @@ export class WhitePage {
 
     this.drawboard = new Drawboard(
       { imgEle: this.target },
-      { page: this, mountContainer: this.whiteboard!.target }
+      { page: this, mountContainer: this.mountContainer }
     );
 
     this.whiteboard!.eventHub!.on('sync', (ev: SyncEvent) => {

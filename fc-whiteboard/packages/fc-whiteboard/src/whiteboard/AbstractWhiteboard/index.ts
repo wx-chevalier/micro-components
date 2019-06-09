@@ -27,6 +27,8 @@ export abstract class AbstractWhiteboard {
   // 是否仅同步快照数据，用于弱网状态下
   allowRollback: boolean = false;
   onlyEmitSnap: boolean = false;
+  // 画板的挂载点
+  drawboardMountPoint: 'body' | 'parent' = 'body';
   snapInterval: number = 15 * 1000;
 
   /** UI Options */

@@ -59,7 +59,7 @@ export class Baseboard {
       '0 0 ' + this.width.toString() + ' ' + this.height.toString()
     );
 
-    this.boardHolder.style.position = 'fixed';
+    this.boardHolder.style.position = mountContainer === document.body ? 'absolute' : 'fixed';
     this.boardHolder.style.width = `${this.width}px`;
     this.boardHolder.style.height = `${this.height}px`;
     this.boardHolder.style.transformOrigin = 'top left';
