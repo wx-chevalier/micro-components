@@ -1,7 +1,5 @@
 import { SyncEvent } from '../../event/SyncEvent';
-import { WhitePage } from '../WhitePage/index';
 import { createDivWithClassName } from '../../utils/dom';
-import { WhiteboardSnap } from '../AbstractWhiteboard/snap';
 import { AbstractWhiteboard } from '../AbstractWhiteboard/index';
 import { Mode } from '../../utils/types';
 
@@ -47,7 +45,7 @@ export class MirrorWhiteboard extends AbstractWhiteboard {
   }
 
   /** 响应页面切换的事件 */
-  private onPageChange(nextPageIndex: number) {
+  onPageChange(nextPageIndex: number) {
     if (this.visiblePageIndex === nextPageIndex) {
       return;
     }
@@ -69,53 +67,6 @@ export class MirrorWhiteboard extends AbstractWhiteboard {
       id: this.id,
       target: 'whiteboard',
       border: this.captureSnap()
-    });
-  }
-
-  /** 响应获取到的快照事件 */
-  private applySnap(snap: WhiteboardSnap) {
-    const { id, sources, pageIds } = snap;
-
-    if (!this.isInitialized && !this.isSyncing) {
-      this.id = id;
-      this.sources = sources;
-      this.isSyncing = true;
-
-      // 初始化所有的 WhitePages
-      this.sources.forEach((source, i) => {
-        const page = new WhitePage(
-          { imgSrc: source },
-          {
-            mode: this.mode,
-            whiteboard: this,
-            parentContainer: this.pagesContainer
-          }
-        );
-        page.id = pageIds[i];
-
-        // 这里隐藏 Dashboard 的图片源，Siema 切换的是占位图片
-        page.container.style.visibility = 'hidden';
-
-        this.pages.push(page);
-
-        page.open();
-      });
-
-      this.initSiema();
-      this.isInitialized = true;
-      this.isSyncing = false;
-    }
-
-    // 如果已经初始化完毕，则进行状态同步
-    this.onPageChange(snap.visiblePageIndex);
-
-    // 同步 Pages
-    (snap.pages || []).forEach(pageSnap => {
-      const page = this.pageMap[pageSnap.id];
-
-      if (page) {
-        page.applySnap(pageSnap);
-      }
     });
   }
 }

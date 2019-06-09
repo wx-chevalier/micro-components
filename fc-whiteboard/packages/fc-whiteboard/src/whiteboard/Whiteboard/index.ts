@@ -57,7 +57,7 @@ export class Whiteboard extends AbstractWhiteboard {
     indicatorCurrent.innerHTML = `${this.visiblePageIndex + 1}`;
 
     indicatorContainer.appendChild(indicatorCurrent);
-    indicatorContainer.appendChild(document.createTextNode(` / ${this.sources.length}`));
+    indicatorContainer.appendChild(document.createTextNode(`/${this.sources.length}`));
 
     const indicatorItem: ToolbarItem = {
       name: 'indicator',
@@ -122,7 +122,7 @@ export class Whiteboard extends AbstractWhiteboard {
   }
 
   /** 响应页面切换的事件 */
-  private onPageChange(nextPageIndex: number) {
+  onPageChange(nextPageIndex: number) {
     if (this.visiblePageIndex === nextPageIndex) {
       return;
     }
