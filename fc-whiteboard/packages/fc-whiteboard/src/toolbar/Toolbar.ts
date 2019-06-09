@@ -56,7 +56,7 @@ export class Toolbar extends DomEventAware {
 
     super.init(this.toolbarUI);
 
-    interact('#drag-handler').draggable({
+    (interact as any)('#drag-handler').draggable({
       onmove: this.onDragMove
     });
 
