@@ -23,7 +23,8 @@ const whiteboard = new Whiteboard(document.getElementById('root') as HTMLDivElem
   sources: images,
   eventHub,
   // Enable this option to disable incremental sync, just use full sync
-  onlyEmitSnap: false
+  onlyEmitSnap: false,
+  allowRollback: true
 });
 
 whiteboard.open();

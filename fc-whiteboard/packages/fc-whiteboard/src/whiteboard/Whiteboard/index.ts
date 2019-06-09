@@ -8,6 +8,7 @@ import { separatorToolbarItem } from '../../toolbar/toolbar-items';
 const LeftArrowIcon = require('../../assets/bx-left-arrow.svg');
 const RightArrowIcon = require('../../assets/bx-right-arrow.svg');
 const FinishIcon = require('../../assets/finish.svg');
+const RollbackIcon = require('../../assets/rollback.svg');
 
 const prefix = 'fcw-board';
 
@@ -28,11 +29,16 @@ export class Whiteboard extends AbstractWhiteboard {
 
     this.initMaster();
 
+    // 添加初始化的 Snapshot
+    this.snapHistory.push(this.captureSnap(false));
+
     this.emitSnapshot();
   }
 
   /** 以主模式启动 */
   private initMaster() {
+    this.isInitialized = true;
+
     // 初始化控制节点
     const prevToolbarItem = {
       icon: LeftArrowIcon,
@@ -93,6 +99,16 @@ export class Whiteboard extends AbstractWhiteboard {
       }
     };
 
+    const rollbackItem: ToolbarItem = {
+      icon: RollbackIcon,
+      name: 'rollback',
+      tooltipText: 'Rollback',
+      shortcut: 'ESC',
+      onClick: () => {
+        this.rollbackSnap();
+      }
+    };
+
     // 初始化所有的 WhitePages
     this.sources.forEach(source => {
       const page = new WhitePage(
@@ -107,7 +123,8 @@ export class Whiteboard extends AbstractWhiteboard {
             indicatorItem,
             nextToolbarItem,
             separatorToolbarItem,
-            finishItem
+            finishItem,
+            rollbackItem
           ]
         }
       );

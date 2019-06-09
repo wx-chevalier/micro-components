@@ -87,10 +87,15 @@ export class WhitePage {
 
   /** 应用快照 */
   public applySnap(snap: WhitepageSnap) {
+    const markerIdsSet = new Set();
+
     snap.markers.forEach(markerSnap => {
       // 判断是否存在，存在则同步，否则创建
       const marker = this.drawboard.markerMap[markerSnap.id];
 
+      markerIdsSet.add(markerSnap.id);
+
+      // 如果存在则直接应用，否则创建新的 Marker
       if (marker) {
         marker.applySnap(markerSnap);
       } else {
@@ -98,6 +103,14 @@ export class WhitePage {
           id: markerSnap.id
         });
         newMarker.applySnap(markerSnap);
+      }
+    });
+
+    // 移除当前不存在的 Marker
+    this.drawboard.markers.forEach(marker => {
+      if (!markerIdsSet.has(marker.id)) {
+        // 如果不存在该 Marker，则删除
+        this.drawboard.deleteMarkerWithEvent(marker);
       }
     });
   }

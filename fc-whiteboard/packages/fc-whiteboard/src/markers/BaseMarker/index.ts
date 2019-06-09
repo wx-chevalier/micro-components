@@ -134,6 +134,11 @@ export class BaseMarker extends DomEventAware {
     }
   }
 
+  /** 移除该 Marker */
+  public destroy() {
+    this.visual.style.display = 'none';
+  }
+
   protected resize(x: number, y: number, cb?: Function) {
     return;
   }

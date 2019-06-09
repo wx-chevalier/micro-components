@@ -25,7 +25,7 @@ export abstract class AbstractWhiteboard {
 
   /** Options */
   // 是否仅同步快照数据，用于弱网状态下
-  allowBack: boolean = false;
+  allowRollback: boolean = false;
   onlyEmitSnap: boolean = false;
   snapInterval: number = 15 * 1000;
 
@@ -49,6 +49,8 @@ export abstract class AbstractWhiteboard {
     return map;
   }
   siema: any;
+  // 历史快照记录
+  snapHistory: WhiteboardSnap[] = [];
 
   /** State | 内部状态 */
   // 是否被初始化过，如果尚未被初始化，则等待来自于 Master 的同步消息
@@ -59,7 +61,13 @@ export abstract class AbstractWhiteboard {
 
   constructor(
     target: HTMLDivElement,
-    { sources, eventHub, visiblePageIndex, onlyEmitSnap }: Partial<AbstractWhiteboard> = {}
+    {
+      sources,
+      eventHub,
+      visiblePageIndex,
+      allowRollback,
+      onlyEmitSnap
+    }: Partial<AbstractWhiteboard> = {}
   ) {
     if (target) {
       this.target = target;
@@ -86,6 +94,10 @@ export abstract class AbstractWhiteboard {
     }
 
     this.onlyEmitSnap = !!onlyEmitSnap;
+
+    if (typeof allowRollback !== 'undefined') {
+      this.allowRollback = !!allowRollback;
+    }
 
     this.init();
   }
@@ -135,7 +147,17 @@ export abstract class AbstractWhiteboard {
       }
     }
 
-    // 判断是否进行了元素的增加或者删除
+    // 判断是否进行了元素的增加或者删除，如果开启了则添加历史记录
+    if (
+      this.allowRollback &&
+      (borderEvent.event === 'addMarker' || borderEvent.event === 'removeMarker')
+    ) {
+      if (this.snapHistory.length > 20) {
+        this.snapHistory.shift();
+      }
+
+      this.snapHistory.push(this.captureSnap(false));
+    }
 
     borderEvent.timestamp = Math.floor(Date.now() / 1000);
     this.eventHub.emit('sync', borderEvent);
@@ -159,6 +181,20 @@ export abstract class AbstractWhiteboard {
       visiblePageIndex: this.visiblePageIndex,
       pages: this.pages.map(p => p.captureSnap())
     };
+  }
+
+  /** 回退到上一个 Snap */
+  public rollbackSnap() {
+    if (this.snapHistory.length === 0) {
+      return;
+    }
+
+    this.snapHistory.pop();
+    const snap = this.snapHistory[this.snapHistory.length - 1];
+
+    if (snap) {
+      this.applySnap(snap);
+    }
   }
 
   /** 销毁操作操作 */

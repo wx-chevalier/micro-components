@@ -230,17 +230,27 @@ export class Drawboard extends Baseboard {
   };
 
   public deleteActiveMarker = () => {
-    if (this.activeMarker) {
+    this.deleteMarkerWithEvent(this.activeMarker);
+  };
+
+  public clearMarkers = () => {
+    [...this.markers].forEach(marker => {
+      this.deleteMarkerWithEvent(marker);
+    });
+  };
+
+  public deleteMarkerWithEvent = (marker: BaseMarker | null) => {
+    if (marker) {
       // 触发事件
       if (this.onChange) {
         this.onChange({
           event: 'removeMarker',
-          id: this.activeMarker.id,
+          id: marker.id,
           target: 'marker',
-          marker: { id: this.activeMarker.id }
+          marker: { id: marker.id }
         });
       }
-      this.deleteMarker(this.activeMarker);
+      this.deleteMarker(marker);
     }
   };
 
@@ -305,6 +315,9 @@ export class Drawboard extends Baseboard {
         return;
       case 'Shift+T':
         this.addMarker(TextMarker);
+        return;
+      case 'ESC':
+        this.page.whiteboard!.rollbackSnap();
         return;
       default:
         break;
