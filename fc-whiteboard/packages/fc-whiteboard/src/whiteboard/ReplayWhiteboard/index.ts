@@ -1,6 +1,6 @@
 import { MirrorWhiteboard } from '../MirrorWhiteboard';
 import { SyncEvent } from '../../event/SyncEvent';
-import { EventHub } from 'fc-whiteboard/src/event/EventHub';
+import { EventHub } from '../../event/EventHub';
 
 // 窗口大小为一分钟
 const windowSize = 60 * 1000;

@@ -9,7 +9,7 @@ import { WhitepageSnap } from '../AbstractWhiteboard/snap';
 import { AbstractWhiteboard } from '../AbstractWhiteboard/index';
 
 import './index.less';
-import { ToolbarItem } from 'fc-whiteboard/src/toolbar/ToolbarItem';
+import { ToolbarItem } from '../../toolbar/ToolbarItem';
 
 const prefix = 'fcw-page';
 
