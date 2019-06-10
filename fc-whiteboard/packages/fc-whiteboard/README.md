@@ -2,11 +2,51 @@
 
 Web whiteboard screencasting(both live and playback mode) with background slides, can be used as a graphics tablet for online tutoring or remote collaboration.
 
-# 事件系统
+# 演示者视图
 
-仅在 WhiteBoard 与 WhitePage 级别提供了事件的响应，而在 Drawboard 与 Marker 级别提供了事件的触发。
+# 学生视图
 
-事件类型分为 Snapshot（snap）与 Key Actions（ka）两种。
+仅在 WhiteBoard 与 WhitePage 级别提供了事件的响应，而在 Drawboard 与 Marker 级别提供了事件的触发。事件类型分为 Snapshot（snap）与 Key Actions（ka）两种。
+
+在 [Mushi-Chat](https://github.com/wx-chevalier/Mushi-Chat) 中，我们使用了简单的 WebSocket 来透传转发即可：
+
+```js
+const wsEventHub = new EventEmitter();
+
+if (isPresenter) {
+  wsEventHub.on('sync', data => {
+    if (data.event === 'finish') {
+      // 单独处理结束事件
+      if (typeof callback === 'function') {
+        callback();
+      }
+    }
+    const msg = {
+      from: `${currentUser.id}`,
+      type: 'room',
+      to: `${chatroom.room_id}`,
+      msg: {
+        type: 'cmd',
+        action: 'whiteboard/sync',
+        message: JSON.stringify(data)
+      }
+    };
+    socket.sendMessage(msg);
+  });
+} else {
+  socket.onMessage(([data]) => {
+    const {
+      msg: { type, message }
+    } = data;
+
+    if (type === 'whiteboard/sync') {
+      wsEventHub.emit('sync', JSON.parse(message));
+    }
+  });
+}
+```
+
+# 回放视图
 
 # Todos
 

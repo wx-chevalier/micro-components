@@ -26,6 +26,8 @@ export abstract class AbstractWhiteboard {
   /** Options */
   // 是否仅同步快照数据，用于弱网状态下
   allowRollback: boolean = false;
+  // 是否开启自动比例适配
+  autoFit: boolean = false;
   onlyEmitSnap: boolean = false;
   // 画板的挂载点
   drawboardMountPoint: 'body' | 'parent' = 'body';
