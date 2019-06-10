@@ -192,7 +192,8 @@ export abstract class AbstractWhiteboard {
 
   /** 回退到上一个 Snap */
   public rollbackSnap() {
-    if (this.snapHistory.length === 0) {
+    // 始终保留空白的 Snap
+    if (this.snapHistory.length === 0 || this.snapHistory.length === 1) {
       return;
     }
 
