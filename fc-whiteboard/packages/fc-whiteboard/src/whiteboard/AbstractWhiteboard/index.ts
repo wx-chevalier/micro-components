@@ -68,7 +68,8 @@ export abstract class AbstractWhiteboard {
       eventHub,
       visiblePageIndex,
       allowRollback,
-      onlyEmitSnap
+      onlyEmitSnap,
+      drawboardMountPoint
     }: Partial<AbstractWhiteboard> = {}
   ) {
     if (target) {
@@ -99,6 +100,10 @@ export abstract class AbstractWhiteboard {
 
     if (typeof allowRollback !== 'undefined') {
       this.allowRollback = !!allowRollback;
+    }
+
+    if (drawboardMountPoint) {
+      this.drawboardMountPoint = drawboardMountPoint;
     }
 
     this.init();
