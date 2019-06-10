@@ -44,3 +44,7 @@ const mirrorWhiteboard = new MirrorWhiteboard(
 );
 
 mirrorWhiteboard.open();
+
+setTimeout(() => {
+  whiteboard.destroy();
+}, 500);

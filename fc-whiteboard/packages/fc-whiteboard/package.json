@@ -4,7 +4,7 @@
     "react"
   ],
   "name": "fc-whiteboard",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "main": "dist/index.js",
   "types": "dist/types/index.d.ts",
   "prettier": {

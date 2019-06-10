@@ -151,12 +151,12 @@ export class Drawboard extends Baseboard {
   };
 
   public destroy = () => {
-    if (this.toolbarUI) {
-      this.mountContainer.removeChild(this.toolbarUI);
+    if (this.toolbarUI && this.toolbarUI.parentElement) {
+      this.toolbarUI.parentElement.removeChild(this.toolbarUI);
     }
 
-    if (this.boardCanvas) {
-      this.mountContainer.removeChild(this.boardHolder);
+    if (this.boardHolder && this.boardHolder.parentElement) {
+      this.boardHolder.parentElement.removeChild(this.boardHolder);
     }
 
     if (this.listener) {
