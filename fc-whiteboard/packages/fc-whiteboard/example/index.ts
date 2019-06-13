@@ -35,6 +35,10 @@ whiteboard = new Whiteboard(document.getElementById('root') as HTMLDivElement, {
 
 whiteboard.open();
 
+// setTimeout(() => {
+//   whiteboard.hide();
+// }, 1000);
+
 const mirrorWhiteboard = new MirrorWhiteboard(
   document.getElementById('root-mirror') as HTMLDivElement,
   {
