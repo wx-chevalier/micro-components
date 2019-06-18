@@ -65,7 +65,7 @@ export class Baseboard {
     this.boardHolder.style.transformOrigin = 'top left';
     this.positionBoard();
     this.defs = SvgHelper.createDefs();
-    this.defs.style.pointerEvents = 'auto';
+    this.boardCanvas.style.pointerEvents = 'auto';
     this.boardCanvas.appendChild(this.defs);
     this.boardHolder.appendChild(this.boardCanvas);
   };
