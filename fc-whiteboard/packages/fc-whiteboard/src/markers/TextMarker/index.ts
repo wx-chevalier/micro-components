@@ -90,6 +90,7 @@ export class TextMarker extends RectangularMarker {
     setTimeout(this.sizeText, 10);
   };
 
+  /** 执行文本的自动适配 */
   private sizeText = () => {
     const textSize = this.textElement.getBBox();
     let x = 0;
@@ -135,7 +136,11 @@ export class TextMarker extends RectangularMarker {
     this.editorTextArea.addEventListener('keydown', this.onEditorKeyDown);
     this.editor.appendChild(this.editorTextArea);
 
-    document.body.appendChild(this.editor);
+    if (this.drawboard) {
+      this.drawboard.boardHolder.appendChild(this.editor);
+    } else {
+      document.body.appendChild(this.editor);
+    }
 
     const buttons = document.createElement('div');
     buttons.className = 'fc-whiteboard-text-editor-button-bar';
@@ -175,7 +180,9 @@ export class TextMarker extends RectangularMarker {
   };
 
   private closeEditor = () => {
-    document.body.removeChild(this.editor);
+    if (this.editor) {
+      this.editor.parentElement!.removeChild(this.editor);
+    }
   };
 
   private onEditorKeyDown = (ev: KeyboardEvent) => {
