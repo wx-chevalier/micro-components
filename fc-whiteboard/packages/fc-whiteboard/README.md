@@ -2,6 +2,8 @@
 
 Web whiteboard screencasting(both live and playback mode) with background slides, can be used as a graphics tablet for online tutoring or remote collaboration.
 
+You can try it in [online demo](https://3q1z35q53p.codesandbox.io/).
+
 # 演示者视图
 
 # 学生视图
