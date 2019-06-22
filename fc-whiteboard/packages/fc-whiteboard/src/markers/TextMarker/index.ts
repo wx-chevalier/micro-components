@@ -26,7 +26,7 @@ export class TextMarker extends RectangularMarker {
 
   /** UI Handlers */
   private textElement: SVGTextElement;
-  private editor: HTMLDivElement;
+  private editor?: HTMLDivElement;
   private editorTextArea: HTMLTextAreaElement;
 
   /** Getter & Setter */
@@ -126,6 +126,11 @@ export class TextMarker extends RectangularMarker {
   };
 
   private showEditor = () => {
+    // 确保仅创建单个 Editor 对象
+    if (this.editor) {
+      return;
+    }
+
     this.editor = document.createElement('div');
     this.editor.className = 'fc-whiteboard-text-editor';
 
@@ -180,8 +185,9 @@ export class TextMarker extends RectangularMarker {
   };
 
   private closeEditor = () => {
-    if (this.editor) {
-      this.editor.parentElement!.removeChild(this.editor);
+    if (this.editor && this.editor.parentElement) {
+      this.editor.parentElement.removeChild(this.editor);
+      this.editor = undefined;
     }
   };
 
