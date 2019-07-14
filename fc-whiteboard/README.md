@@ -1,12 +1,16 @@
+![](https://i.postimg.cc/dV2QcC20/image.png)
+
 # fc-whiteboard
 
 Web whiteboard screencasting(both live and playback mode) with background slides, can be used as a graphics tablet for online tutoring or remote collaboration.
 
-[![](https://i.postimg.cc/CLG53MF8/image.png)](https://codesandbox.io/s/3q1z35q53p?fontsize=14)
+![](https://i.postimg.cc/pXNpNRwq/image.png)
 
-# Usage
+[fc-whiteboard https://parg.co/NiK](https://github.com/wx-chevalier/fractal-components/tree/master/fc-whiteboard) 是 Web 在线白板组件库，支持实时直播（一对多）与回放两种模式，其绘制版也能够独立使用。fc-whiteboard 内置了 EventHub，只需要像 [Mushi-Chat](https://github.com/wx-chevalier/Mushi-Chat) 这样提供简单的 WebSocket 服务端，即可快速构建实时在线共享电子白板。
 
-## Whiteboard live mode
+# Usage | 使用
+
+## Whiteboard live mode | 直播模式
 
 ![](https://i.postimg.cc/65t7MNBQ/Kapture-2019-04-17-at-13-47-52.gif)
 
@@ -47,7 +51,7 @@ const mirrorWhiteboard = new MirrorWhiteboard(
 mirrorWhiteboard.open();
 ```
 
-## Whiteboard replay mode
+## Whiteboard replay mode | 回放模式
 
 ```ts
 import { ReplayWhiteboard } from 'fc-whiteboard';
@@ -102,7 +106,7 @@ The persistent events are listed as follow:
 ]
 ```
 
-## Use drawboard alone
+## Use drawboard alone | 单独使用 Drawboard
 
 ```html
 <img id="root" src="https://upload-images.jianshu.io/upload_images/1647496-6bede989c09af527.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></img>
@@ -118,7 +122,13 @@ const d = new Drawboard({
 d.open();
 ```
 
-# Event System | 事件系统
+# 内部设计
+
+## Draw System | 绘制系统
+
+绘制能力最初改造自 [markerjs](https://markerjs.com/)，
+
+## Event System | 事件系统
 
 仅在 WhiteBoard 与 WhitePage 级别提供了事件的响应，而在 Drawboard 与 Marker 级别提供了事件的触发。
 
@@ -132,8 +142,8 @@ d.open();
 - [x] 将白板划分为 Whiteboard, MirrorWhiteboard, ReplayWhiteboard 三种模式，开始编写录播模式，修复增量同步与全量同步冲突的问题。
 - [x] 根据获得到的事件的时间进行重播，完善录播模式功能。
 - [x] 优化 Toolbar 样式，增加 Toolbar 拖拽功能
-- [ ] 增加拖拽绘制功能
-- [ ] 添加全屏的绘制功能，全屏绘制会基于新的全局 div 元素，而非直接将当前元素扩大化
+- [x] 增加拖拽绘制功能
+- [x] 添加全屏的绘制功能，全屏绘制会基于新的全局 div 元素，而非直接将当前元素扩大化
 - [ ] 添加 Whiteboard 的 Loading 界面
 - [ ] 支持编辑中途的缩放能力，将全屏的画板与局部画板的事件达到同步
 
