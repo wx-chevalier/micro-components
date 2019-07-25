@@ -8,6 +8,8 @@ Web whiteboard screencasting(both live and playback mode) with background slides
 
 在很多培训、协作、在线演讲的场景下，我们需要有电子白板的功能，能够方便地在演讲者与听众之间共享屏幕、绘制等信息。[fc-whiteboard https://parg.co/NiK](https://github.com/wx-chevalier/fractal-components/tree/master/fc-whiteboard) 是 Web 在线白板组件库，支持实时直播（一对多）与回放两种模式，其绘制版也能够独立使用。fc-whiteboard 内置了 EventHub，只需要像 [Mushi-Chat](https://github.com/wx-chevalier/Mushi-Chat) 这样提供简单的 WebSocket 服务端，即可快速构建实时在线共享电子白板。
 
+**代码迁移到了 [web-whiteboard](https://github.com/wx-chevalier/web-whiteboard)**
+
 # Usage | 使用
 
 ## Whiteboard live mode | 直播模式
@@ -37,12 +39,15 @@ const images = [
 ];
 
 // 初始化演讲者端
-const whiteboard = new Whiteboard(document.getElementById('root') as HTMLDivElement, {
-  sources: images,
-  eventHub,
-  // Enable this option to disable incremental sync, just use full sync
-  onlyEmitSnap: false
-});
+const whiteboard = new Whiteboard(
+  document.getElementById('root') as HTMLDivElement,
+  {
+    sources: images,
+    eventHub,
+    // Enable this option to disable incremental sync, just use full sync
+    onlyEmitSnap: false
+  }
+);
 
 whiteboard.open();
 
@@ -108,7 +113,9 @@ import * as events from './events.json';
 
 let hasSend = false;
 
-const whiteboard = new ReplayWhiteboard(document.getElementById('root') as HTMLDivElement);
+const whiteboard = new ReplayWhiteboard(document.getElementById(
+  'root'
+) as HTMLDivElement);
 
 whiteboard.setContext(events[0].timestamp, async (t1, t2) => {
   if (!hasSend) {
@@ -353,7 +360,12 @@ export interface SyncEvent {
 譬如当某个 Marker 发生移动时候，其会触发如下的事件：
 
 ```ts
-this.onChange({ target: 'marker', id: this.id, event: 'moveMarker', marker: { dx, dy } });
+this.onChange({
+  target: 'marker',
+  id: this.id,
+  event: 'moveMarker',
+  marker: { dx, dy }
+});
 ```
 
 仅在 WhiteBoard 与 WhitePage 级别提供了事件的响应，而在 Drawboard 与 Marker 级别提供了事件的触发。
