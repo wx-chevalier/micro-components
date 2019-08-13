@@ -5,3 +5,5 @@
 Web whiteboard screencasting(both live and playback mode) with background slides, can be used as a graphics tablet for online tutoring or remote collaboration.
 
 ![](https://i.postimg.cc/pXNpNRwq/image.png)
+
+项目迁移到了 [web-whiteboard](https://github.com/wx-chevalier/web-whiteboard)。
