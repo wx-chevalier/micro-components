@@ -14,7 +14,7 @@
     "removeComments": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "allowUnusedLabels": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
