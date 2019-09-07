@@ -30,8 +30,6 @@ export default class AppSimple extends Component<any, any> {
       }
     ];
 
-    console.log(this.data);
-
     this.links = [{ id: 1, start: 1, end: 2 }];
   }
 

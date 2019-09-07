@@ -3,15 +3,9 @@ import React, { Component } from 'react';
 import {
   BUFFER_DAYS,
   DATA_CONTAINER_WIDTH,
-  DATE_MODE_DAY,
-  DATE_MODE_WEEK,
   DATE_MODE_MONTH,
-  DATE_MODE_YEAR,
-  DAY_MONTH_MODE,
   DATE_MODE_TYPE,
-  DAY_WEEK_MODE,
-  DAY_DAY_MODE,
-  DAY_YEAR_MODE
+  getDayWidth
 } from '@/const';
 
 import { registry, DataController, Config } from '@/controller';
@@ -67,7 +61,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     this.initialise = false;
     //This variable define the number of pixels the viewport can scroll till arrive to the end of the context
     this.pxToScroll = 1900;
-    const dayWidth = this.getDayWidth(this.props.dateMode);
+    const dayWidth = getDayWidth(this.props.dateMode);
 
     this.config = new Config();
     this.config.load(this.props.config);
@@ -98,24 +92,6 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   componentWillUpdate(nextProps) {
     this.checkUpdate(nextProps);
     this.checkNeedData(nextProps);
-  }
-
-  ////////////////////
-  //     ON MODE    //
-  ////////////////////
-  getDayWidth(dateMode) {
-    switch (dateMode) {
-      case DATE_MODE_DAY:
-        return DAY_DAY_MODE;
-      case DATE_MODE_WEEK:
-        return DAY_WEEK_MODE;
-      case DATE_MODE_MONTH:
-        return DAY_MONTH_MODE;
-      case DATE_MODE_YEAR:
-        return DAY_YEAR_MODE;
-      default:
-        return DAY_MONTH_MODE;
-    }
   }
 
   ////////////////////
@@ -219,6 +195,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
       newStartRow + this.state.numVisibleRows >= this.props.data.length
         ? this.props.data.length - 1
         : newStartRow + this.state.numVisibleRows;
+
     //If we need updates then change the state and the scroll position
     //Got you
     this.setStartEnd();
@@ -345,7 +322,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
           dateMode: nextProps.dateMode
         },
         () => {
-          const newDayWidth = this.getDayWidth(this.state.dateMode);
+          const newDayWidth = getDayWidth(this.state.dateMode);
 
           this.setState(
             {

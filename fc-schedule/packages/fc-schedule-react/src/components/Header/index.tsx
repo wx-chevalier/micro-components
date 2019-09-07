@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import {
   BUFFER_DAYS,
   DATA_CONTAINER_WIDTH,
@@ -105,7 +105,7 @@ export class Header extends PureComponent<any, any> {
     let currentTop = '';
     let currentMiddle = '';
     let currentBottom = '';
-    let currentDate: any = null;
+    let currentDate: Moment | null = null;
     let box: any = null;
 
     const start = this.props.currentDay;
@@ -121,7 +121,12 @@ export class Header extends PureComponent<any, any> {
         lastLeft.top = box.left + box.width;
 
         result.top.push(
-          <HeaderItem key={i} left={box.left} width={box.width} label={currentTop} />
+          <HeaderItem
+            key={currentDate.valueOf()}
+            left={box.left}
+            width={box.width}
+            label={currentTop}
+          />
         );
       }
 
@@ -131,19 +136,32 @@ export class Header extends PureComponent<any, any> {
         lastLeft.middle = box.left + box.width;
 
         result.middle.push(
-          <HeaderItem key={i} left={box.left} width={box.width} label={currentMiddle} />
+          <HeaderItem
+            key={currentDate.valueOf()}
+            left={box.left}
+            width={box.width}
+            label={currentMiddle}
+          />
         );
       }
 
       if (currentBottom != currentDate.format(getFormat(bottom))) {
         currentBottom = currentDate.format(getFormat(bottom));
+
         box = this.getBox(currentDate, bottom, lastLeft.bottom);
+
         lastLeft.bottom = box.left + box.width;
+
         if (bottom == 'shorttime' || bottom == 'fulltime') {
           result.bottom.push(this.renderTime(box.left, box.width, bottom, i));
         } else {
           result.bottom.push(
-            <HeaderItem key={i} left={box.left} width={box.width} label={currentBottom} />
+            <HeaderItem
+              key={currentDate.valueOf()}
+              left={box.left}
+              width={box.width}
+              label={currentBottom}
+            />
           );
         }
       }

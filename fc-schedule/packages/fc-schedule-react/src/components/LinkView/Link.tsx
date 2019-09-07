@@ -45,7 +45,6 @@ export class LinkComp extends Component<any, any> {
   render() {
     const { config } = this.props;
 
-    console.log(config);
     const pathColor = this.props.isSelected
       ? config.values.links.selectedColor
       : config.values.links.color;
