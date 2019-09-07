@@ -1,4 +1,26 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
-ReactDOM.render(<Simple />, document.getElementById('root'));
+import 'react-tabs/style/react-tabs.css';
+
+import AppSimple from './pages/AppSimple';
+
+ReactDOM.render(
+  <div>
+    <Tabs>
+      <TabList>
+        <Tab>简单示例</Tab>
+        <Tab>Title 2</Tab>
+      </TabList>
+
+      <TabPanel>
+        <AppSimple />
+      </TabPanel>
+      <TabPanel>
+        <h2>Any content 2</h2>
+      </TabPanel>
+    </Tabs>
+  </div>,
+  document.getElementById('root')
+);

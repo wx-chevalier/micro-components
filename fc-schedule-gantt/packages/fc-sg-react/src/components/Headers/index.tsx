@@ -60,6 +60,8 @@ export class Header extends PureComponent<any, any> {
         return 'dd';
       case 'daymonth':
         return 'D';
+      default:
+        return null;
     }
   }
 
@@ -115,16 +117,19 @@ export class Header extends PureComponent<any, any> {
       </div>
     );
   };
+
   getBox(date, mode, lastLeft) {
     let increment = this.getModeIncrement(date, mode) * this.props.dayWidth;
+
     if (!lastLeft) {
       let starDate = this.getStartDate(date, mode);
       starDate = starDate.startOf('day');
       let now = moment().startOf('day');
       let daysInBetween = starDate.diff(now, 'days');
+
       lastLeft = dateHelper.dayToPosition(
         daysInBetween,
-        this.props.nowposition,
+        this.props.nowPosition,
         this.props.dayWidth
       );
     }
@@ -141,8 +146,8 @@ export class Header extends PureComponent<any, any> {
     let currentDate: any = null;
     let box: any = null;
 
-    let start = this.props.currentday;
-    let end = this.props.currentday + this.props.numVisibleDays;
+    let start = this.props.currentDay;
+    let end = this.props.currentDay + this.props.numVisibleDays;
 
     for (let i = start - BUFFER_DAYS; i < end + BUFFER_DAYS; i++) {
       //The unit of iteration is day
@@ -207,23 +212,27 @@ export class Header extends PureComponent<any, any> {
         return this.renderHeaderRows('month', 'dayweek', 'daymonth');
       case VIEW_MODE_YEAR:
         return this.renderHeaderRows('year', 'month', 'week');
+      default:
+        return this.renderHeaderRows('year', 'month', 'week');
     }
   };
 
   setBoundaries = () => {
-    this.start = this.props.currentday - BUFFER_DAYS;
-    this.end = this.props.currentday + this.props.numVisibleDays + BUFFER_DAYS;
+    this.start = this.props.currentDay - BUFFER_DAYS;
+    this.end = this.props.currentDay + this.props.numVisibleDays + BUFFER_DAYS;
   };
 
   needToRender = () => {
     return (
-      this.props.currentday < this.start ||
-      this.props.currentday + this.props.numVisibleDays > this.end
+      this.props.currentDay < this.start ||
+      this.props.currentDay + this.props.numVisibleDays > this.end
     );
   };
 
   render() {
-    if (this.refs.Header) (this.refs.Header as any).scrollLeft = this.props.scrollLeft;
+    if (this.refs.Header) {
+      (this.refs.Header as any).scrollLeft = this.props.scrollLeft;
+    }
     //Check boundaries to see if wee need to recalcualte header
     // if (this.needToRender()|| !this.cache){
     //     this.cache=this.renderHeader();

@@ -31,7 +31,7 @@ export class LinkViewPort extends Component<any, any> {
 
   getItemPosition = (index, date) => {
     let x = dateHelper.dateToPixel(date, 0, this.props.dayWidth);
-    let y = index * this.props.itemheight + this.props.itemheight / 2;
+    let y = index * this.props.itemHeight + this.props.itemHeight / 2;
     return { x: x, y: y };
   };
 
@@ -80,6 +80,7 @@ export class LinkViewPort extends Component<any, any> {
       let position = this.getItemPosition(record.index, record.item.end);
       return <CreateLink start={position} onFinishCreateLink={this.props.onFinishCreateLink} />;
     }
+    return null;
   };
 
   renderChangingTaskLinks = () => {
@@ -152,7 +153,7 @@ export class LinkViewPort extends Component<any, any> {
           </marker>
         </defs>
         <g
-          transform={`matrix(1,0,0,1,${-(this.props.scrollLeft - this.props.nowposition)},${-this
+          transform={`matrix(1,0,0,1,${-(this.props.scrollLeft - this.props.nowPosition)},${-this
             .props.scrollTop})`}
         >
           {this.cache}

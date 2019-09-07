@@ -1,25 +1,40 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import VerticalSpliter from 'libs/components/taskList/VerticalSpliter';
-import Header from 'libs/components/header/Headers';
-import DataViewPort from 'libs/components/viewport/DataViewPort';
-import LinkViewPort from 'libs/components/links/LinkViewPort';
-import TaskList from 'libs/components/taskList/TaskList';
-import Registry from 'libs/helpers/registry/Registry';
-import { BUFFER_DAYS, DATA_CONTAINER_WIDTH } from 'libs/Const';
-import { VIEW_MODE_DAY, VIEW_MODE_WEEK, VIEW_MODE_MONTH, VIEW_MODE_YEAR } from 'libs/Const';
-import { DAY_MONTH_MODE, DAY_WEEK_MODE, DAY_DAY_MODE, DAY_YEAR_MODE } from 'libs/Const';
-import DataController from 'libs/controller/DataController';
-import Config from 'libs/helpers/config/Config';
+
+import {
+  BUFFER_DAYS,
+  DATA_CONTAINER_WIDTH,
+  VIEW_MODE_DAY,
+  VIEW_MODE_WEEK,
+  VIEW_MODE_MONTH,
+  VIEW_MODE_YEAR,
+  DAY_MONTH_MODE,
+  DAY_WEEK_MODE,
+  DAY_DAY_MODE,
+  DAY_YEAR_MODE
+} from '@/const';
+
+import { config, registry, DataController } from '@/controller';
 
 import './index.css';
+import TaskList from '../TaskList';
+import VerticalSpliter from '../TaskList/VerticalSpliter';
+import { Header } from '../Headers';
+import { LinkViewPort } from '../Link/LinkViewPort';
+import { DataViewPort } from '../DataViewPort';
 
-export class TimeLine extends Component {
+export class TimeLine extends Component<any, any> {
   static defaultProps = {
-    itemheight: 20,
+    itemHeight: 20,
     dayWidth: 24,
     nonEditableName: false
   };
+
+  dragging: boolean;
+  draggingPosition: number;
+  dc: DataController;
+  initialise: boolean;
+  pxToScroll: number;
+
   constructor(props) {
     super(props);
     this.dragging = false;
@@ -31,13 +46,13 @@ export class TimeLine extends Component {
     this.pxToScroll = 1900;
 
     let dayWidth = this.getDayWidth(this.props.mode);
-    Config.load(this.props.config);
+    config.load(this.props.config);
     //Initialising state
     this.state = {
-      currentday: 0, //Day that is in the 0px horizontal
-      //nowposition is the reference position, this variable support the infinit scrolling by accumulatning scroll times and redefining the 0 position
-      // if we accumulat 2 scroll to the left nowposition will be 2* DATA_CONTAINER_WIDTH
-      nowposition: 0,
+      currentDay: 0, //Day that is in the 0px horizontal
+      //nowPosition is the reference position, this variable support the infinit scrolling by accumulatning scroll times and redefining the 0 position
+      // if we accumulat 2 scroll to the left nowPosition will be 2* DATA_CONTAINER_WIDTH
+      nowPosition: 0,
       startRow: 0, //
       endRow: 10,
       sideStyle: { width: 200 },
@@ -77,21 +92,20 @@ export class TimeLine extends Component {
   ////////////////////
   //     ON SIZE    //
   ////////////////////
-
   onSize = size => {
     //If size has changed
     this.calculateVerticalScrollVariables(size);
     if (!this.initialise) {
       this.dc.initialise(
-        this.state.scrollLeft + this.state.nowposition,
-        this.state.scrollLeft + this.state.nowposition + size.width,
-        this.state.nowposition,
+        this.state.scrollLeft + this.state.nowPosition,
+        this.state.scrollLeft + this.state.nowPosition + size.width,
+        this.state.nowPosition,
         this.state.dayWidth
       );
       this.initialise = true;
     }
     this.setStartEnd();
-    let newNumVisibleRows = Math.ceil(size.height / this.props.itemheight);
+    let newNumVisibleRows = Math.ceil(size.height / this.props.itemHeight);
     let newNumVisibleDays = this.calcNumVisibleDays(size);
     let rowInfo = this.calculateStartEndRows(
       newNumVisibleRows,
@@ -127,7 +141,7 @@ export class TimeLine extends Component {
   };
 
   calculateStartEndRows = (numVisibleRows, data, scrollTop) => {
-    let new_start = Math.trunc(scrollTop / this.props.itemheight);
+    let new_start = Math.trunc(scrollTop / this.props.itemHeight);
     let new_end =
       new_start + numVisibleRows >= data.length ? data.length : new_start + numVisibleRows;
     return { start: new_start, end: new_end };
@@ -137,13 +151,13 @@ export class TimeLine extends Component {
     this.dc.setStartEnd(
       this.state.scrollLeft,
       this.state.scrollLeft + this.state.size.width,
-      this.state.nowposition,
+      this.state.nowPosition,
       this.state.dayWidth
     );
   };
 
   horizontalChange = newScrollLeft => {
-    let new_nowposition = this.state.nowposition;
+    let new_nowPosition = this.state.nowPosition;
     let new_left = -1;
     let headerData = this.state.headerData;
     let new_startRow = this.state.startRow;
@@ -152,12 +166,12 @@ export class TimeLine extends Component {
     //Calculating if we need to roll up the scroll
     if (newScrollLeft > this.pxToScroll) {
       //ContenLegnth-viewportLengt
-      new_nowposition = this.state.nowposition - this.pxToScroll;
+      new_nowPosition = this.state.nowPosition - this.pxToScroll;
       new_left = 0;
     } else {
       if (newScrollLeft <= 0) {
         //ContenLegnth-viewportLengt
-        new_nowposition = this.state.nowposition + this.pxToScroll;
+        new_nowPosition = this.state.nowPosition + this.pxToScroll;
         new_left = this.pxToScroll;
       } else {
         new_left = newScrollLeft;
@@ -165,10 +179,10 @@ export class TimeLine extends Component {
     }
 
     //Get the day of the left position
-    let currentIndx = Math.trunc((newScrollLeft - this.state.nowposition) / this.state.dayWidth);
+    let currentIndx = Math.trunc((newScrollLeft - this.state.nowPosition) / this.state.dayWidth);
 
     //Calculate rows to render
-    new_startRow = Math.trunc(this.state.scrollTop / this.props.itemheight);
+    new_startRow = Math.trunc(this.state.scrollTop / this.props.itemHeight);
     new_endRow =
       new_startRow + this.state.numVisibleRows >= this.props.data.length
         ? this.props.data.length - 1
@@ -178,8 +192,8 @@ export class TimeLine extends Component {
     this.setStartEnd();
     this.setState(
       (this.state = {
-        currentday: currentIndx,
-        nowposition: new_nowposition,
+        currentDay: currentIndx,
+        nowPosition: new_nowPosition,
         headerData: headerData,
         scrollLeft: new_left,
         startRow: new_startRow,
@@ -245,12 +259,6 @@ export class TimeLine extends Component {
     this.dragging = false;
   };
 
-  doMouseLeave = e => {
-    // if (!e.relatedTarget.nodeName)
-    //     this.dragging=false;
-    this.dragging = false;
-  };
-
   //Child communicating states
   onTaskListSizing = delta => {
     this.setState(prevState => {
@@ -299,39 +307,78 @@ export class TimeLine extends Component {
   calcNumVisibleDays = size => {
     return Math.ceil(size.width / this.state.dayWidth) + BUFFER_DAYS;
   };
+
   checkMode() {
     if (this.props.mode != this.state.mode && this.props.mode) {
-      this.state.mode = this.props.mode;
-      let newDayWidth = this.getDayWidth(this.state.mode);
-      this.state.dayWidth = newDayWidth;
-      this.state.numVisibleDays = this.calcNumVisibleDays(this.state.size);
-      //to recalculate the now position we have to see how mwny scroll has happen
-      //to do so we calculate the diff of days between current day and now
-      //And we calculate how many times we have scroll
-      let scrollTime = Math.ceil((-this.state.currentday * this.state.dayWidth) / this.pxToScroll);
-      //We readjust now postion to the new number of scrolls
-      this.state.nowposition = scrollTime * this.pxToScroll;
-      let scrollLeft =
-        (this.state.currentday * this.state.dayWidth + this.state.nowposition) % this.pxToScroll;
-      // we recalculate the new scroll Left value
-      this.state.scrollLeft = scrollLeft;
+      this.setState(
+        {
+          mode: this.props.mode
+        },
+        () => {
+          let newDayWidth = this.getDayWidth(this.state.mode);
+
+          this.setState(
+            {
+              dayWidth: newDayWidth,
+              numVisibleDays: this.calcNumVisibleDays(this.state.size)
+            },
+            () => {
+              //to recalculate the now position we have to see how mwny scroll has happen
+              //to do so we calculate the diff of days between current day and now
+              //And we calculate how many times we have scroll
+              let scrollTime = Math.ceil(
+                (-this.state.currentDay * this.state.dayWidth) / this.pxToScroll
+              );
+              //We readjust now postion to the new number of scrolls
+              const nowPosition = scrollTime * this.pxToScroll;
+              let scrollLeft =
+                (this.state.currentDay * this.state.dayWidth + nowPosition) % this.pxToScroll;
+
+              this.setState({
+                nowPosition,
+
+                // we recalculate the new scroll Left value
+                scrollLeft
+              });
+            }
+          );
+        }
+      );
     }
   }
   checkNeeeData = () => {
     if (this.props.data != this.state.data) {
-      this.state.data = this.props.data;
-      let rowInfo = this.calculateStartEndRows(
-        this.state.numVisibleRows,
-        this.props.data,
-        this.state.scrollTop
+      this.setState(
+        {
+          data: this.props.data
+        },
+        () => {
+          let rowInfo = this.calculateStartEndRows(
+            this.state.numVisibleRows,
+            this.props.data,
+            this.state.scrollTop
+          );
+          this.setState(
+            {
+              startRow: rowInfo.start,
+              endRow: rowInfo.end
+            },
+            () => {
+              registry.registerData(this.state.data);
+            }
+          );
+        }
       );
-      this.state.startRow = rowInfo.start;
-      this.state.endRow = rowInfo.end;
-      Registry.registerData(this.state.data);
     }
     if (this.props.links != this.state.links) {
-      this.state.links = this.props.links;
-      Registry.registerLinks(this.props.links);
+      this.setState(
+        {
+          links: this.props.links
+        },
+        () => {
+          registry.registerLinks(this.props.links);
+        }
+      );
     }
   };
   render() {
@@ -342,7 +389,7 @@ export class TimeLine extends Component {
         <div className="timeLine-side-main" style={this.state.sideStyle}>
           <TaskList
             ref="taskViewPort"
-            itemheight={this.props.itemheight}
+            itemHeight={this.props.itemHeight}
             startRow={this.state.startRow}
             endRow={this.state.endRow}
             data={this.props.data}
@@ -358,8 +405,8 @@ export class TimeLine extends Component {
           <Header
             headerData={this.state.headerData}
             numVisibleDays={this.state.numVisibleDays}
-            currentday={this.state.currentday}
-            nowposition={this.state.nowposition}
+            currentDay={this.state.currentDay}
+            nowPosition={this.state.nowPosition}
             dayWidth={this.state.dayWidth}
             mode={this.state.mode}
             scrollLeft={this.state.scrollLeft}
@@ -368,14 +415,13 @@ export class TimeLine extends Component {
             ref="dataViewPort"
             scrollLeft={this.state.scrollLeft}
             scrollTop={this.state.scrollTop}
-            itemheight={this.props.itemheight}
-            nowposition={this.state.nowposition}
+            itemHeight={this.props.itemHeight}
+            nowPosition={this.state.nowPosition}
             startRow={this.state.startRow}
             endRow={this.state.endRow}
             data={this.props.data}
             selectedItem={this.props.selectedItem}
             dayWidth={this.state.dayWidth}
-            onScroll={this.scrollData}
             onMouseDown={this.doMouseDown}
             onMouseMove={this.doMouseMove}
             onMouseUp={this.doMouseUp}
@@ -401,7 +447,7 @@ export class TimeLine extends Component {
             startRow={this.state.startRow}
             endRow={this.state.endRow}
             data={this.props.data}
-            nowposition={this.state.nowposition}
+            nowPosition={this.state.nowPosition}
             dayWidth={this.state.dayWidth}
             interactiveMode={this.state.interactiveMode}
             taskToCreate={this.state.taskToCreate}
@@ -409,8 +455,7 @@ export class TimeLine extends Component {
             changingTask={this.state.changingTask}
             selectedItem={this.props.selectedItem}
             onSelectItem={this.onSelectItem}
-            itemheight={this.props.itemheight}
-            onSelectItem={this.onSelectItem}
+            itemHeight={this.props.itemHeight}
             links={this.props.links}
           />
         </div>

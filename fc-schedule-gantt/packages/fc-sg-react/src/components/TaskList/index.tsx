@@ -31,7 +31,7 @@ export class TaskRow extends Component<any, any> {
         style={{
           ...config.values.taskList.task.style,
           top: this.props.top,
-          height: this.props.itemheight
+          height: this.props.itemHeight
         }}
         onClick={e => this.props.onSelectItem(this.props.item)}
       >
@@ -59,7 +59,7 @@ export default class TaskList extends Component<any, any> {
   }
 
   getContainerStyle(rows) {
-    let new_height = rows > 0 ? rows * this.props.itemheight : 10;
+    let new_height = rows > 0 ? rows * this.props.itemHeight : 10;
     return { height: new_height };
   }
 
@@ -74,8 +74,8 @@ export default class TaskList extends Component<any, any> {
           index={i}
           item={item}
           label={item.name}
-          top={i * this.props.itemheight}
-          itemheight={this.props.itemheight}
+          top={i * this.props.itemHeight}
+          itemHeight={this.props.itemHeight}
           isSelected={this.props.selectedItem == item}
           onUpdateTask={this.props.onUpdateTask}
           onSelectItem={this.props.onSelectItem}

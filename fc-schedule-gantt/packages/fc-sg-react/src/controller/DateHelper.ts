@@ -2,7 +2,7 @@ const MIL_IN_HOUR = 1000 * 3600;
 
 /** 数据辅助 */
 export class DateHelper {
-  dateToPixel(input, nowposition, daywidth) {
+  dateToPixel(input, nowPosition, daywidth) {
     let nowDate = this.getToday(); //
     let inputTime = new Date(input);
 
@@ -10,12 +10,12 @@ export class DateHelper {
     let lightSavingDiff = (inputTime.getTimezoneOffset() - nowDate.getTimezoneOffset()) * 60 * 1000;
     let timeDiff = inputTime.getTime() - nowDate.getTime() - lightSavingDiff;
     let pixelWeight = daywidth / 24; //Value in pixels of one hour
-    return (timeDiff / MIL_IN_HOUR) * pixelWeight + nowposition;
+    return (timeDiff / MIL_IN_HOUR) * pixelWeight + nowPosition;
   }
 
-  pixelToDate(position, nowposition, daywidth) {
+  pixelToDate(position, nowPosition, daywidth) {
     let hoursInPixel = 24 / daywidth;
-    let pixelsFromNow = position - nowposition;
+    let pixelsFromNow = position - nowPosition;
     let today = this.getToday();
     let milisecondsFromNow = today.getTime() + pixelsFromNow * hoursInPixel * MIL_IN_HOUR;
     let result = new Date(milisecondsFromNow);

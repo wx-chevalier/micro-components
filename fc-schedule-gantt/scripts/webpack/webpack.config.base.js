@@ -6,7 +6,6 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const webpack = require('webpack');
 const tsImportPluginFactory = require('ts-import-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const RewriteImportPlugin = require('less-plugin-rewrite-import');
 
 const rootPath = process.cwd();
 const packageName = require(path.resolve(rootPath, 'package.json'));
@@ -15,6 +14,7 @@ const buildEnv = {
   rootPath,
   packageName,
   src: path.resolve(rootPath, './src'),
+  example: path.resolve(rootPath, './example'),
   public: path.resolve(rootPath, './public'),
   build: path.resolve(rootPath, './build')
 };
@@ -38,16 +38,7 @@ const lessLoader = {
       'primary-color': '#5d4bff'
     },
     javascriptEnabled: true,
-    paths: [path.resolve(rootPath, './node_modules'), path.resolve(rootPath, './src')],
-    plugins: [
-      new RewriteImportPlugin({
-        paths: {
-          '~antd/es/style/themes/default.less': function() {
-            return 'antd/es/style/themes/default.less';
-          }
-        }
-      })
-    ]
+    paths: [path.resolve(rootPath, './node_modules'), path.resolve(rootPath, './src')]
   }
 };
 
@@ -131,7 +122,7 @@ module.exports = {
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
-        include: [/node_modules/, buildEnv.src]
+        include: [/node_modules/, buildEnv.src, buildEnv.example]
       },
       {
         test: /\.less$/,
@@ -151,7 +142,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new ForkTsCheckerWebpackPlugin({ checkSyntacticErrors: true, eslint: true }),
+    new ForkTsCheckerWebpackPlugin({ checkSyntacticErrors: false, eslint: false }),
     new webpack.WatchIgnorePlugin([/less\.d\.ts$/]),
     new webpack.IgnorePlugin(/\.js\.map$/)
   ],
