@@ -1,0 +1,19 @@
+.fc-schedule-vertical-spliter {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: col-resize;
+  height: 100%;
+  width: 1px;
+  background-color: rgb(207, 207, 205, 0.5);
+}
+
+.fc-schedule-square-grip {
+  flex: 0 0 auto;
+
+  border-radius: 50%;
+  height: 5px;
+  width: 5px;
+  margin: 3px 0;
+}
