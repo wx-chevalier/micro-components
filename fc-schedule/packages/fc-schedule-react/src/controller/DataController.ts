@@ -52,8 +52,8 @@ export class DataController {
 
   //OnScroll
   loadDataHorizon = () => {
-    let lowerLimit = dateHelper.pixelToDate(this.lowerLimit, this.newPosition, this.dayWidth);
-    let upLimit = dateHelper.pixelToDate(this.upperLimit, this.newPosition, this.dayWidth);
+    const lowerLimit = dateHelper.pixelToDate(this.lowerLimit, this.newPosition, this.dayWidth);
+    const upLimit = dateHelper.pixelToDate(this.upperLimit, this.newPosition, this.dayWidth);
     this.onHorizonChange(lowerLimit, upLimit);
   };
 }

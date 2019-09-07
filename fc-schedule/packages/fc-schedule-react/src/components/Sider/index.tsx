@@ -61,15 +61,18 @@ export default class TaskList extends Component<any, any> {
   }
 
   getContainerStyle(rows) {
-    let new_height = rows > 0 ? rows * this.props.itemHeight : 10;
-    return { height: new_height };
+    const newHeight = rows > 0 ? rows * this.props.itemHeight : 10;
+    return { height: newHeight };
   }
 
   renderTaskRow(data) {
-    let result: any = [];
+    const result: any = [];
+
     for (let i = this.props.startRow; i < this.props.endRow + 1; i++) {
-      let item = data[i];
+      const item = data[i];
+
       if (!item) break;
+
       result.push(
         <TaskRow
           key={i}
@@ -93,8 +96,10 @@ export default class TaskList extends Component<any, any> {
   };
 
   render() {
-    let data = this.props.data ? this.props.data : [];
+    const data = this.props.data ? this.props.data : [];
+
     this.containerStyle = this.getContainerStyle(data.length);
+
     return (
       <div className="timeLine-side">
         <div className="timeLine-side-title" style={config.values.taskList.title.style}>

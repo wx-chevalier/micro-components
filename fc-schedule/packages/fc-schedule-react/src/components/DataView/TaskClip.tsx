@@ -95,7 +95,7 @@ export class DataTask extends Component<IProps, IState> {
   }
 
   dragProcess(x) {
-    let delta = this.draggingPosition - x;
+    const delta = this.draggingPosition - x;
     let newLeft = this.state.left;
     let newWidth = this.state.width;
 
@@ -112,7 +112,7 @@ export class DataTask extends Component<IProps, IState> {
         break;
     }
     //the coordinates need to be global
-    let changeObj = {
+    const changeObj = {
       item: this.props.item,
       position: {
         start: newLeft - this.props.nowPosition,
@@ -126,17 +126,17 @@ export class DataTask extends Component<IProps, IState> {
 
   dragEnd() {
     this.props.onChildDrag(false);
-    let new_start_date = dateHelper.pixelToDate(
+    const newStartDate = dateHelper.pixelToDate(
       this.state.left,
       this.props.nowPosition,
       this.props.dayWidth
     );
-    let new_end_date = dateHelper.pixelToDate(
+    const newEndDate = dateHelper.pixelToDate(
       this.state.left + this.state.width,
       this.props.nowPosition,
       this.props.dayWidth
     );
-    this.props.onUpdateTask(this.props.item, { start: new_start_date, end: new_end_date });
+    this.props.onUpdateTask(this.props.item, { start: newStartDate, end: newEndDate });
     this.setState({ dragging: false, dateMode: MODE_NONE });
   }
 
@@ -179,11 +179,11 @@ export class DataTask extends Component<IProps, IState> {
   };
 
   calculateStyle() {
-    let configStyle = this.props.isSelected
+    const configStyle = this.props.isSelected
       ? config.values.dataViewPort.task.selectedStyle
       : config.values.dataViewPort.task.style;
 
-    let backgroundColor = this.props.color ? this.props.color : configStyle.backgroundColor;
+    const backgroundColor = this.props.color ? this.props.color : configStyle.backgroundColor;
 
     const finalHeight = this.props.height > 25 ? 20 : this.props.height - 5;
     const top = (this.props.height - finalHeight) / 2;
@@ -211,7 +211,7 @@ export class DataTask extends Component<IProps, IState> {
   }
 
   render() {
-    let style = this.calculateStyle();
+    const style = this.calculateStyle();
     return (
       <div
         onMouseDown={e => this.doMouseDown(e, MODE_MOVE)}

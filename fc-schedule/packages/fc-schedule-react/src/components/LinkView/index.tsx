@@ -15,8 +15,8 @@ export class LinkView extends Component<any, any> {
   }
 
   renderLink(startItem, endItem, link, key) {
-    let startPosition = this.getItemPosition(startItem.index, startItem.item.end);
-    let endPosition = this.getItemPosition(endItem.index, endItem.item.start);
+    const startPosition = this.getItemPosition(startItem.index, startItem.item.end);
+    const endPosition = this.getItemPosition(endItem.index, endItem.item.start);
     return (
       <Link
         key={key}
@@ -30,19 +30,19 @@ export class LinkView extends Component<any, any> {
   }
 
   getItemPosition = (index, date) => {
-    let x = dateHelper.dateToPixel(date, 0, this.props.dayWidth);
-    let y = index * this.props.itemHeight + this.props.itemHeight / 2;
+    const x = dateHelper.dateToPixel(date, 0, this.props.dayWidth);
+    const y = index * this.props.itemHeight + this.props.itemHeight / 2;
     return { x: x, y: y };
   };
 
   renderLinks() {
     this.cache = [];
-    let renderLinks = {};
+    const renderLinks = {};
     let startItem,
       endItem = {};
     if (this.state.data.length == 0) return;
     for (let i = 0; i < this.state.links.length; i++) {
-      let link = this.state.links[i];
+      const link = this.state.links[i];
       if (!link) if (renderLinks[link.id]) continue;
       startItem = registry.getTask(link.start);
       if (!startItem) {
@@ -76,8 +76,8 @@ export class LinkView extends Component<any, any> {
 
   renderCreateLink = () => {
     if (this.props.interactiveMode) {
-      let record = registry.getTask(this.props.taskToCreate.task.id);
-      let position = this.getItemPosition(record.index, record.item.end);
+      const record = registry.getTask(this.props.taskToCreate.task.id);
+      const position = this.getItemPosition(record.index, record.item.end);
       return <DraftLink start={position} onFinishCreateLink={this.props.onFinishCreateLink} />;
     }
     return null;
@@ -91,7 +91,7 @@ export class LinkView extends Component<any, any> {
         },
         () => {
           //Get Links from task
-          let links = registry.getLinks(this.state.changingTask.item.id);
+          const links = registry.getLinks(this.state.changingTask.item.id);
           if (!links) return;
           let item: any = null;
           let startItem: any = null;

@@ -29,8 +29,8 @@ export class DraftLink extends Component<any, any> {
       this.lastY = e.clientY;
       this.init = true;
     }
-    let newX = this.state.x + (e.clientX - this.lastX);
-    let newY = this.state.y + (e.clientY - this.lastY);
+    const newX = this.state.x + (e.clientX - this.lastX);
+    const newY = this.state.y + (e.clientY - this.lastY);
     this.lastX = e.clientX;
     this.lastY = e.clientY;
     this.setState({ x: newX, y: newY });

@@ -34,7 +34,9 @@ export default class VerticalSpliter extends Component<any, any> {
   doMouseMove(e) {
     if (this.state.dragging) {
       e.stopPropagation();
-      let delta = this.draggingPosition - e.clientX;
+
+      const delta = this.draggingPosition - e.clientX;
+
       this.draggingPosition = e.clientX;
       this.props.onTaskListSizing(delta);
     }

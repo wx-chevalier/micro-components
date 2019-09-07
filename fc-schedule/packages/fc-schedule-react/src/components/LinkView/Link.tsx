@@ -20,11 +20,11 @@ export class Link extends Component<any, any> {
   };
 
   calcSCoordinates = () => {
-    let cpt1 = { x: this.props.start.x + SSHAPE_SIDE_WIDTH, y: this.props.start.y };
-    let halfY = (this.props.end.y - this.props.start.y) / 2;
-    let cpt2 = { x: cpt1.x, y: cpt1.y + halfY };
-    let cpt3 = { x: this.props.end.x - SSHAPE_SIDE_WIDTH, y: cpt2.y };
-    let cpt4 = { x: cpt3.x, y: cpt3.y + halfY };
+    const cpt1 = { x: this.props.start.x + SSHAPE_SIDE_WIDTH, y: this.props.start.y };
+    const halfY = (this.props.end.y - this.props.start.y) / 2;
+    const cpt2 = { x: cpt1.x, y: cpt1.y + halfY };
+    const cpt3 = { x: this.props.end.x - SSHAPE_SIDE_WIDTH, y: cpt2.y };
+    const cpt4 = { x: cpt3.x, y: cpt3.y + halfY };
     return { cpt1: cpt1, cpt2: cpt2, cpt3: cpt3, cpt4: cpt4 };
   };
 
@@ -44,7 +44,7 @@ export class Link extends Component<any, any> {
   };
 
   render() {
-    let pathColor = this.props.isSelected
+    const pathColor = this.props.isSelected
       ? config.values.links.selectedColor
       : config.values.links.color;
     return (

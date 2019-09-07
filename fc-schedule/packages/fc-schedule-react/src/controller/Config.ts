@@ -17,7 +17,7 @@ export class Config {
 
   populate(values, defaultConfig, final) {
     if (!this.isObject(defaultConfig)) return;
-    for (let key in defaultConfig) {
+    for (const key in defaultConfig) {
       if (!values[key]) {
         //if not exits
         final[key] = defaultConfig[key];

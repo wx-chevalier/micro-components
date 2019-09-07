@@ -42,26 +42,26 @@ export class DataViewPortComp extends Component<IDataViewPortCompProps> {
     this.childDragging = false;
   }
   getContainerHeight(rows) {
-    let new_height = rows > 0 ? rows * this.props.itemHeight : 10;
-    return new_height;
+    const newHeight = rows > 0 ? rows * this.props.itemHeight : 10;
+    return newHeight;
   }
   onChildDrag = dragging => {
     this.childDragging = dragging;
   };
 
   renderRows = () => {
-    let result: any[] = [];
+    const result: any[] = [];
     for (let i = this.props.startRow; i < this.props.endRow + 1; i++) {
-      let item = this.props.data[i];
+      const item = this.props.data[i];
       if (!item) break;
       //FIXME PAINT IN BOUNDARIES
 
-      let newPosition = dateHelper.dateToPixel(
+      const newPosition = dateHelper.dateToPixel(
         item.start,
         this.props.nowPosition,
         this.props.dayWidth
       );
-      let new_width =
+      const newWidth =
         dateHelper.dateToPixel(item.end, this.props.nowPosition, this.props.dayWidth) - newPosition;
 
       result.push(
@@ -79,7 +79,7 @@ export class DataViewPortComp extends Component<IDataViewPortCompProps> {
             dayWidth={this.props.dayWidth}
             color={item.color}
             left={newPosition}
-            width={new_width}
+            width={newWidth}
             height={this.props.itemHeight}
             onChildDrag={this.onChildDrag}
             isSelected={this.props.selectedItem == item}
@@ -123,7 +123,7 @@ export class DataViewPortComp extends Component<IDataViewPortCompProps> {
       (this.refs.dataViewPort as any).scrollTop = this.props.scrollTop;
     }
 
-    let height = this.getContainerHeight(this.props.data.length);
+    const height = this.getContainerHeight(this.props.data.length);
     return (
       <div
         ref="dataViewPort"

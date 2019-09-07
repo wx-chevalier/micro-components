@@ -63,7 +63,7 @@ export class Header extends PureComponent<any, any> {
         return moment([year, 0, 1] as any);
       case 'month':
         year = date.year();
-        let month = date.month();
+        const month = date.month();
         return moment([year, month, 1]);
       case 'week':
         return date.subtract(date.day(), 'days');
@@ -73,8 +73,8 @@ export class Header extends PureComponent<any, any> {
   };
 
   renderTime = (left, width, dateMode, key) => {
-    let result: any[] = [];
-    let hourWidth = width / 24;
+    const result: any[] = [];
+    const hourWidth = width / 24;
     let iterLeft = 0;
     for (let i = 0; i < 24; i++) {
       result.push(
@@ -96,13 +96,13 @@ export class Header extends PureComponent<any, any> {
   };
 
   getBox(date, dateMode, lastLeft) {
-    let increment = this.getModeIncrement(date, dateMode) * this.props.dayWidth;
+    const increment = this.getModeIncrement(date, dateMode) * this.props.dayWidth;
 
     if (!lastLeft) {
       let starDate = this.getStartDate(date, dateMode);
       starDate = starDate.startOf('day');
-      let now = moment().startOf('day');
-      let daysInBetween = starDate.diff(now, 'days');
+      const now = moment().startOf('day');
+      const daysInBetween = starDate.diff(now, 'days');
 
       lastLeft = dateHelper.dayToPosition(
         daysInBetween,
@@ -115,16 +115,16 @@ export class Header extends PureComponent<any, any> {
   }
 
   renderHeaderRows = (top, middle, bottom) => {
-    let result: any = { top: [], middle: [], bottom: [] };
-    let lastLeft: any = {};
+    const result: any = { top: [], middle: [], bottom: [] };
+    const lastLeft: any = {};
     let currentTop = '';
     let currentMiddle = '';
     let currentBottom = '';
     let currentDate: any = null;
     let box: any = null;
 
-    let start = this.props.currentDay;
-    let end = this.props.currentDay + this.props.numVisibleDays;
+    const start = this.props.currentDay;
+    const end = this.props.currentDay + this.props.numVisibleDays;
 
     for (let i = start - BUFFER_DAYS; i < end + BUFFER_DAYS; i++) {
       //The unit of iteration is day
