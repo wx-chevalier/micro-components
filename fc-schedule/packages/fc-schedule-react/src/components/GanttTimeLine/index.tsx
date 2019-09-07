@@ -66,7 +66,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     this.config = new Config();
     this.config.load(this.props.config);
 
-    //Initialising state
+    // Initialising state
     this.state = {
       currentDay: 0, //Day that is in the 0px horizontal
       //nowPosition is the reference position, this variable support the infinit scrolling by accumulatning scroll times and redefining the 0 position
@@ -78,7 +78,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
       scrollLeft: 0,
       scrollTop: 0,
       numVisibleRows: 40,
-      numVisibleDays: 60,
+      numVisibleDays: BUFFER_DAYS * 2 + 1,
       dayWidth: dayWidth,
       interactiveMode: false,
       taskToCreate: null,
