@@ -28,6 +28,7 @@ export class Config {
       }
     }
   }
+
   isObject(value) {
     if (typeof value === 'string' || typeof value === 'boolean' || typeof value === 'number')
       return false;
@@ -38,5 +39,3 @@ export class Config {
     return this.data;
   }
 }
-
-export const config = new Config();

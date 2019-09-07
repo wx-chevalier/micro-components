@@ -14,19 +14,21 @@ import {
   DAY_YEAR_MODE
 } from '@/const';
 
-import { config, registry, DataController } from '@/controller';
+import { registry, DataController, Config } from '@/controller';
 import { UiConfig, BaseProps, Task, LinkType } from '@/types';
 
 import './index.css';
-import Sider from '../Sider';
-import VerticalSpliter from '../Sider/VerticalSpliter';
+import { Sider } from '../Sider';
+import { VerticalSpliter } from '../Sider/VerticalSpliter';
 import { Header } from '../Header';
 import { LinkView } from '../LinkView';
 import { DataViewPort } from '../DataView';
+import { Provider } from '@/utils/context';
 
 interface IGanttTimeLineProps extends BaseProps {
   data: Task[];
-  dateMode: DATE_MODE_TYPE;
+  dateMode?: DATE_MODE_TYPE;
+  viewMode?: 'task' | 'worker';
 
   config?: UiConfig;
   selectedItem?: Task;
@@ -40,11 +42,14 @@ interface IGanttTimeLineProps extends BaseProps {
 }
 
 export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
+  config: UiConfig;
+
   static defaultProps = {
     itemHeight: 40,
     dayWidth: 24,
     nonEditableName: false,
-    dateMode: DATE_MODE_MONTH
+    dateMode: DATE_MODE_MONTH,
+    viewMode: 'task'
   };
 
   dragging: boolean;
@@ -62,9 +67,11 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     this.initialise = false;
     //This variable define the number of pixels the viewport can scroll till arrive to the end of the context
     this.pxToScroll = 1900;
-
     const dayWidth = this.getDayWidth(this.props.dateMode);
-    config.load(this.props.config);
+
+    this.config = new Config();
+    this.config.load(this.props.config);
+
     //Initialising state
     this.state = {
       currentDay: 0, //Day that is in the 0px horizontal
@@ -404,81 +411,84 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     this.checkMode();
     this.checkNeeeData();
     return (
-      <div className="timeLine">
-        <div className="timeLine-side-main" style={this.state.sideStyle}>
-          <Sider
-            ref="taskViewPort"
-            itemHeight={this.props.itemHeight}
-            startRow={this.state.startRow}
-            endRow={this.state.endRow}
-            data={this.props.data}
-            selectedItem={this.props.selectedItem}
-            onSelectItem={this.onSelectItem}
-            onUpdateTask={this.props.onUpdateTask}
-            onScroll={this.verticalChange}
-            nonEditable={this.props.nonEditableName}
-          />
-          <VerticalSpliter onSiderSizing={this.onSiderSizing} />
+      <Provider value={{ config: this.config }}>
+        <div className="timeLine">
+          <div className="timeLine-side-main" style={this.state.sideStyle}>
+            <Sider
+              ref="taskViewPort"
+              itemHeight={this.props.itemHeight}
+              startRow={this.state.startRow}
+              endRow={this.state.endRow}
+              data={this.props.data}
+              selectedItem={this.props.selectedItem}
+              onSelectItem={this.onSelectItem}
+              onUpdateTask={this.props.onUpdateTask}
+              onScroll={this.verticalChange}
+              nonEditable={this.props.nonEditableName}
+            />
+            <VerticalSpliter config={this.config} onSiderSizing={this.onSiderSizing} />
+          </div>
+          <div className="timeLine-main">
+            <Header
+              config={this.config}
+              headerData={this.state.headerData}
+              numVisibleDays={this.state.numVisibleDays}
+              currentDay={this.state.currentDay}
+              nowPosition={this.state.nowPosition}
+              dayWidth={this.state.dayWidth}
+              dateMode={this.state.dateMode}
+              scrollLeft={this.state.scrollLeft}
+            />
+            <DataViewPort
+              ref="dataViewPort"
+              scrollLeft={this.state.scrollLeft}
+              scrollTop={this.state.scrollTop}
+              itemHeight={this.props.itemHeight}
+              nowPosition={this.state.nowPosition}
+              startRow={this.state.startRow}
+              endRow={this.state.endRow}
+              data={this.props.data}
+              selectedItem={this.props.selectedItem}
+              dayWidth={this.state.dayWidth}
+              onMouseDown={this.doMouseDown}
+              onMouseMove={this.doMouseMove}
+              onMouseUp={this.doMouseUp}
+              onMouseLeave={this.doMouseLeave}
+              onTouchStart={this.doTouchStart}
+              onTouchMove={this.doTouchMove}
+              onTouchEnd={this.doTouchEnd}
+              onTouchCancel={this.doTouchCancel}
+              onSelectItem={this.onSelectItem}
+              onUpdateTask={this.props.onUpdateTask}
+              onTaskChanging={this.onTaskChanging}
+              onStartCreateLink={this.onStartCreateLink}
+              onFinishCreateLink={this.onFinishCreateLink}
+              boundaries={{
+                lower: this.state.scrollLeft,
+                upper: this.state.scrollLeft + this.state.size.width
+              }}
+              onSize={this.onSize}
+            />
+            <LinkView
+              scrollLeft={this.state.scrollLeft}
+              scrollTop={this.state.scrollTop}
+              startRow={this.state.startRow}
+              endRow={this.state.endRow}
+              data={this.props.data}
+              nowPosition={this.state.nowPosition}
+              dayWidth={this.state.dayWidth}
+              interactiveMode={this.state.interactiveMode}
+              taskToCreate={this.state.taskToCreate}
+              onFinishCreateLink={this.onFinishCreateLink}
+              changingTask={this.state.changingTask}
+              selectedItem={this.props.selectedItem}
+              onSelectItem={this.onSelectItem}
+              itemHeight={this.props.itemHeight}
+              links={this.props.links}
+            />
+          </div>
         </div>
-        <div className="timeLine-main">
-          <Header
-            headerData={this.state.headerData}
-            numVisibleDays={this.state.numVisibleDays}
-            currentDay={this.state.currentDay}
-            nowPosition={this.state.nowPosition}
-            dayWidth={this.state.dayWidth}
-            dateMode={this.state.dateMode}
-            scrollLeft={this.state.scrollLeft}
-          />
-          <DataViewPort
-            ref="dataViewPort"
-            scrollLeft={this.state.scrollLeft}
-            scrollTop={this.state.scrollTop}
-            itemHeight={this.props.itemHeight}
-            nowPosition={this.state.nowPosition}
-            startRow={this.state.startRow}
-            endRow={this.state.endRow}
-            data={this.props.data}
-            selectedItem={this.props.selectedItem}
-            dayWidth={this.state.dayWidth}
-            onMouseDown={this.doMouseDown}
-            onMouseMove={this.doMouseMove}
-            onMouseUp={this.doMouseUp}
-            onMouseLeave={this.doMouseLeave}
-            onTouchStart={this.doTouchStart}
-            onTouchMove={this.doTouchMove}
-            onTouchEnd={this.doTouchEnd}
-            onTouchCancel={this.doTouchCancel}
-            onSelectItem={this.onSelectItem}
-            onUpdateTask={this.props.onUpdateTask}
-            onTaskChanging={this.onTaskChanging}
-            onStartCreateLink={this.onStartCreateLink}
-            onFinishCreateLink={this.onFinishCreateLink}
-            boundaries={{
-              lower: this.state.scrollLeft,
-              upper: this.state.scrollLeft + this.state.size.width
-            }}
-            onSize={this.onSize}
-          />
-          <LinkView
-            scrollLeft={this.state.scrollLeft}
-            scrollTop={this.state.scrollTop}
-            startRow={this.state.startRow}
-            endRow={this.state.endRow}
-            data={this.props.data}
-            nowPosition={this.state.nowPosition}
-            dayWidth={this.state.dayWidth}
-            interactiveMode={this.state.interactiveMode}
-            taskToCreate={this.state.taskToCreate}
-            onFinishCreateLink={this.onFinishCreateLink}
-            changingTask={this.state.changingTask}
-            selectedItem={this.props.selectedItem}
-            onSelectItem={this.onSelectItem}
-            itemHeight={this.props.itemHeight}
-            links={this.props.links}
-          />
-        </div>
-      </div>
+      </Provider>
     );
   }
 }

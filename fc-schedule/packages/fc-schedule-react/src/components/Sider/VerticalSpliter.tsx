@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { config } from '@/controller';
 
 import './VerticalSpliter.css';
 
-export default class VerticalSpliter extends Component<any, any> {
+export class VerticalSpliter extends Component<any, any> {
   draggingPosition: number;
 
   constructor(props) {
@@ -47,6 +46,8 @@ export default class VerticalSpliter extends Component<any, any> {
   }
 
   render() {
+    const { config } = this.props;
+
     return (
       <div
         className="fc-schedule-vertical-spliter"

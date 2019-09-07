@@ -51,6 +51,7 @@ export default class AppSimple extends Component<any, any> {
                 }
               }
             }}
+            dateMode="day"
             data={this.data}
             links={this.links}
           />

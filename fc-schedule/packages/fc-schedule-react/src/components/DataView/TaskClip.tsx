@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { dateHelper, config } from '@/controller';
+import { dateHelper } from '@/controller';
 import {
   MODE_NONE,
   MODE_MOVE,
@@ -9,6 +9,8 @@ import {
   LINK_POS_LEFT,
   LINK_POS_RIGHT
 } from '@/const';
+import withContext from '@/utils/context';
+import { UiConfig } from '../../types/index';
 
 interface IProps {
   label: string;
@@ -27,6 +29,8 @@ interface IProps {
   onUpdateTask: Function;
   onStartCreateLink: Function;
   onFinishCreateLink: Function;
+
+  config: UiConfig;
 }
 
 interface IState {
@@ -36,7 +40,7 @@ interface IState {
   dateMode: number;
 }
 
-export class DataTask extends Component<IProps, IState> {
+export class DataTaskComp extends Component<IProps, IState> {
   draggingPosition: number;
 
   constructor(props) {
@@ -179,6 +183,8 @@ export class DataTask extends Component<IProps, IState> {
   };
 
   calculateStyle() {
+    const { config } = this.props;
+
     const configStyle = this.props.isSelected
       ? config.values.dataViewPort.task.selectedStyle
       : config.values.dataViewPort.task.style;
@@ -211,7 +217,9 @@ export class DataTask extends Component<IProps, IState> {
   }
 
   render() {
+    const { config } = this.props;
     const style = this.calculateStyle();
+
     return (
       <div
         onMouseDown={e => this.doMouseDown(e, MODE_MOVE)}
@@ -252,3 +260,5 @@ export class DataTask extends Component<IProps, IState> {
     );
   }
 }
+
+export const DataTask = withContext(DataTaskComp);

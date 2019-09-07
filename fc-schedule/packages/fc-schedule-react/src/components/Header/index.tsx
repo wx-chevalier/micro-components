@@ -9,10 +9,11 @@ import {
   DATE_MODE_YEAR
 } from '@/const';
 
-import { config, dateHelper } from '@/controller';
+import { dateHelper } from '@/controller';
 
 import './index.css';
 import { HeaderItem } from './HeaderItem';
+import { getFormat } from '@/utils/datetime';
 
 export class Header extends PureComponent<any, any> {
   start: any;
@@ -21,25 +22,6 @@ export class Header extends PureComponent<any, any> {
   constructor(props) {
     super(props);
     this.setBoundaries();
-  }
-
-  getFormat(dateMode, position?) {
-    switch (dateMode) {
-      case 'year':
-        return 'YYYY';
-      case 'month':
-        if (position == 'top') return 'MMMM YYYY';
-        else return 'MMMM';
-      case 'week':
-        if (position == 'top') return 'ww MMMM YYYY';
-        else return 'ww';
-      case 'dayweek':
-        return 'dd';
-      case 'daymonth':
-        return 'D';
-      default:
-        return null;
-    }
   }
 
   getModeIncrement(date, dateMode) {
@@ -115,6 +97,8 @@ export class Header extends PureComponent<any, any> {
   }
 
   renderHeaderRows = (top, middle, bottom) => {
+    const { config } = this.props;
+
     const result: any = { top: [], middle: [], bottom: [] };
     const lastLeft: any = {};
     let currentTop = '';
@@ -129,8 +113,8 @@ export class Header extends PureComponent<any, any> {
     for (let i = start - BUFFER_DAYS; i < end + BUFFER_DAYS; i++) {
       //The unit of iteration is day
       currentDate = moment().add(i, 'days');
-      if (currentTop != currentDate.format(this.getFormat(top, 'top'))) {
-        currentTop = currentDate.format(this.getFormat(top, 'top'));
+      if (currentTop != currentDate.format(getFormat(top, 'top'))) {
+        currentTop = currentDate.format(getFormat(top, 'top'));
         box = this.getBox(currentDate, top, lastLeft.top);
         lastLeft.top = box.left + box.width;
         result.top.push(
@@ -138,8 +122,8 @@ export class Header extends PureComponent<any, any> {
         );
       }
 
-      if (currentMiddle != currentDate.format(this.getFormat(middle))) {
-        currentMiddle = currentDate.format(this.getFormat(middle));
+      if (currentMiddle != currentDate.format(getFormat(middle))) {
+        currentMiddle = currentDate.format(getFormat(middle));
         box = this.getBox(currentDate, middle, lastLeft.middle);
         lastLeft.middle = box.left + box.width;
         result.middle.push(
@@ -147,8 +131,8 @@ export class Header extends PureComponent<any, any> {
         );
       }
 
-      if (currentBottom != currentDate.format(this.getFormat(bottom))) {
-        currentBottom = currentDate.format(this.getFormat(bottom));
+      if (currentBottom != currentDate.format(getFormat(bottom))) {
+        currentBottom = currentDate.format(getFormat(bottom));
         box = this.getBox(currentDate, bottom, lastLeft.bottom);
         lastLeft.bottom = box.left + box.width;
         if (bottom == 'shorttime' || bottom == 'fulltime') {

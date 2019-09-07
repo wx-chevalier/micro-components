@@ -1,59 +1,11 @@
 import React, { Component } from 'react';
 
-import { config } from '@/controller';
+import withContext from '@/utils/context';
 
 import './index.less';
-import { EditableText } from '../EditableText';
+import { TaskRow } from './TaskRow';
 
-export class VerticalLine extends Component<any, any> {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return <div className="timeLine-main-data-verticalLine" style={{ left: this.props.left }} />;
-  }
-}
-
-export class TaskRow extends Component<any, any> {
-  constructor(props) {
-    super(props);
-  }
-
-  onChange = value => {
-    if (this.props.onUpdateTask) {
-      this.props.onUpdateTask(this.props.item, { name: value });
-    }
-  };
-
-  render() {
-    return (
-      <div
-        className="timeLine-side-task-row"
-        style={{
-          ...config.values.taskList.task.style,
-          top: this.props.top,
-          height: this.props.itemHeight
-        }}
-        onClick={e => this.props.onSelectItem(this.props.item)}
-      >
-        {this.props.nonEditable ? (
-          <div tabIndex={this.props.index} style={{ width: '100%' }}>
-            {this.props.label}
-          </div>
-        ) : (
-          <EditableText
-            value={this.props.label}
-            index={this.props.index}
-            onChange={this.onChange}
-          />
-        )}
-      </div>
-    );
-  }
-}
-
-export default class TaskList extends Component<any, any> {
+export class SiderComp extends Component<any, any> {
   containerStyle: any;
 
   constructor(props) {
@@ -76,6 +28,7 @@ export default class TaskList extends Component<any, any> {
       result.push(
         <TaskRow
           key={i}
+          config={this.props.config}
           index={i}
           item={item}
           label={item.name}
@@ -96,6 +49,8 @@ export default class TaskList extends Component<any, any> {
   };
 
   render() {
+    const { config } = this.props;
+
     const data = this.props.data ? this.props.data : [];
 
     this.containerStyle = this.getContainerStyle(data.length);
@@ -114,3 +69,5 @@ export default class TaskList extends Component<any, any> {
     );
   }
 }
+
+export const Sider = withContext(SiderComp);

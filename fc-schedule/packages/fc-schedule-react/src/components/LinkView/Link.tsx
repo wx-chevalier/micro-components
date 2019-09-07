@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-
-import { config } from '@/controller';
+import withContext from '../../utils/context';
 
 const SSHAPE_SIDE_WIDTH = 20;
 
-export class Link extends Component<any, any> {
+export class LinkComp extends Component<any, any> {
   constructor(props) {
     super(props);
   }
@@ -44,6 +43,9 @@ export class Link extends Component<any, any> {
   };
 
   render() {
+    const { config } = this.props;
+
+    console.log(config);
     const pathColor = this.props.isSelected
       ? config.values.links.selectedColor
       : config.values.links.color;
@@ -79,3 +81,5 @@ export class Link extends Component<any, any> {
     );
   }
 }
+
+export const Link = withContext(LinkComp);

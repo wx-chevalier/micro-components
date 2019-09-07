@@ -1,19 +1,24 @@
 import React, { Component } from 'react';
+import { UiConfig } from '@/types';
 
-import { config } from '@/controller';
+import withContext from '../../utils/context';
 
 export interface IDataRowProps {
   label: string;
   left: number;
   top: number;
   itemHeight: number;
+
+  config?: UiConfig;
 }
 
-export class DataRow extends Component<IDataRowProps> {
+export class DataRowComp extends Component<IDataRowProps> {
   constructor(props) {
     super(props);
   }
   render() {
+    const { config = {} } = this.props;
+
     return (
       <div
         className="timeLine-main-data-row"
@@ -28,3 +33,5 @@ export class DataRow extends Component<IDataRowProps> {
     );
   }
 }
+
+export const DataRow = withContext(DataRowComp);
