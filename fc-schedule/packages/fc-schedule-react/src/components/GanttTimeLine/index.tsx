@@ -22,7 +22,7 @@ import { Sider } from '../Sider';
 import { VerticalSpliter } from '../Sider/VerticalSpliter';
 import { Header } from '../Header';
 import { LinkView } from '../LinkView';
-import { DataViewPort } from '../DataView';
+import { DataView } from '../DataView';
 import { Provider } from '@/utils/context';
 
 interface IGanttTimeLineProps extends BaseProps {
@@ -95,6 +95,11 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     };
   }
 
+  componentWillUpdate(nextProps) {
+    this.checkUpdate(nextProps);
+    this.checkNeedData(nextProps);
+  }
+
   ////////////////////
   //     ON MODE    //
   ////////////////////
@@ -148,7 +153,6 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   /////////////////////////
   //   VIEWPORT CHANGES  //
   /////////////////////////
-
   verticalChange = scrollTop => {
     if (scrollTop == this.state.scrollTop) return;
     //Check if we have scrolling rows
@@ -334,11 +338,11 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     return Math.ceil(size.width / this.state.dayWidth) + BUFFER_DAYS;
   };
 
-  checkMode() {
-    if (this.props.dateMode != this.state.dateMode && this.props.dateMode) {
+  checkUpdate(nextProps) {
+    if (nextProps.dateMode != this.state.dateMode && nextProps.dateMode) {
       this.setState(
         {
-          dateMode: this.props.dateMode
+          dateMode: nextProps.dateMode
         },
         () => {
           const newDayWidth = this.getDayWidth(this.state.dateMode);
@@ -372,16 +376,17 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
       );
     }
   }
-  checkNeeeData = () => {
-    if (this.props.data != this.state.data) {
+
+  checkNeedData = nextProps => {
+    if (nextProps.data != this.state.data) {
       this.setState(
         {
-          data: this.props.data
+          data: nextProps.data
         },
         () => {
           const rowInfo = this.calculateStartEndRows(
             this.state.numVisibleRows,
-            this.props.data,
+            nextProps.data,
             this.state.scrollTop
           );
           this.setState(
@@ -396,20 +401,19 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
         }
       );
     }
-    if (this.props.links != this.state.links) {
+    if (nextProps.links != this.state.links) {
       this.setState(
         {
-          links: this.props.links
+          links: nextProps.links
         },
         () => {
-          registry.registerLinks(this.props.links);
+          registry.registerLinks(nextProps.links);
         }
       );
     }
   };
+
   render() {
-    this.checkMode();
-    this.checkNeeeData();
     return (
       <Provider value={{ config: this.config }}>
         <div className="timeLine">
@@ -439,8 +443,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
               dateMode={this.state.dateMode}
               scrollLeft={this.state.scrollLeft}
             />
-            <DataViewPort
-              ref="dataViewPort"
+            <DataView
               scrollLeft={this.state.scrollLeft}
               scrollTop={this.state.scrollTop}
               itemHeight={this.props.itemHeight}

@@ -16,6 +16,7 @@ import { HeaderItem } from './HeaderItem';
 import { getFormat } from '@/utils/datetime';
 
 export class Header extends PureComponent<any, any> {
+  cache: any;
   start: any;
   end: any;
 
@@ -113,10 +114,12 @@ export class Header extends PureComponent<any, any> {
     for (let i = start - BUFFER_DAYS; i < end + BUFFER_DAYS; i++) {
       //The unit of iteration is day
       currentDate = moment().add(i, 'days');
+
       if (currentTop != currentDate.format(getFormat(top, 'top'))) {
         currentTop = currentDate.format(getFormat(top, 'top'));
         box = this.getBox(currentDate, top, lastLeft.top);
         lastLeft.top = box.left + box.width;
+
         result.top.push(
           <HeaderItem key={i} left={box.left} width={box.width} label={currentTop} />
         );
@@ -126,6 +129,7 @@ export class Header extends PureComponent<any, any> {
         currentMiddle = currentDate.format(getFormat(middle));
         box = this.getBox(currentDate, middle, lastLeft.middle);
         lastLeft.middle = box.left + box.width;
+
         result.middle.push(
           <HeaderItem key={i} left={box.left} width={box.width} label={currentMiddle} />
         );
@@ -194,11 +198,11 @@ export class Header extends PureComponent<any, any> {
     if (this.refs.Header) {
       (this.refs.Header as any).scrollLeft = this.props.scrollLeft;
     }
-    //Check boundaries to see if wee need to recalcualte header
-    // if (this.needToRender()|| !this.cache){
-    //     this.cache=this.renderHeader();
-    //     this.setBoundaries();
-    // }
+    // Check boundaries to see if wee need to recalcualte header
+    if (this.needToRender() || !this.cache) {
+      this.cache = this.renderHeader();
+      this.setBoundaries();
+    }
     return (
       <div id="timeline-header" ref="Header" className="timeLine-main-header-viewPort">
         {this.renderHeader()}

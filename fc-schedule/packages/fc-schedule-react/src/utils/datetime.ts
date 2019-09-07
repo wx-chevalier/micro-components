@@ -9,7 +9,7 @@ export function getFormat(dateMode: string, position?: string) {
       if (position == 'top') return 'ww MMMM YYYY';
       else return 'ww';
     case 'dayweek':
-      return 'dd';
+      return 'MM-D';
     case 'daymonth':
       return 'D';
     default:

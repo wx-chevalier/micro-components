@@ -149,4 +149,4 @@ export class DataViewPortComp extends Component<IDataViewPortCompProps> {
   }
 }
 
-export const DataViewPort = withSize({ monitorWidth: true, monitorHeight: true })(DataViewPortComp);
+export const DataView = withSize({ monitorWidth: true, monitorHeight: true })(DataViewPortComp);

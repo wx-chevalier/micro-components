@@ -4,7 +4,6 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 import 'react-tabs/style/react-tabs.css';
 
-import App from './pages/App';
 import AppSimple from './pages/AppSimple';
 
 ReactDOM.render(
@@ -18,9 +17,7 @@ ReactDOM.render(
       <TabPanel>
         <AppSimple />
       </TabPanel>
-      <TabPanel>
-        <App />
-      </TabPanel>
+      <TabPanel></TabPanel>
     </Tabs>
   </div>,
   document.getElementById('root')

@@ -1,10 +1,25 @@
 import React, { PureComponent } from 'react';
 
-export class HeaderItem extends PureComponent<any> {
+export interface IHeaderItemProps {
+  left: number;
+  width: number;
+  label: string | number;
+
+  height?: number;
+}
+
+export class HeaderItem extends PureComponent<IHeaderItemProps> {
+  static defaultProps = {
+    height: 20
+  };
+
   constructor(props) {
     super(props);
   }
+
   render() {
+    const { height } = this.props;
+
     return (
       <div
         style={{
@@ -13,7 +28,7 @@ export class HeaderItem extends PureComponent<any> {
           alignItems: 'center',
           borderLeft: 'solid 1px white',
           position: 'absolute',
-          height: 20,
+          height,
           left: this.props.left,
           width: this.props.width
         }}
