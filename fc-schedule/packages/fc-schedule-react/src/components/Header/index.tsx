@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import {
   BUFFER_DAYS,
   DATA_CONTAINER_WIDTH,
@@ -14,10 +14,14 @@ import { dateHelper } from '@/controller';
 import './index.css';
 import { HeaderItem } from './HeaderItem';
 import { getFormat } from '@/utils/datetime';
+import { getStartDate } from '../../utils/datetime';
+import { DATE_MODE_TYPE } from '../../const/index';
 
 export class Header extends PureComponent<any, any> {
   cache: any;
 
+  // 具体的开始时间
+  startDate: Moment;
   // 开始的日期下标，数字，开始的时间为 currentDay - BUFFER_DAYS
   startDay: number;
   // 结束时间为 currentDay + numVisibleDays + BUFFER_DAYS
@@ -28,7 +32,8 @@ export class Header extends PureComponent<any, any> {
     this.setBoundaries();
   }
 
-  getModeIncrement(date, dateMode) {
+  /** 获取某个模式的时间间隔 */
+  getModeIncrement(date: Moment, dateMode) {
     switch (dateMode) {
       case 'year':
         return dateHelper.daysInYear(date.year());
@@ -41,72 +46,58 @@ export class Header extends PureComponent<any, any> {
     }
   }
 
-  /** 获取某个开始的时间 */
-  getStartDate = (date, dateMode) => {
-    let year = null;
-
-    switch (dateMode) {
-      case 'year':
-        year = date.year() as any;
-        return moment([year, 0, 1] as any);
-      case 'month':
-        year = date.year();
-        const month = date.month();
-        return moment([year, month, 1]);
-      case 'week':
-        return date.subtract(date.day(), 'days');
-      default:
-        return date.startOf('days');
-    }
-  };
-
   setBoundaries = () => {
     this.startDay = this.props.currentDay - BUFFER_DAYS;
     this.endDay = this.props.currentDay + this.props.numVisibleDays + BUFFER_DAYS;
   };
 
-  renderTime = (left, width, dateMode, key) => {
+  renderTime = (left, width, dateMode, key, withYear) => {
     const result: any[] = [];
     const hourWidth = width / 24;
     let iterLeft = 0;
+
     for (let i = 0; i < 24; i++) {
       result.push(
         <HeaderItem
-          key={i}
+          key={`${key}-${i}`}
           left={iterLeft}
           width={hourWidth}
           label={dateMode == 'shorttime' ? i : `${i}:00`}
+          height={withYear ? 20 : 30}
         />
       );
       iterLeft = iterLeft + hourWidth;
     }
     return (
-      <div key={key} style={{ position: 'absolute', height: 20, left: left, width: width }}>
+      <div
+        key={key}
+        style={{ position: 'absolute', height: withYear ? 20 : 30, left: left, width: width }}
+      >
         {result}
       </div>
     );
   };
 
-  getBox(date, dateMode, lastLeft) {
+  getBox(date: Moment, dateMode: DATE_MODE_TYPE, lastLeft: number) {
     const increment = this.getModeIncrement(date, dateMode) * this.props.dayWidth;
+    let newLastLeft = lastLeft;
 
     if (!lastLeft) {
-      let startDate = this.getStartDate(date, dateMode);
-      startDate = startDate.startOf('day');
+      const startDate = getStartDate(date, dateMode).startOf('day');
       const now = moment().startOf('day');
       const daysInBetween = startDate.diff(now, 'days');
 
-      lastLeft = dateHelper.dayToPosition(
+      newLastLeft = dateHelper.dayToPosition(
         daysInBetween,
         this.props.nowPosition,
         this.props.dayWidth
       );
     }
 
-    return { left: lastLeft, width: increment };
+    return { left: newLastLeft, width: increment };
   }
 
-  renderHeaderRows = (top, middle, bottom) => {
+  renderHeaderRows = (top, middle, bottom, withYear = true) => {
     const { config } = this.props;
 
     const result: any = { top: [], middle: [], bottom: [] };
@@ -117,16 +108,20 @@ export class Header extends PureComponent<any, any> {
 
     let box: any = null;
 
-    const startDay = this.props.currentDay;
-    const endDay = this.props.currentDay + this.props.numVisibleDays;
+    this.startDay = this.props.currentDay - BUFFER_DAYS;
+    this.endDay = this.props.currentDay + this.props.numVisibleDays + BUFFER_DAYS;
 
-    for (let i = startDay - BUFFER_DAYS; i < endDay + BUFFER_DAYS; i++) {
+    this.startDate = moment().add(this.startDay, 'days');
+
+    for (let i = this.startDay; i < this.endDay; i++) {
       // The unit of iteration is day
       const currentDate = moment().add(i, 'days');
 
-      if (currentTop != currentDate.format(getFormat(top, 'top'))) {
+      if (withYear && currentTop != currentDate.format(getFormat(top, 'top'))) {
         currentTop = currentDate.format(getFormat(top, 'top'));
+
         box = this.getBox(currentDate, top, lastLeft.top);
+
         lastLeft.top = box.left + box.width;
 
         result.top.push(
@@ -151,6 +146,7 @@ export class Header extends PureComponent<any, any> {
             left={box.left}
             width={box.width}
             label={currentMiddle}
+            height={withYear ? 20 : 30}
           />
         );
       }
@@ -163,7 +159,9 @@ export class Header extends PureComponent<any, any> {
         lastLeft.bottom = box.left + box.width;
 
         if (bottom == 'shorttime' || bottom == 'fulltime') {
-          result.bottom.push(this.renderTime(box.left, box.width, bottom, currentDate.valueOf()));
+          result.bottom.push(
+            this.renderTime(box.left, box.width, bottom, currentDate.valueOf(), withYear)
+          );
         } else {
           result.bottom.push(
             <HeaderItem
@@ -171,6 +169,7 @@ export class Header extends PureComponent<any, any> {
               left={box.left}
               width={box.width}
               label={currentBottom}
+              height={withYear ? 20 : 30}
             />
           );
         }
@@ -182,13 +181,21 @@ export class Header extends PureComponent<any, any> {
         className="timeLine-main-header-container"
         style={{ width: DATA_CONTAINER_WIDTH, maxWidth: DATA_CONTAINER_WIDTH }}
       >
-        <div className="header-top" style={{ ...config.values.header.top.style }}>
-          {result.top}
-        </div>
-        <div className="header-middle" style={{ ...config.values.header.middle.style }}>
+        {withYear && (
+          <div className="header-top" style={{ ...config.values.header.top.style }}>
+            {result.top}
+          </div>
+        )}
+        <div
+          className="header-middle"
+          style={{ height: withYear ? 20 : 30, ...config.values.header.middle.style }}
+        >
           {result.middle}
         </div>
-        <div className="header-bottom" style={{ ...config.values.header.bottom.style }}>
+        <div
+          className="header-bottom"
+          style={{ height: withYear ? 20 : 30, ...config.values.header.bottom.style }}
+        >
           {result.bottom}
         </div>
       </div>
@@ -198,7 +205,7 @@ export class Header extends PureComponent<any, any> {
   renderHeader = () => {
     switch (this.props.dateMode) {
       case DATE_MODE_DAY:
-        return this.renderHeaderRows('week', 'dayweek', 'fulltime');
+        return this.renderHeaderRows('week', 'dayweek', 'fulltime', false);
       case DATE_MODE_WEEK:
         return this.renderHeaderRows('week', 'dayweek', 'shorttime');
       case DATE_MODE_MONTH:

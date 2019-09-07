@@ -78,7 +78,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
       scrollLeft: 0,
       scrollTop: 0,
       numVisibleRows: 40,
-      numVisibleDays: BUFFER_DAYS * 2 + 1,
+      numVisibleDays: 10,
       dayWidth: dayWidth,
       interactiveMode: false,
       taskToCreate: null,
