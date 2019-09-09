@@ -16,12 +16,15 @@ const screenChangeEvents = [
 export interface ICarouselProps {
   flickThreshold: number;
   items: any[];
+  thumbnailWidth: number;
+
   showNav: boolean;
   autoPlay: boolean;
   lazyLoad: boolean;
   infinite: boolean;
   showIndex: boolean;
   showBullets: boolean;
+  showSlider: boolean;
   showThumbnails: boolean;
   showPlayButton: boolean;
   showFullscreenButton: boolean;
@@ -39,6 +42,7 @@ export interface ICarouselProps {
   slideOnThumbnailOver: boolean;
   swipeThreshold: number;
   swipingTransitionDuration: number;
+
   onSlide: any;
   onScreenChange: any;
   onPause: any;
@@ -53,6 +57,7 @@ export interface ICarouselProps {
   onMouseLeave: any;
   onThumbnailError: any;
   onThumbnailClick: any;
+
   renderCustomControls: any;
   renderLeftNav: any;
   renderRightNav: any;
@@ -60,6 +65,7 @@ export interface ICarouselProps {
   renderFullscreenButton: any;
   renderItem: any;
   renderThumbInner: any;
+
   stopPropagation: boolean;
   additionalClass: string;
   useTranslate3D: boolean;
@@ -81,7 +87,80 @@ export interface ICarouselState {
   isTransitioning?: boolean;
 }
 
-export class Carousel extends React.Component<ICarouselProps, any> {
+export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
+  static defaultProps = {
+    items: [],
+    thumbnailWidth: 200,
+    showNav: true,
+    autoPlay: false,
+    lazyLoad: false,
+    infinite: true,
+    showSlider: true,
+    showIndex: false,
+    showBullets: false,
+    showThumbnails: true,
+    showPlayButton: true,
+    showFullscreenButton: true,
+    disableThumbnailScroll: false,
+    disableArrowKeys: false,
+    disableSwipe: false,
+    useTranslate3D: true,
+    isRTL: false,
+    useBrowserFullscreen: true,
+    preventDefaultTouchmoveEvent: false,
+    flickThreshold: 0.4,
+    stopPropagation: false,
+    indexSeparator: ' / ',
+    thumbnailPosition: 'bottom',
+    startIndex: 0,
+    slideDuration: 450,
+    swipingTransitionDuration: 0,
+    slideInterval: 3000,
+    swipeThreshold: 30,
+    renderLeftNav: (onClick, disabled) => {
+      return (
+        <button
+          type="button"
+          className="fc-gallery-carousel-left-nav"
+          disabled={disabled}
+          onClick={onClick}
+          aria-label="Previous Slide"
+        />
+      );
+    },
+    renderRightNav: (onClick, disabled) => {
+      return (
+        <button
+          type="button"
+          className="fc-gallery-carousel-right-nav"
+          disabled={disabled}
+          onClick={onClick}
+          aria-label="Next Slide"
+        />
+      );
+    },
+    renderPlayPauseButton: (onClick, isPlaying) => {
+      return (
+        <button
+          type="button"
+          className={`fc-gallery-carousel-play-button${isPlaying ? ' active' : ''}`}
+          onClick={onClick}
+          aria-label="Play or Pause Slideshow"
+        />
+      );
+    },
+    renderFullscreenButton: (onClick, isFullscreen) => {
+      return (
+        <button
+          type="button"
+          className={`fc-gallery-carousel-fullscreen-button${isFullscreen ? ' active' : ''}`}
+          onClick={onClick}
+          aria-label="Open Fullscreen"
+        />
+      );
+    }
+  };
+
   resizeObserver: ResizeObserver;
   direction: string;
 
@@ -119,77 +198,6 @@ export class Carousel extends React.Component<ICarouselProps, any> {
     }
   }
 
-  static defaultProps = {
-    items: [],
-    showNav: true,
-    autoPlay: false,
-    lazyLoad: false,
-    infinite: true,
-    showIndex: false,
-    showBullets: false,
-    showThumbnails: true,
-    showPlayButton: true,
-    showFullscreenButton: true,
-    disableThumbnailScroll: false,
-    disableArrowKeys: false,
-    disableSwipe: false,
-    useTranslate3D: true,
-    isRTL: false,
-    useBrowserFullscreen: true,
-    preventDefaultTouchmoveEvent: false,
-    flickThreshold: 0.4,
-    stopPropagation: false,
-    indexSeparator: ' / ',
-    thumbnailPosition: 'bottom',
-    startIndex: 0,
-    slideDuration: 450,
-    swipingTransitionDuration: 0,
-    slideInterval: 3000,
-    swipeThreshold: 30,
-    renderLeftNav: (onClick, disabled) => {
-      return (
-        <button
-          type="button"
-          className="image-gallery-left-nav"
-          disabled={disabled}
-          onClick={onClick}
-          aria-label="Previous Slide"
-        />
-      );
-    },
-    renderRightNav: (onClick, disabled) => {
-      return (
-        <button
-          type="button"
-          className="image-gallery-right-nav"
-          disabled={disabled}
-          onClick={onClick}
-          aria-label="Next Slide"
-        />
-      );
-    },
-    renderPlayPauseButton: (onClick, isPlaying) => {
-      return (
-        <button
-          type="button"
-          className={`image-gallery-play-button${isPlaying ? ' active' : ''}`}
-          onClick={onClick}
-          aria-label="Play or Pause Slideshow"
-        />
-      );
-    },
-    renderFullscreenButton: (onClick, isFullscreen) => {
-      return (
-        <button
-          type="button"
-          className={`image-gallery-fullscreen-button${isFullscreen ? ' active' : ''}`}
-          onClick={onClick}
-          aria-label="Open Fullscreen"
-        />
-      );
-    }
-  };
-
   componentDidMount() {
     if (this.props.autoPlay) {
       this.play();
@@ -199,7 +207,7 @@ export class Carousel extends React.Component<ICarouselProps, any> {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const itemsSizeChanged = prevProps.items.length !== this.props.items.length;
+    const itemsSizeChanged = prevProps.items.length !== this.props.items!.length;
     const itemsChanged = JSON.stringify(prevProps.items) !== JSON.stringify(this.props.items);
     const startIndexUpdated = prevProps.startIndex !== this.props.startIndex;
     if (itemsSizeChanged) {
@@ -256,7 +264,7 @@ export class Carousel extends React.Component<ICarouselProps, any> {
         } else {
           this.slideToIndex(this.state.currentIndex + 1);
         }
-      }, Math.max(slideInterval, slideDuration));
+      }, Math.max(slideInterval || 0, slideDuration || 0));
 
       if (this.props.onPlay && callback) {
         this.props.onPlay(this.state.currentIndex);
@@ -342,7 +350,7 @@ export class Carousel extends React.Component<ICarouselProps, any> {
         }
       }
 
-      let slideCount = this.props.items.length - 1;
+      const slideCount = this.props.items!.length - 1;
       let nextIndex = index;
 
       if (index < 0) {
@@ -375,7 +383,7 @@ export class Carousel extends React.Component<ICarouselProps, any> {
           this.props.onSlide(this.state.currentIndex);
         }
       }
-    }, this.props.slideDuration + 50);
+    }, (this.props.slideDuration || 0) + 50);
   };
 
   getCurrentIndex() {
@@ -429,7 +437,7 @@ export class Carousel extends React.Component<ICarouselProps, any> {
 
   _initGalleryResizing = element => {
     /*
-      When image-gallery-slide-wrapper unmounts and mounts when thumbnail bar position is changed
+      When fc-gallery-carousel-slide-wrapper unmounts and mounts when thumbnail bar position is changed
       ref is called twice, once with null and another with the element.
       Make sure element is available before calling observe.
     */
@@ -541,7 +549,7 @@ export class Carousel extends React.Component<ICarouselProps, any> {
     if (!scrollingUpDown) {
       // don't swipe if user is scrolling
       const side = (dir === 'Left' ? 1 : -1) * (isRTL ? -1 : 1); // if it is RTL the direction is reversed
-      const isFlick = velocity > this.props.flickThreshold;
+      const isFlick = velocity > (this.props.flickThreshold || 0);
       this._handleOnSwipedTo(side, isFlick);
     }
   };
@@ -568,10 +576,11 @@ export class Carousel extends React.Component<ICarouselProps, any> {
   }
 
   _sufficientSwipeOffset() {
-    return Math.abs(this.state.offsetPercentage) > this.props.swipeThreshold;
+    return Math.abs(this.state.offsetPercentage) > (this.props.swipeThreshold || 0);
   }
 
   _handleSwiping = ({ event, absX, dir }) => {
+    const { thumbnailWidth = 0 } = this.props;
     if (this.props.disableSwipe) return;
     const { galleryWidth, isTransitioning, scrollingUpDown, scrollingLeftRight } = this.state;
     const { swipingTransitionDuration } = this.props;
@@ -582,9 +591,9 @@ export class Carousel extends React.Component<ICarouselProps, any> {
     if (!isTransitioning && !scrollingUpDown) {
       const side = dir === 'Right' ? 1 : -1;
 
-      let offsetPercentage = (absX / galleryWidth) * 100;
-      if (Math.abs(offsetPercentage) >= 100) {
-        offsetPercentage = 100;
+      let offsetPercentage = (absX / galleryWidth) * thumbnailWidth;
+      if (Math.abs(offsetPercentage) >= thumbnailWidth) {
+        offsetPercentage = thumbnailWidth;
       }
 
       const swipingTransition = {
@@ -602,7 +611,7 @@ export class Carousel extends React.Component<ICarouselProps, any> {
   };
 
   _canNavigate() {
-    return this.props.items.length >= 2;
+    return this.props.items!.length >= 2;
   }
 
   _canSlideLeft() {
@@ -622,7 +631,7 @@ export class Carousel extends React.Component<ICarouselProps, any> {
   }
 
   _canSlideNext() {
-    return this.state.currentIndex < this.props.items.length - 1;
+    return this.state.currentIndex < this.props.items!.length - 1;
   }
 
   _slideThumbnailBar(previousIndex) {
@@ -630,8 +639,8 @@ export class Carousel extends React.Component<ICarouselProps, any> {
     if (this.state.currentIndex === 0) {
       this._setThumbsTranslate(0);
     } else {
-      let indexDifference = Math.abs(previousIndex - currentIndex);
-      let scroll = this._getThumbsTranslate(indexDifference) || 0;
+      const indexDifference = Math.abs(previousIndex - currentIndex);
+      const scroll = this._getThumbsTranslate(indexDifference) || 0;
       if (scroll > 0) {
         if (previousIndex < currentIndex) {
           this._setThumbsTranslate(thumbsTranslate - scroll);
@@ -668,19 +677,22 @@ export class Carousel extends React.Component<ICarouselProps, any> {
         totalScroll = this._thumbnails.scrollWidth - thumbnailsWrapperWidth;
       }
 
-      let totalThumbnails = this._thumbnails.children.length;
+      const totalThumbnails = this._thumbnails.children.length;
       // scroll-x required per index change
-      let perIndexScroll = totalScroll / (totalThumbnails - 1);
+      const perIndexScroll = totalScroll / (totalThumbnails - 1);
 
       return indexDifference * perIndexScroll;
     }
+
+    return 0;
   }
 
   _getAlignmentClassName(index) {
     /*
       Necessary for lazing loading
     */
-    let { currentIndex } = this.state;
+    const { items = [] } = this.props;
+    const { currentIndex } = this.state;
     let alignment = '';
     const leftClassName = 'left';
     const centerClassName = 'center';
@@ -698,11 +710,11 @@ export class Carousel extends React.Component<ICarouselProps, any> {
         break;
     }
 
-    if (this.props.items.length >= 3 && this.props.infinite) {
-      if (index === 0 && currentIndex === this.props.items.length - 1) {
+    if (items.length >= 3 && this.props.infinite) {
+      if (index === 0 && currentIndex === items.length - 1) {
         // set first slide as right slide if were sliding right from last slide
         alignment = ` ${rightClassName}`;
-      } else if (index === this.props.items.length - 1 && currentIndex === 0) {
+      } else if (index === items.length - 1 && currentIndex === 0) {
         // set last slide as left slide if were sliding left from first slide
         alignment = ` ${leftClassName}`;
       }
@@ -713,21 +725,23 @@ export class Carousel extends React.Component<ICarouselProps, any> {
 
   _isGoingFromFirstToLast() {
     const { currentIndex, previousIndex } = this.state;
-    const totalSlides = this.props.items.length - 1;
+    const totalSlides = this.props.items!.length - 1;
     return previousIndex === 0 && currentIndex === totalSlides;
   }
 
   _isGoingFromLastToFirst() {
     const { currentIndex, previousIndex } = this.state;
-    const totalSlides = this.props.items.length - 1;
+    const totalSlides = this.props.items!.length - 1;
     return previousIndex === totalSlides && currentIndex === 0;
   }
 
   _getTranslateXForTwoSlide(index) {
+    const { thumbnailWidth = 0 } = this.props;
+
     // For taking care of infinite swipe when there are only two slides
     const { currentIndex, offsetPercentage, previousIndex } = this.state;
-    const baseTranslateX = -100 * currentIndex;
-    let translateX = baseTranslateX + index * 100 + offsetPercentage;
+    const baseTranslateX = -thumbnailWidth * currentIndex;
+    let translateX = baseTranslateX + index * thumbnailWidth + offsetPercentage;
 
     // keep track of user swiping direction
     if (offsetPercentage > 0) {
@@ -738,9 +752,9 @@ export class Carousel extends React.Component<ICarouselProps, any> {
 
     // when swiping make sure the slides are on the correct side
     if (currentIndex === 0 && index === 1 && offsetPercentage > 0) {
-      translateX = -100 + offsetPercentage;
+      translateX = -thumbnailWidth + offsetPercentage;
     } else if (currentIndex === 1 && index === 0 && offsetPercentage < 0) {
-      translateX = 100 + offsetPercentage;
+      translateX = thumbnailWidth + offsetPercentage;
     }
 
     if (currentIndex !== previousIndex) {
@@ -751,14 +765,14 @@ export class Carousel extends React.Component<ICarouselProps, any> {
         offsetPercentage === 0 &&
         this.direction === 'left'
       ) {
-        translateX = 100;
+        translateX = thumbnailWidth;
       } else if (
         previousIndex === 1 &&
         index === 1 &&
         offsetPercentage === 0 &&
         this.direction === 'right'
       ) {
-        translateX = -100;
+        translateX = -thumbnailWidth;
       }
     } else {
       // keep the slide on the correct slide even when not a swipe
@@ -768,14 +782,14 @@ export class Carousel extends React.Component<ICarouselProps, any> {
         offsetPercentage === 0 &&
         this.direction === 'left'
       ) {
-        translateX = -100;
+        translateX = -thumbnailWidth;
       } else if (
         currentIndex === 1 &&
         index === 0 &&
         offsetPercentage === 0 &&
         this.direction === 'right'
       ) {
-        translateX = 100;
+        translateX = thumbnailWidth;
       }
     }
 
@@ -820,7 +834,7 @@ export class Carousel extends React.Component<ICarouselProps, any> {
   }
 
   _isFirstOrLastSlide(index) {
-    const totalSlides = this.props.items.length - 1;
+    const totalSlides = this.props.items!.length - 1;
     const isLastSlide = index === totalSlides;
     const isFirstSlide = index === 0;
     return isLastSlide || isFirstSlide;
@@ -832,7 +846,7 @@ export class Carousel extends React.Component<ICarouselProps, any> {
       e.g. center to left or center to right
     */
     const { previousIndex, currentIndex } = this.state;
-    const totalSlides = this.props.items.length - 1;
+    const totalSlides = this.props.items!.length - 1;
     // we want to show the in between slides transition
     const slidingMoreThanOneSlideLeftOrRight = Math.abs(previousIndex - currentIndex) > 1;
     const notGoingFromFirstToLast = !(previousIndex === 0 && currentIndex === totalSlides);
@@ -842,24 +856,27 @@ export class Carousel extends React.Component<ICarouselProps, any> {
   }
 
   _getSlideStyle(index) {
+    const { thumbnailWidth = 0 } = this.props;
+
     const { currentIndex, offsetPercentage } = this.state;
-    const { infinite, items, useTranslate3D, isRTL } = this.props;
-    const baseTranslateX = -100 * currentIndex;
+    const { infinite, items = [], useTranslate3D, isRTL } = this.props;
+    const baseTranslateX = -thumbnailWidth * currentIndex;
     const totalSlides = items.length - 1;
 
     // calculates where the other slides belong based on currentIndex
     // if it is RTL the base line should be reversed
-    let translateX = (baseTranslateX + index * 100) * (isRTL ? -1 : 1) + offsetPercentage;
+    let translateX =
+      (baseTranslateX + index * thumbnailWidth) * (isRTL ? -1 : 1) + offsetPercentage;
 
     if (infinite && items.length > 2) {
       if (currentIndex === 0 && index === totalSlides) {
         // make the last slide the slide before the first
         // if it is RTL the base line should be reversed
-        translateX = -100 * (isRTL ? -1 : 1) + offsetPercentage;
+        translateX = -thumbnailWidth * (isRTL ? -1 : 1) + offsetPercentage;
       } else if (currentIndex === totalSlides && index === 0) {
         // make the first slide the slide after the last
         // if it is RTL the base line should be reversed
-        translateX = 100 * (isRTL ? -1 : 1) + offsetPercentage;
+        translateX = thumbnailWidth * (isRTL ? -1 : 1) + offsetPercentage;
       }
     }
 
@@ -929,7 +946,7 @@ export class Carousel extends React.Component<ICarouselProps, any> {
     const onImageError = this.props.onImageError || this._handleImageError;
 
     return (
-      <div className="image-gallery-image">
+      <div className="fc-gallery-carousel-image">
         {item.imageSet ? (
           <picture onLoad={this.props.onImageLoad} onError={onImageError}>
             {item.imageSet.map((source, index) => (
@@ -949,16 +966,18 @@ export class Carousel extends React.Component<ICarouselProps, any> {
           />
         )}
 
-        {item.description && <span className="image-gallery-description">{item.description}</span>}
+        {item.description && (
+          <span className="fc-gallery-carousel-description">{item.description}</span>
+        )}
       </div>
     );
   };
 
   _renderThumbInner = item => {
-    let onThumbnailError = this.props.onThumbnailError || this._handleImageError;
+    const onThumbnailError = this.props.onThumbnailError || this._handleImageError;
 
     return (
-      <div className="image-gallery-thumbnail-inner">
+      <div className="fc-gallery-carousel-thumbnail-inner">
         <img
           src={item.thumbnail}
           alt={item.thumbnailAlt}
@@ -966,7 +985,7 @@ export class Carousel extends React.Component<ICarouselProps, any> {
           onError={onThumbnailError}
         />
         {item.thumbnailLabel && (
-          <div className="image-gallery-thumbnail-label">{item.thumbnailLabel}</div>
+          <div className="fc-gallery-carousel-thumbnail-label">{item.thumbnailLabel}</div>
         )}
       </div>
     );
@@ -1001,6 +1020,7 @@ export class Carousel extends React.Component<ICarouselProps, any> {
   };
 
   render() {
+    const { showSlider } = this.props;
     const { currentIndex, isFullscreen, modalFullscreen, isPlaying } = this.state;
 
     const { infinite, slideOnThumbnailOver, isRTL, lazyLoad } = this.props;
@@ -1011,11 +1031,11 @@ export class Carousel extends React.Component<ICarouselProps, any> {
     const slideLeft = this._slideLeft;
     const slideRight = this._slideRight;
 
-    let slides: any = [];
-    let thumbnails: any = [];
-    let bullets: any = [];
+    const slides: any = [];
+    const thumbnails: any = [];
+    const bullets: any = [];
 
-    this.props.items.forEach((item, index) => {
+    this.props.items!.forEach((item, index) => {
       const alignment = this._getAlignmentClassName(index);
       const originalClass = item.originalClass ? ` ${item.originalClass}` : '';
       const thumbnailClass = item.thumbnailClass ? ` ${item.thumbnailClass}` : '';
@@ -1030,12 +1050,12 @@ export class Carousel extends React.Component<ICarouselProps, any> {
         this._lazyLoaded[index] = true;
       }
 
-      let slideStyle = this._getSlideStyle(index);
+      const slideStyle = this._getSlideStyle(index);
 
       const slide = (
         <div
           key={index}
-          className={'image-gallery-slide' + alignment + originalClass}
+          className={'fc-gallery-carousel-slide' + alignment + originalClass}
           style={Object.assign(slideStyle, this.state.style)}
           onClick={this.props.onClick}
           onTouchMove={this.props.onTouchMove}
@@ -1045,7 +1065,7 @@ export class Carousel extends React.Component<ICarouselProps, any> {
           onMouseLeave={this.props.onMouseLeave}
           role={this.props.onClick && 'button'}
         >
-          {showItem ? renderItem(item) : <div style={{ height: '100%' }}></div>}
+          {showItem ? renderItem(item) : <div style={{ height: 'thumbnailWidth%' }}></div>}
         </div>
       );
 
@@ -1066,7 +1086,9 @@ export class Carousel extends React.Component<ICarouselProps, any> {
             aria-pressed={currentIndex === index ? 'true' : 'false'}
             aria-label={`Go to Slide ${index + 1}`}
             className={
-              'image-gallery-thumbnail' + (currentIndex === index ? ' active' : '') + thumbnailClass
+              'fc-gallery-carousel-thumbnail' +
+              (currentIndex === index ? ' active' : '') +
+              thumbnailClass
             }
             onMouseLeave={slideOnThumbnailOver ? this._onThumbnailMouseLeave : undefined}
             onMouseOver={event =>
@@ -1091,7 +1113,7 @@ export class Carousel extends React.Component<ICarouselProps, any> {
             key={index}
             type="button"
             className={[
-              'image-gallery-bullet',
+              'fc-gallery-carousel-bullet',
               currentIndex === index ? 'active' : '',
               item.bulletClass || ''
             ].join(' ')}
@@ -1106,62 +1128,71 @@ export class Carousel extends React.Component<ICarouselProps, any> {
     const slideWrapper = (
       <div
         ref={this._initGalleryResizing}
-        className={`image-gallery-slide-wrapper ${thumbnailPosition} ${
-          isRTL ? 'image-gallery-rtl' : ''
+        className={`fc-gallery-carousel-slide-wrapper ${thumbnailPosition} ${
+          isRTL ? 'fc-gallery-carousel-rtl' : ''
         }`}
       >
-        {this.props.renderCustomControls && this.props.renderCustomControls()}
+        {showSlider && (
+          <React.Fragment>
+            {this.props.renderCustomControls && this.props.renderCustomControls()}
 
-        {this.props.showFullscreenButton &&
-          this.props.renderFullscreenButton(this._toggleFullScreen, isFullscreen)}
+            {this.props.showFullscreenButton &&
+              this.props.renderFullscreenButton(this._toggleFullScreen, isFullscreen)}
 
-        {this.props.showPlayButton && this.props.renderPlayPauseButton(this._togglePlay, isPlaying)}
+            {this.props.showPlayButton &&
+              this.props.renderPlayPauseButton(this._togglePlay, isPlaying)}
 
-        {this._canNavigate() ? (
-          [
-            this.props.showNav && (
-              <span key="navigation">
-                {this.props.renderLeftNav(slideLeft, !this._canSlideLeft())}
-                {this.props.renderRightNav(slideRight, !this._canSlideRight())}
-              </span>
-            ),
+            {this._canNavigate() ? (
+              [
+                this.props.showNav && (
+                  <span key="navigation">
+                    {this.props.renderLeftNav(slideLeft, !this._canSlideLeft())}
+                    {this.props.renderRightNav(slideRight, !this._canSlideRight())}
+                  </span>
+                ),
 
-            <Swipeable
-              className="image-gallery-swipe"
-              key="swipeable"
-              delta={0}
-              onSwiping={this._handleSwiping}
-              onSwiped={this._handleOnSwiped}
-            >
-              <div className="image-gallery-slides">{slides}</div>
-            </Swipeable>
-          ]
-        ) : (
-          <div className="image-gallery-slides">{slides}</div>
-        )}
-        {this.props.showBullets && (
-          <div className="image-gallery-bullets">
-            <div
-              className="image-gallery-bullets-container"
-              role="navigation"
-              aria-label="Bullet Navigation"
-            >
-              {bullets}
-            </div>
-          </div>
-        )}
-        {this.props.showIndex && (
-          <div className="image-gallery-index">
-            <span className="image-gallery-index-current">{this.state.currentIndex + 1}</span>
-            <span className="image-gallery-index-separator">{this.props.indexSeparator}</span>
-            <span className="image-gallery-index-total">{this.props.items.length}</span>
-          </div>
+                <Swipeable
+                  className="fc-gallery-carousel-swipe"
+                  key="swipeable"
+                  delta={0}
+                  onSwiping={this._handleSwiping}
+                  onSwiped={this._handleOnSwiped}
+                >
+                  <div className="fc-gallery-carousel-slides">{slides}</div>
+                </Swipeable>
+              ]
+            ) : (
+              <div className="fc-gallery-carousel-slides">{slides}</div>
+            )}
+            {this.props.showBullets && (
+              <div className="fc-gallery-carousel-bullets">
+                <div
+                  className="fc-gallery-carousel-bullets-container"
+                  role="navigation"
+                  aria-label="Bullet Navigation"
+                >
+                  {bullets}
+                </div>
+              </div>
+            )}
+            {this.props.showIndex && (
+              <div className="fc-gallery-carousel-index">
+                <span className="fc-gallery-carousel-index-current">
+                  {this.state.currentIndex + 1}
+                </span>
+                <span className="fc-gallery-carousel-index-separator">
+                  {this.props.indexSeparator}
+                </span>
+                <span className="fc-gallery-carousel-index-total">{this.props.items!.length}</span>
+              </div>
+            )}
+          </React.Fragment>
         )}
       </div>
     );
 
     const classNames = [
-      'image-gallery',
+      'fc-gallery-carousel',
       this.props.additionalClass,
       modalFullscreen ? 'fullscreen-modal' : ''
     ]
@@ -1170,19 +1201,23 @@ export class Carousel extends React.Component<ICarouselProps, any> {
 
     return (
       <div ref={i => (this._imageGallery = i)} className={classNames} aria-live="polite">
-        <div className={`image-gallery-content${isFullscreen ? ' fullscreen' : ''}`}>
+        <div className={`fc-gallery-carousel-content${isFullscreen ? ' fullscreen' : ''}`}>
           {(thumbnailPosition === 'bottom' || thumbnailPosition === 'right') && slideWrapper}
+
           {this.props.showThumbnails && (
             <div
-              className={`image-gallery-thumbnails-wrapper ${thumbnailPosition} ${
+              className={`fc-gallery-carousel-thumbnails-wrapper ${thumbnailPosition} ${
                 !this._isThumbnailVertical() && isRTL ? 'thumbnails-wrapper-rtl' : ''
               }`}
               style={this._getThumbnailBarHeight()}
             >
-              <div className="image-gallery-thumbnails" ref={i => (this._thumbnailsWrapper = i)}>
+              <div
+                className="fc-gallery-carousel-thumbnails"
+                ref={i => (this._thumbnailsWrapper = i)}
+              >
                 <div
                   ref={t => (this._thumbnails = t)}
-                  className="image-gallery-thumbnails-container"
+                  className="fc-gallery-carousel-thumbnails-container"
                   style={thumbnailStyle}
                   aria-label="Thumbnail Navigation"
                 >
@@ -1191,6 +1226,7 @@ export class Carousel extends React.Component<ICarouselProps, any> {
               </div>
             </div>
           )}
+
           {(thumbnailPosition === 'top' || thumbnailPosition === 'left') && slideWrapper}
         </div>
       </div>
