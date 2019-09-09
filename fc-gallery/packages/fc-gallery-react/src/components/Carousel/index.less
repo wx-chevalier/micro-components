@@ -1,0 +1,338 @@
+@fc-screen-sm-min: 768px;
+@fc-screen-xsm-min: 480px;
+@fc-white: #fff;
+@fc-black: #000;
+@fc-blue: #337ab7;
+@fc-background-black: rgba(0, 0, 0, 0.4);
+@fc-transparent: rgba(0, 0, 0, 0);
+
+.fc-gallery-carousel {
+  -webkit-tap-highlight-color: @fc-transparent;
+
+  &.fullscreen-modal {
+    background: @fc-black;
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 100%;
+    z-index: 5;
+
+    .fc-gallery-carousel-content {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+}
+
+.fc-gallery-carousel-content {
+  position: relative;
+  line-height: 0;
+  top: 0;
+
+  &.fullscreen {
+    background: @fc-black;
+
+    .fc-gallery-carousel-slide {
+      background: @fc-black;
+    }
+  }
+}
+
+.fc-gallery-carousel-slide-wrapper {
+  position: relative;
+
+  &.left,
+  &.right {
+    display: inline-block;
+    width: calc(100% - 113px); // 100px + 8px for border + 5px for padding
+
+    @media (max-width: @fc-screen-sm-min) {
+      width: calc(100% - 84px); // 75px + 6px for border + 3px for padding
+    }
+  }
+  &.fc-gallery-carousel-rtl {
+    direction: rtl;
+  }
+}
+
+.fc-gallery-carousel-fullscreen-button,
+.fc-gallery-carousel-play-button,
+.fc-gallery-carousel-left-nav,
+.fc-gallery-carousel-right-nav {
+  appearance: none;
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+  outline: none;
+  position: absolute;
+  z-index: 4;
+}
+
+.fc-gallery-carousel-fullscreen-button,
+.fc-gallery-carousel-play-button {
+  bottom: 0;
+}
+
+.fc-gallery-carousel-fullscreen-button {
+  right: 0;
+}
+
+.fc-gallery-carousel-play-button {
+  left: 0;
+}
+
+.fc-gallery-carousel-left-nav,
+.fc-gallery-carousel-right-nav {
+  color: @fc-white;
+  font-size: 5em;
+  padding: 50px 15px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  &[disabled] {
+    cursor: disabled;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  @media (max-width: @fc-screen-sm-min) {
+    font-size: 3.4em;
+    padding: 20px 15px;
+  }
+
+  @media (max-width: @fc-screen-xsm-min) {
+    font-size: 2.4em;
+    padding: 0 15px;
+  }
+}
+
+.fc-gallery-carousel-left-nav {
+  left: 0;
+}
+
+.fc-gallery-carousel-right-nav {
+  right: 0;
+}
+
+.fc-gallery-carousel-slides {
+  line-height: 0;
+  overflow: hidden;
+  position: relative;
+  white-space: nowrap;
+}
+
+.fc-gallery-carousel-slide {
+  background: @fc-white;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+
+  &.center {
+    position: relative;
+  }
+
+  img {
+    width: 100%;
+  }
+
+  .fc-gallery-carousel-description {
+    background: @fc-background-black;
+    bottom: 70px;
+    color: @fc-white;
+    left: 0;
+    line-height: 1;
+    padding: 10px 20px;
+    position: absolute;
+    white-space: normal;
+
+    @media (max-width: @fc-screen-sm-min) {
+      bottom: 45px;
+      font-size: 0.8em;
+      padding: 8px 15px;
+    }
+  }
+}
+
+.fc-gallery-carousel-bullets {
+  bottom: 20px;
+  left: 0;
+  margin: 0 auto;
+  position: absolute;
+  right: 0;
+  width: 80%;
+  z-index: 4;
+
+  .fc-gallery-carousel-bullets-container {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  .fc-gallery-carousel-bullet {
+    appearance: none;
+    background-color: transparent;
+    border: 1px solid @fc-white;
+    border-radius: 50%;
+    box-shadow: 0 1px 0 lighten(@fc-black, 10%);
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 5px;
+    outline: none;
+    padding: 5px;
+
+    @media (max-width: @fc-screen-sm-min) {
+      margin: 0 3px;
+      padding: 3px;
+    }
+
+    @media (max-width: @fc-screen-xsm-min) {
+      padding: 2.7px;
+    }
+
+    &.active {
+      background: @fc-white;
+    }
+  }
+}
+
+.fc-gallery-carousel-thumbnails-wrapper {
+  position: relative;
+
+  &.thumbnails-wrapper-rtl {
+    direction: rtl;
+  }
+  &.left,
+  &.right {
+    display: inline-block;
+    vertical-align: top;
+    width: 108px; // 100px + 8px for border
+
+    @media (max-width: @fc-screen-sm-min) {
+      width: 81px; // 75px + 6px for border
+    }
+
+    .fc-gallery-carousel-thumbnails {
+      height: 100%;
+      width: 100%;
+      left: 0;
+      padding: 0;
+      position: absolute;
+      top: 0;
+
+      .fc-gallery-carousel-thumbnail {
+        display: block;
+        margin-right: 0;
+        padding: 0;
+
+        + .fc-gallery-carousel-thumbnail {
+          margin-left: 0;
+        }
+      }
+    }
+  }
+
+  &.left {
+    margin-right: 5px;
+
+    @media (max-width: @fc-screen-sm-min) {
+      margin-right: 3px;
+    }
+  }
+
+  &.right {
+    margin-left: 5px;
+
+    @media (max-width: @fc-screen-sm-min) {
+      margin-left: 3px;
+    }
+  }
+}
+
+.fc-gallery-carousel-thumbnails {
+  overflow: hidden;
+  padding: 5px 0;
+
+  @media (max-width: @fc-screen-sm-min) {
+    padding: 3px 0;
+  }
+
+  .fc-gallery-carousel-thumbnails-container {
+    cursor: pointer;
+    text-align: center;
+    transition: transform 0.45s ease-out;
+    white-space: nowrap;
+  }
+}
+
+.fc-gallery-carousel-thumbnail {
+  display: inline-block;
+  border: 4px solid transparent;
+  transition: border 0.3s ease-out;
+  width: 100px;
+
+  @media (max-width: @fc-screen-sm-min) {
+    border: 3px solid transparent;
+    width: 75px;
+  }
+
+  + .fc-gallery-carousel-thumbnail {
+    margin-left: 2px;
+  }
+
+  .fc-gallery-carousel-thumbnail-inner {
+    position: relative;
+  }
+
+  img {
+    vertical-align: middle;
+    width: 100%;
+  }
+
+  &.active {
+    border: 4px solid @fc-blue;
+
+    @media (max-width: @fc-screen-sm-min) {
+      border: 3px solid @fc-blue;
+    }
+  }
+}
+
+.fc-gallery-carousel-thumbnail-label {
+  box-sizing: border-box;
+  color: white;
+  font-size: 1em;
+  left: 0;
+  line-height: 1em;
+  padding: 5%;
+  position: absolute;
+  top: 50%;
+  text-shadow: 1px 1px 0 black;
+  transform: translateY(-50%);
+  white-space: normal;
+  width: 100%;
+
+  @media (max-width: @fc-screen-sm-min) {
+    font-size: 0.8em;
+    line-height: 0.8em;
+  }
+}
+
+.fc-gallery-carousel-index {
+  background: @fc-background-black;
+  color: @fc-white;
+  line-height: 1;
+  padding: 10px 20px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 4;
+
+  @media (max-width: @fc-screen-sm-min) {
+    font-size: 0.8em;
+    padding: 5px 10px;
+  }
+}
