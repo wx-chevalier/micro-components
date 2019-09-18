@@ -1,6 +1,6 @@
 {
   "name": "fc-schedule-react",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "fc-schedule-react",
   "repository": {
     "type": "git",
@@ -28,8 +28,9 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run build:es && npm run build:cjs",
-    "build:es": "tsc --project ./tsconfig.es.json",
-    "build:cjs": "tsc --project ./tsconfig.cjs.json",
+    "build:es": "tsc --project ./tsconfig.es.json && npm run copy dist/es/",
+    "build:cjs": "tsc --project ./tsconfig.cjs.json && npm run copy dist/cjs/",
+    "copy": "copyfiles -u 1 './src/**/*.{less,svg}' ",
     "dev": "webpack-dev-server --config ./scripts/webpack/webpack.config.dev.js --hot",
     "start": "npm run dev",
     "test": "jest --config ./scripts/jest/jest.config.js",
@@ -46,6 +47,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
+    "copyfiles": "^2.1.1",
     "eslint": "^6.2.2",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-prettier": "^6.1.0",
