@@ -4,7 +4,7 @@
   "description": "A React Schedule component with virtual rendering",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wx-chevalier/fractch-components"
+    "url": "https://github.com/wx-chevalier/fractal-components"
   },
   "license": "MIT",
   "keywords": [
