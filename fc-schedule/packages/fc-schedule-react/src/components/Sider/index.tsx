@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import withContext from '@/utils/context';
+import withContext from '../../utils/context';
 
 import './index.less';
 import { TaskRow } from './TaskRow';

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { UiConfig } from '@/types';
+import { UiConfig } from '../../types';
 
 import withContext from '../../utils/context';
 

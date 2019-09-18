@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { withSize } from 'react-sizeme';
 
-import { DATA_CONTAINER_WIDTH } from '@/const';
-import { dateHelper } from '@/controller';
+import { DATA_CONTAINER_WIDTH } from '../../const';
+import { dateHelper } from '../../controller';
 
 import { DataTask } from './TaskClip';
 import { IDataRowProps, DataRow } from './DataRow';

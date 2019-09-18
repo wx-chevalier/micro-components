@@ -7,13 +7,13 @@ import {
   DATE_MODE_WEEK,
   DATE_MODE_MONTH,
   DATE_MODE_YEAR
-} from '@/const';
+} from '../../const';
 
-import { dateHelper } from '@/controller';
+import { dateHelper } from '../../controller';
 
 import './index.css';
 import { HeaderItem } from './HeaderItem';
-import { getFormat } from '@/utils/datetime';
+import { getFormat } from '../../utils/datetime';
 import { getStartDate } from '../../utils/datetime';
 import { DATE_MODE_TYPE } from '../../const/index';
 

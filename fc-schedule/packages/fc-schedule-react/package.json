@@ -1,6 +1,6 @@
 {
   "name": "fc-schedule-react",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "fc-schedule-react",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
     "build": "npm run build:es && npm run build:cjs",
     "build:es": "tsc --project ./tsconfig.es.json && npm run copy dist/es/",
     "build:cjs": "tsc --project ./tsconfig.cjs.json && npm run copy dist/cjs/",
-    "copy": "copyfiles -u 1 './src/**/*.{less,svg}' ",
+    "copy": "copyfiles -u 1 './src/**/*.{less,css,svg}' ",
     "dev": "webpack-dev-server --config ./scripts/webpack/webpack.config.dev.js --hot",
     "start": "npm run dev",
     "test": "jest --config ./scripts/jest/jest.config.js",

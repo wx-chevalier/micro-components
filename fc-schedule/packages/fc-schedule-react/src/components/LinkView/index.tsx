@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { registry, dateHelper } from '@/controller';
+import { registry, dateHelper } from '../../controller';
 
 import { Link } from './Link';
 import { DraftLink } from './DraftLink';

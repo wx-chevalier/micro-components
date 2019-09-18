@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { dateHelper } from '@/controller';
+import { dateHelper } from '../../controller';
 import {
   MODE_NONE,
   MODE_MOVE,
@@ -8,8 +8,8 @@ import {
   MOVE_RESIZE_RIGHT,
   LINK_POS_LEFT,
   LINK_POS_RIGHT
-} from '@/const';
-import withContext from '@/utils/context';
+} from '../../const';
+import withContext from '../../utils/context';
 import { UiConfig } from '../../types/index';
 
 interface IProps {

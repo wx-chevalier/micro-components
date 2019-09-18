@@ -6,10 +6,10 @@ import {
   DATE_MODE_MONTH,
   DATE_MODE_TYPE,
   getDayWidth
-} from '@/const';
+} from '../../const';
 
-import { registry, DataController, Config } from '@/controller';
-import { UiConfig, BaseProps, Task, LinkType } from '@/types';
+import { registry, DataController, Config } from '../../controller';
+import { UiConfig, BaseProps, Task, LinkType } from '../../types';
 
 import './index.css';
 import { Sider } from '../Sider';
@@ -17,7 +17,7 @@ import { VerticalSpliter } from '../Sider/VerticalSpliter';
 import { Header } from '../Header';
 import { LinkView } from '../LinkView';
 import { DataView } from '../DataView';
-import { Provider } from '@/utils/context';
+import { Provider } from '../../utils/context';
 
 interface IGanttTimeLineProps extends BaseProps {
   data: Task[];
