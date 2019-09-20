@@ -54,7 +54,7 @@ module.exports = {
     index: path.resolve(buildEnv.rootPath, './src/index.tsx')
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.css', '.less'],
+    extensions: ['.ts', '.tsx', '.js', '.css', '.less', '.svg'],
     plugins: [new TSConfigPathsPlugin()],
     alias: {
       '@': path.resolve(rootPath, './src/'),

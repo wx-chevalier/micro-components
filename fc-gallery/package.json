@@ -58,6 +58,7 @@
     "upgrade": "./scripts/tools/upgrade_pkgs.sh"
   },
   "devDependencies": {
+    "@svgr/webpack": "^4.3.2",
     "@types/jest": "24.0.18",
     "@types/react-dom": "^16.9.0",
     "@typescript-eslint/eslint-plugin": "^2.0.0",

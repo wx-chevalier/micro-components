@@ -5,6 +5,8 @@ import debounce from 'lodash.debounce';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import './index.less';
+import X from '../../assets/X.svg';
+import { Image } from '../../types';
 
 const screenChangeEvents = [
   'fullscreenchange',
@@ -15,7 +17,7 @@ const screenChangeEvents = [
 
 export interface ICarouselProps {
   flickThreshold: number;
-  items: any[];
+  items: Image[];
   thumbnailWidth: number;
 
   showNav: boolean;
@@ -57,6 +59,8 @@ export interface ICarouselProps {
   onMouseLeave: any;
   onThumbnailError: any;
   onThumbnailClick: any;
+  onThumbnailDelete: any;
+  onBulletClick: any;
 
   renderCustomControls: any;
   renderLeftNav: any;
@@ -973,19 +977,26 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
     );
   };
 
-  _renderThumbInner = item => {
-    const onThumbnailError = this.props.onThumbnailError || this._handleImageError;
+  /** 渲染缩略图 */
+  _renderThumbInner = (item: Image) => {
+    const { onThumbnailError, onThumbnailDelete } = this.props;
+
+    const _onThumbnailError = onThumbnailError || this._handleImageError;
 
     return (
       <div className="fc-gallery-carousel-thumbnail-inner">
-        <img
-          src={item.thumbnail}
-          alt={item.thumbnailAlt}
-          title={item.thumbnailTitle}
-          onError={onThumbnailError}
-        />
+        <img src={item.thumbnail} alt={item.alt} title={item.title} onError={_onThumbnailError} />
         {item.thumbnailLabel && (
           <div className="fc-gallery-carousel-thumbnail-label">{item.thumbnailLabel}</div>
+        )}
+        {onThumbnailDelete && (
+          <div className="fc-gallery-carousel-thumbnail-delete-icon">
+            <X
+              onClick={() => {
+                onThumbnailDelete(item);
+              }}
+            />
+          </div>
         )}
       </div>
     );
@@ -1035,15 +1046,14 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
     const thumbnails: any = [];
     const bullets: any = [];
 
-    this.props.items!.forEach((item, index) => {
+    this.props.items!.forEach((item: Image, index) => {
       const alignment = this._getAlignmentClassName(index);
       const originalClass = item.originalClass ? ` ${item.originalClass}` : '';
       const thumbnailClass = item.thumbnailClass ? ` ${item.thumbnailClass}` : '';
 
-      const renderItem = item.renderItem || this.props.renderItem || this._renderItem;
+      const renderItem = this.props.renderItem || this._renderItem;
 
-      const renderThumbInner =
-        item.renderThumbInner || this.props.renderThumbInner || this._renderThumbInner;
+      const renderThumbInner = this.props.renderThumbInner || this._renderThumbInner;
 
       const showItem = !lazyLoad || alignment || this._lazyLoaded[index];
       if (showItem && lazyLoad && !this._lazyLoaded[index]) {
@@ -1103,8 +1113,8 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
 
       if (this.props.showBullets) {
         const bulletOnClick = event => {
-          if (item.bulletOnClick) {
-            item.bulletOnClick({ item, itemIndex: index, currentIndex });
+          if (this.props.onBulletClick) {
+            this.props.onBulletClick({ item, itemIndex: index, currentIndex });
           }
           return this.slideToIndex.call(this, index, event);
         };

@@ -197,12 +197,6 @@ export class App extends React.Component<any, any> {
           thumbnailWidth={100}
           showSlider={false}
           lazyLoad={false}
-          onClick={this._onImageClick.bind(this)}
-          onImageLoad={this._onImageLoad}
-          onSlide={this._onSlide.bind(this)}
-          onPause={this._onPause.bind(this)}
-          onScreenChange={this._onScreenChange.bind(this)}
-          onPlay={this._onPlay.bind(this)}
           infinite={this.state.infinite}
           showBullets={this.state.showBullets}
           showFullscreenButton={
@@ -218,6 +212,15 @@ export class App extends React.Component<any, any> {
           slideInterval={parseInt(this.state.slideInterval)}
           slideOnThumbnailOver={this.state.slideOnThumbnailOver}
           additionalClass="app-image-gallery"
+          onClick={this._onImageClick.bind(this)}
+          onImageLoad={this._onImageLoad}
+          onSlide={this._onSlide.bind(this)}
+          onPause={this._onPause.bind(this)}
+          onScreenChange={this._onScreenChange.bind(this)}
+          onPlay={this._onPlay.bind(this)}
+          onThumbnailDelete={(...args) => {
+            console.log(args);
+          }}
         />
 
         <div className="app-sandbox">

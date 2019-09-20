@@ -336,3 +336,18 @@
     padding: 5px 10px;
   }
 }
+
+.fc-gallery-carousel-thumbnail {
+  &-delete-icon {
+    display: none;
+    position: absolute;
+    right: -5px;
+    top: -5px;
+  }
+
+  &-inner:hover {
+    .fc-gallery-carousel-thumbnail-delete-icon {
+      display: block;
+    }
+  }
+}
