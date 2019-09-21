@@ -1,14 +1,17 @@
 export interface Image {
-  src: string;
+  src?: string;
   nano?: string;
   alt?: string;
   title?: string;
-  srcset: string[];
-  originalClass?: string;
+  description?: string;
+  srcSet?: string;
+  imageSet?: { srcSet: string; media: string; type: string }[];
+  sizes?: string;
+  className?: string;
 
   thumbnail?: string;
   thumbnailLabel?: string;
-  thumbnailClass?: string;
+  thumbnailClassName?: string;
   thumbnailWidth?: number;
   thumbnailHeight?: number;
 
@@ -16,5 +19,5 @@ export interface Image {
   caption?: string;
   tags?: { value: string; title: string }[];
 
-  isSelected: boolean;
+  isSelected?: boolean;
 }

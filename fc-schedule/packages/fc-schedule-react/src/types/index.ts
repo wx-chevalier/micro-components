@@ -7,6 +7,10 @@ interface Base {
   extra?: any;
 }
 
+export interface BaseProps {
+  itemHeight: number;
+}
+
 export interface Worker extends Base {
   tasks?: Task[];
 }
@@ -37,8 +41,4 @@ export interface LinkType extends Base {
 export interface UiConfig {
   header?: any;
   [key: string]: any;
-}
-
-export interface BaseProps {
-  itemHeight: number;
 }

@@ -21,14 +21,6 @@ const buildEnv = {
 
 const moduleCSSLoader = {
   loader: 'css-loader'
-  // options: {
-  //   modules: {
-  //     mode: 'local',
-  //     localIdentName: 'rtw_[hash:base64:5]_[local]'
-  //   },
-  //   sourceMap: false,
-  //   importLoaders: 2
-  // }
 };
 
 const lessLoader = {

@@ -4,6 +4,7 @@ export interface IWorkerGridProps {}
 
 export interface IWorkerGridState {}
 
+/** 工作机器的网格视图 */
 export class WorkerGrid extends React.Component<IWorkerGridProps, IWorkerGridState> {
   constructor(props: IWorkerGridProps) {
     super(props);

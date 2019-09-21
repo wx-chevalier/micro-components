@@ -946,7 +946,7 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
     this.slideToIndex(this.state.currentIndex + 1, event);
   };
 
-  _renderItem = item => {
+  _renderItem = (item: Image) => {
     const onImageError = this.props.onImageError || this._handleImageError;
 
     return (
@@ -956,15 +956,15 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
             {item.imageSet.map((source, index) => (
               <source key={index} media={source.media} srcSet={source.srcSet} type={source.type} />
             ))}
-            <img alt={item.originalAlt} src={item.original} />
+            <img alt={item.alt} src={item.src} />
           </picture>
         ) : (
           <img
-            src={item.original}
-            alt={item.originalAlt}
+            src={item.src}
+            alt={item.alt}
             srcSet={item.srcSet}
             sizes={item.sizes}
-            title={item.originalTitle}
+            title={item.title}
             onLoad={this.props.onImageLoad}
             onError={onImageError}
           />
@@ -1048,8 +1048,8 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
 
     this.props.items!.forEach((item: Image, index) => {
       const alignment = this._getAlignmentClassName(index);
-      const originalClass = item.originalClass ? ` ${item.originalClass}` : '';
-      const thumbnailClass = item.thumbnailClass ? ` ${item.thumbnailClass}` : '';
+      const originalClass = item.className ? ` ${item.className}` : '';
+      const thumbnailClass = item.thumbnailClassName ? ` ${item.thumbnailClassName}` : '';
 
       const renderItem = this.props.renderItem || this._renderItem;
 

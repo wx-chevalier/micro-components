@@ -1,8 +1,14 @@
 import React, { Component } from 'react';
 
-import './VerticalSpliter.css';
+import './index.less';
+import { UiConfig } from '../../types/index';
 
-export class VerticalSpliter extends Component<any, any> {
+export interface VerticalSpliterProps {
+  config: UiConfig;
+  onSizing: (delat: number) => void;
+}
+
+export class VerticalSpliter extends Component<VerticalSpliterProps, any> {
   draggingPosition: number;
 
   constructor(props) {
@@ -31,13 +37,18 @@ export class VerticalSpliter extends Component<any, any> {
   }
 
   doMouseMove(e) {
+    const { onSizing } = this.props;
+
     if (this.state.dragging) {
       e.stopPropagation();
 
       const delta = this.draggingPosition - e.clientX;
 
       this.draggingPosition = e.clientX;
-      this.props.onTaskListSizing(delta);
+
+      if (onSizing) {
+        onSizing(delta);
+      }
     }
   }
 

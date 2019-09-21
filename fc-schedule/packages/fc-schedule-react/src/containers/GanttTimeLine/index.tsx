@@ -12,23 +12,25 @@ import { registry, DataController, Config } from '../../controller';
 import { UiConfig, BaseProps, Task, LinkType } from '../../types';
 
 import './index.css';
-import { Sider } from '../Sider';
-import { VerticalSpliter } from '../Sider/VerticalSpliter';
-import { Header } from '../Header';
-import { LinkView } from '../LinkView';
-import { DataView } from '../DataView';
+import { Sider } from '../../components/Sider';
+import { VerticalSpliter } from '../../components/VerticalSpliter';
+import { Header } from '../../components/Header';
+import { LinkView } from '../../components/LinkView';
+import { DataView } from '../../components/DataView';
 import { Provider } from '../../utils/context';
 
 interface IGanttTimeLineProps extends BaseProps {
   data: Task[];
+  links?: LinkType[];
+  selectedItem?: Task;
+  nonEditableName?: boolean;
+
+  config?: UiConfig;
   dateMode?: DATE_MODE_TYPE;
   viewMode?: 'task' | 'worker';
 
-  config?: UiConfig;
-  selectedItem?: Task;
-  links?: LinkType[];
-  nonEditableName?: boolean;
-
+  // 侧边栏头部渲染函数
+  onSiderHeaderRender?: Function;
   onHorizonChange?: Function;
   onCreateLink?: Function;
   onSelectItem?: Function;
@@ -46,10 +48,13 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     viewMode: 'task'
   };
 
+  dc: DataController;
+  isInitialized: boolean;
   dragging: boolean;
   draggingPosition: number;
-  dc: DataController;
-  initialise: boolean;
+
+  // This variable define the number of pixels the viewport can scroll till arrive to the end of the context
+  // 右侧横向滚动的距离
   pxToScroll: number;
 
   constructor(props) {
@@ -58,8 +63,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     this.draggingPosition = 0;
     this.dc = new DataController();
     this.dc.onHorizonChange = this.onHorizonChange;
-    this.initialise = false;
-    //This variable define the number of pixels the viewport can scroll till arrive to the end of the context
+    this.isInitialized = false;
     this.pxToScroll = 1900;
     const dayWidth = getDayWidth(this.props.dateMode);
 
@@ -100,14 +104,15 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   onSize = size => {
     //If size has changed
     this.calculateVerticalScrollVariables(size);
-    if (!this.initialise) {
-      this.dc.initialise(
+    if (!this.isInitialized) {
+      // 初始化数据控制器
+      this.dc.init(
         this.state.scrollLeft + this.state.nowPosition,
         this.state.scrollLeft + this.state.nowPosition + size.width,
         this.state.nowPosition,
         this.state.dayWidth
       );
-      this.initialise = true;
+      this.isInitialized = true;
     }
     this.setStartEnd();
     const newNumVisibleRows = Math.ceil(size.height / this.props.itemHeight);
@@ -402,12 +407,12 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
               endRow={this.state.endRow}
               data={this.props.data}
               selectedItem={this.props.selectedItem}
+              nonEditable={this.props.nonEditableName}
               onSelectItem={this.onSelectItem}
               onUpdateTask={this.props.onUpdateTask}
               onScroll={this.verticalChange}
-              nonEditable={this.props.nonEditableName}
             />
-            <VerticalSpliter config={this.config} onSiderSizing={this.onSiderSizing} />
+            <VerticalSpliter config={this.config} onSizing={this.onSiderSizing} />
           </div>
           <div className="timeLine-main">
             <Header

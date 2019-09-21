@@ -1,4 +1,4 @@
 export * from './types';
 
-export { WorkerGrid } from './components/WorkerGrid';
-export { GanttTimeLine } from './components/GanttTimeLine';
+export { WorkerGrid } from './containers/WorkerGrid';
+export { GanttTimeLine } from './containers/GanttTimeLine';

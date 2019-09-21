@@ -22,7 +22,7 @@ export class DataController {
     this._dataToRender = [];
   }
 
-  initialise = (start, end, newPosition, dayWidth) => {
+  init = (start, end, newPosition, dayWidth) => {
     this.newPosition = newPosition;
     this.dayWidth = dayWidth;
     this.setLimits(start, end);
