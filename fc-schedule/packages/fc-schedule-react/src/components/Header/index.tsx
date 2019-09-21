@@ -67,6 +67,33 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
     this.endDay = this.props.currentDay + this.props.visibleDaysNum + BUFFER_DAYS;
   };
 
+  // 判断是否需要重新渲染
+  shouldRerender = () => {
+    return (
+      this.props.currentDay < this.startDay ||
+      this.props.currentDay + this.props.visibleDaysNum > this.endDay
+    );
+  };
+
+  getBox(date: Moment, dateMode: DATE_MODE_TYPE, lastLeft: number) {
+    const increment = this.getModeIncrement(date, dateMode) * this.props.dayWidth;
+    let newLastLeft = lastLeft;
+
+    if (!lastLeft) {
+      const startDate = getStartDate(date, dateMode).startOf('day');
+      const now = moment().startOf('day');
+      const daysInBetween = startDate.diff(now, 'days');
+
+      newLastLeft = dateHelper.dayToPosition(
+        daysInBetween,
+        this.props.nowPosition,
+        this.props.dayWidth
+      );
+    }
+
+    return { left: newLastLeft, width: increment };
+  }
+
   renderTime = (left, width, dateMode, key, withYear) => {
     const result: any[] = [];
     const hourWidth = width / 24;
@@ -93,25 +120,6 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
       </div>
     );
   };
-
-  getBox(date: Moment, dateMode: DATE_MODE_TYPE, lastLeft: number) {
-    const increment = this.getModeIncrement(date, dateMode) * this.props.dayWidth;
-    let newLastLeft = lastLeft;
-
-    if (!lastLeft) {
-      const startDate = getStartDate(date, dateMode).startOf('day');
-      const now = moment().startOf('day');
-      const daysInBetween = startDate.diff(now, 'days');
-
-      newLastLeft = dateHelper.dayToPosition(
-        daysInBetween,
-        this.props.nowPosition,
-        this.props.dayWidth
-      );
-    }
-
-    return { left: newLastLeft, width: increment };
-  }
 
   renderHeaderRows = (top, middle, bottom, withYear = true) => {
     const { config } = this.props;
@@ -233,19 +241,13 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
     }
   };
 
-  needToRender = () => {
-    return (
-      this.props.currentDay < this.startDay ||
-      this.props.currentDay + this.props.visibleDaysNum > this.endDay
-    );
-  };
-
   render() {
     if (this.refs.headerRef) {
       (this.refs.headerRef as any).scrollLeft = this.props.scrollLeft;
     }
+
     // Check boundaries to see if wee need to recalcualte header
-    if (this.needToRender() || !this.cache) {
+    if (this.shouldRerender() || !this.cache) {
       this.cache = this.renderHeader();
       this.setBoundaries();
     }

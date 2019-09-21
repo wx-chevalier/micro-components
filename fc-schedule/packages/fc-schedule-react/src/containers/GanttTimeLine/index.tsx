@@ -23,6 +23,7 @@ interface IGanttTimeLineProps extends BaseProps {
   data: Task[];
   links?: LinkType[];
   selectedItem?: Task;
+  currentDay?: number;
 
   config?: UiConfig;
   dateMode?: DATE_MODE_TYPE;
@@ -55,6 +56,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   config: UiConfig;
 
   static defaultProps = {
+    currentDay: 0,
     itemHeight: 40,
     dayWidth: 24,
     disableEditableName: false,
@@ -71,8 +73,9 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   // 右侧横向滚动的距离
   pxToScroll: number;
 
-  constructor(props) {
+  constructor(props: IGanttTimeLineProps) {
     super(props);
+
     this.dragging = false;
     this.draggingPosition = 0;
     this.dc = new DataController();
@@ -87,7 +90,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     // Initialising state
     this.state = {
       // Day that is in the 0px horizontal
-      currentDay: 0,
+      currentDay: props.currentDay,
       //nowPosition is the reference position, this variable support the infinit scrolling by accumulatning scroll times and redefining the 0 position. if we accumulat 2 scroll to the left nowPosition will be 2 * DATA_CONTAINER_WIDTH
       nowPosition: 0,
       startRow: 0,
@@ -208,21 +211,21 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
       }
     }
 
-    //Get the day of the left position
-    const currentIndx = Math.trunc((newScrollLeft - this.state.nowPosition) / this.state.dayWidth);
+    // Get the day of the left position
+    const currentDay = Math.trunc((newScrollLeft - this.state.nowPosition) / this.state.dayWidth);
 
-    //Calculate rows to render
+    // Calculate rows to render
     newStartRow = Math.trunc(this.state.scrollTop / this.props.itemHeight);
     newEndRow =
       newStartRow + this.state.numVisibleRows >= this.props.data.length
         ? this.props.data.length - 1
         : newStartRow + this.state.numVisibleRows;
 
-    //If we need updates then change the state and the scroll position
-    //Got you
+    // If we need updates then change the state and the scroll position
+
     this.setStartEnd();
     this.setState({
-      currentDay: currentIndx,
+      currentDay,
       nowPosition: newNowPosition,
       scrollLeft: newLeft,
       startRow: newStartRow,
@@ -242,12 +245,12 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   /////////////////////
   //   MOUSE EVENTS  //
   /////////////////////
-  doMouseDown = e => {
+  doMouseDown = (e: MouseEvent) => {
     this.dragging = true;
     this.draggingPosition = e.clientX;
   };
 
-  doMouseMove = e => {
+  doMouseMove = (e: MouseEvent) => {
     if (this.dragging) {
       const delta = this.draggingPosition - e.clientX;
 
@@ -258,26 +261,24 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     }
   };
 
-  doMouseUp = e => {
+  doMouseUp = () => {
     this.dragging = false;
   };
 
-  doMouseLeave = e => {
-    // if (!e.relatedTarget.nodeName)
-    //     this.dragging=false;
+  doMouseLeave = () => {
     this.dragging = false;
   };
 
-  doTouchStart = e => {
+  doTouchStart = (e: TouchEvent) => {
     this.dragging = true;
     this.draggingPosition = e.touches[0].clientX;
   };
 
-  doTouchEnd = e => {
+  doTouchEnd = () => {
     this.dragging = false;
   };
 
-  doTouchMove = e => {
+  doTouchMove = (e: TouchEvent) => {
     if (this.dragging) {
       const delta = this.draggingPosition - e.touches[0].clientX;
 
@@ -288,7 +289,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     }
   };
 
-  doTouchCancel = e => {
+  doTouchCancel = () => {
     this.dragging = false;
   };
 

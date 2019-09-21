@@ -28,16 +28,16 @@ export class SiderComp extends Component<any, any> {
       result.push(
         <SiderRow
           key={i}
-          config={this.props.config}
           index={i}
+          config={this.props.config}
           item={item}
           label={item.name}
           top={i * this.props.itemHeight}
           itemHeight={this.props.itemHeight}
+          nonEditable={this.props.nonEditable}
           isSelected={this.props.selectedItem == item}
           onUpdateTask={this.props.onUpdateTask}
           onSelectTask={this.props.onSelectTask}
-          nonEditable={this.props.nonEditable}
         />
       );
     }
