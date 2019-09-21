@@ -19,16 +19,15 @@ import { DATE_MODE_TYPE } from '../../const/index';
 import { UiConfig } from '../../types/index';
 
 export interface IHeaderProps {
-  // 当前开始的天
-  currentDay: number;
-  dayWidth: number;
-  visibleDaysNum: number;
-  // 当前时间的位置
-  nowPosition: number;
-  scrollLeft: number;
-  dateMode: DATE_MODE_TYPE;
-
   config: UiConfig;
+  // 当前天
+  currentDay: number;
+  complementalLeft: number;
+  dateMode: DATE_MODE_TYPE;
+  dayWidth: number;
+  // 当前时间的位置
+  scrollLeft: number;
+  visibleDaysNum: number;
 }
 
 export interface IHeaderState {}
@@ -66,6 +65,7 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
     const increment = getModeIncrement(date, dateMode) * this.props.dayWidth;
     let newLastLeft = lastLeft;
 
+    // 当没有 lastLeft 存在时候，则以 now 为起始坐标进行计算
     if (!lastLeft) {
       const startDate = getStartDate(date, dateMode).startOf('day');
       const now = moment().startOf('day');
@@ -73,7 +73,7 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
 
       newLastLeft = dateHelper.dayToPosition(
         daysInBetween,
-        this.props.nowPosition,
+        this.props.complementalLeft,
         this.props.dayWidth
       );
     }

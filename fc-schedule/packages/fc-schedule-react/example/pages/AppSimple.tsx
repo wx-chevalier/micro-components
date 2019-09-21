@@ -3,6 +3,7 @@ import { GanttTimeLine, Task } from '../../src';
 
 import './App.css';
 import { Worker } from '../../src/types';
+import moment from 'moment';
 
 export default class AppSimple extends Component<any, any> {
   data: Task[];
@@ -76,6 +77,7 @@ export default class AppSimple extends Component<any, any> {
             disableLink={true}
             data={this.data}
             links={this.links}
+            visuallyStartDate={moment().subtract(2, 'day')}
           />
         </div>
       </div>

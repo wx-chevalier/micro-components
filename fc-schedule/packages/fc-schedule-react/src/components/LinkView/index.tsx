@@ -153,8 +153,9 @@ export class LinkView extends Component<any, any> {
           </marker>
         </defs>
         <g
-          transform={`matrix(1,0,0,1,${-(this.props.scrollLeft - this.props.nowPosition)},${-this
-            .props.scrollTop})`}
+          transform={`matrix(1,0,0,1,${-(
+            this.props.scrollLeft - this.props.complementalLeft
+          )},${-this.props.scrollTop})`}
         >
           {this.cache}
           {this.renderCreateLink()}

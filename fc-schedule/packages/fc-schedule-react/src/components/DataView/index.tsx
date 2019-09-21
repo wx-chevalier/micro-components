@@ -13,7 +13,7 @@ interface IDataViewCompProps extends IDataRowProps {
   startRow: number;
   endRow: number;
 
-  nowPosition: number;
+  complementalLeft: number;
   scrollLeft: number;
   scrollTop: number;
   dayWidth: number;
@@ -64,11 +64,12 @@ export class DataViewComp extends Component<IDataViewCompProps> {
 
       const newPosition = dateHelper.dateToPixel(
         item.start,
-        this.props.nowPosition,
+        this.props.complementalLeft,
         this.props.dayWidth
       );
       const newWidth =
-        dateHelper.dateToPixel(item.end, this.props.nowPosition, this.props.dayWidth) - newPosition;
+        dateHelper.dateToPixel(item.end, this.props.complementalLeft, this.props.dayWidth) -
+        newPosition;
 
       result.push(
         <DataRow
@@ -81,7 +82,7 @@ export class DataViewComp extends Component<IDataViewCompProps> {
           <TaskClip
             item={item}
             label={item.name}
-            nowPosition={this.props.nowPosition}
+            complementalLeft={this.props.complementalLeft}
             dayWidth={this.props.dayWidth}
             color={item.color}
             left={newPosition}

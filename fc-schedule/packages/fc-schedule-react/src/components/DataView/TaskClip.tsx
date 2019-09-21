@@ -18,7 +18,7 @@ interface ITaskClipProps {
   left: number;
   width: number;
   height: number;
-  nowPosition: number;
+  complementalLeft: number;
   dayWidth: number;
 
   config: UiConfig;
@@ -121,8 +121,8 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
     const changeObj = {
       item: this.props.item,
       position: {
-        start: newLeft - this.props.nowPosition,
-        end: newLeft + newWidth - this.props.nowPosition
+        start: newLeft - this.props.complementalLeft,
+        end: newLeft + newWidth - this.props.complementalLeft
       }
     };
     this.props.onTaskChanging(changeObj);
@@ -134,12 +134,12 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
     this.props.onChildDrag(false);
     const newStartDate = dateHelper.pixelToDate(
       this.state.left,
-      this.props.nowPosition,
+      this.props.complementalLeft,
       this.props.dayWidth
     );
     const newEndDate = dateHelper.pixelToDate(
       this.state.left + this.state.width,
-      this.props.nowPosition,
+      this.props.complementalLeft,
       this.props.dayWidth
     );
     this.props.onUpdateTask(this.props.item, { start: newStartDate, end: newEndDate });
