@@ -76,7 +76,7 @@ export class LinkView extends Component<any, any> {
 
   renderCreateLink = () => {
     if (this.props.interactiveMode) {
-      const record = registry.getTask(this.props.taskToCreate.task.id);
+      const record = registry.getTask(this.props.linkingTask.task.id);
       const position = this.getItemPosition(record.index, record.item.end);
       return <DraftLink start={position} onFinishCreateLink={this.props.onFinishCreateLink} />;
     }
@@ -84,14 +84,14 @@ export class LinkView extends Component<any, any> {
   };
 
   renderChangingTaskLinks = () => {
-    if (this.props.changingTask != this.state.changingTask) {
+    if (this.props.editingTask != this.state.editingTask) {
       this.setState(
         {
-          changingTask: this.props.changingTask
+          editingTask: this.props.editingTask
         },
         () => {
           //Get Links from task
-          const links = registry.getLinks(this.state.changingTask.item.id);
+          const links = registry.getLinks(this.state.editingTask.item.id);
           if (!links) return;
           let item: any = null;
           let startItem: any = null;
@@ -105,11 +105,11 @@ export class LinkView extends Component<any, any> {
             endItem = registry.getTask(item.link.end);
             if (!endItem) continue;
             startPosition = this.getItemPosition(startItem.index, startItem.item.end);
-            if (this.state.changingTask.item.id == item.link.start)
-              startPosition.x = this.state.changingTask.position.end;
+            if (this.state.editingTask.item.id == item.link.start)
+              startPosition.x = this.state.editingTask.position.end;
             endPosition = this.getItemPosition(endItem.index, endItem.item.start);
-            if (this.state.changingTask.item.id == item.link.end)
-              endPosition.x = this.state.changingTask.position.start;
+            if (this.state.editingTask.item.id == item.link.end)
+              endPosition.x = this.state.editingTask.position.start;
 
             this.cache[item.index] = (
               <Link

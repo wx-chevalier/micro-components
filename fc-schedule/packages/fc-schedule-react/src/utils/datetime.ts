@@ -1,4 +1,4 @@
-import moment from 'moment';
+import * as moment from 'moment';
 
 /** 根据不同的日期类型获取不同的格式 */
 export function getFormat(dateMode: string, position?: string) {

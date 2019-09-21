@@ -36,7 +36,6 @@ interface IGanttTimeLineProps extends BaseProps {
   ////////////////////
   //  Event Handler //
   ////////////////////
-
   // 点击某个数据行的响应，必然会传入当前行所属的 Worker
   onDataRowClick?: (worker: Worker) => void;
 
@@ -69,7 +68,6 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   dragging: boolean;
   draggingPosition: number;
 
-  // This variable define the number of pixels the viewport can scroll till arrive to the end of the context
   // 右侧横向滚动的距离
   pxToScroll: number;
 
@@ -88,24 +86,24 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
 
     // Initialising state
     this.state = {
-      currentDay: 0, //Day that is in the 0px horizontal
-      //nowPosition is the reference position, this variable support the infinit scrolling by accumulatning scroll times and redefining the 0 position
-      // if we accumulat 2 scroll to the left nowPosition will be 2* DATA_CONTAINER_WIDTH
+      // Day that is in the 0px horizontal
+      currentDay: 0,
+      //nowPosition is the reference position, this variable support the infinit scrolling by accumulatning scroll times and redefining the 0 position. if we accumulat 2 scroll to the left nowPosition will be 2 * DATA_CONTAINER_WIDTH
       nowPosition: 0,
-      startRow: 0, //
+      startRow: 0,
       endRow: 10,
-      sideStyle: { width: 200 },
+      siderStyle: { width: 200 },
       scrollLeft: 0,
       scrollTop: 0,
       numVisibleRows: 40,
-      numVisibleDays: 10,
+      visibleDaysNum: 10,
       dayWidth: dayWidth,
       interactiveMode: false,
-      taskToCreate: null,
+      linkingTask: null,
       links: [],
       dateMode: this.props.dateMode ? this.props.dateMode : DATE_MODE_MONTH,
       size: { width: 1, height: 1 },
-      changingTask: null
+      editingTask: null
     };
   }
 
@@ -120,6 +118,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   onResizing = size => {
     //If size has changed
     this.calculateVerticalScrollVariables(size);
+
     if (!this.isInitialized) {
       // 初始化数据控制器
       this.dc.init(
@@ -130,7 +129,9 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
       );
       this.isInitialized = true;
     }
+
     this.setStartEnd();
+
     const newNumVisibleRows = Math.ceil(size.height / this.props.itemHeight);
     const newNumVisibleDays = this.calcNumVisibleDays(size);
     const rowInfo = this.calculateStartEndRows(
@@ -138,9 +139,10 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
       this.props.data,
       this.state.scrollTop
     );
+
     this.setState({
       numVisibleRows: newNumVisibleRows,
-      numVisibleDays: newNumVisibleDays,
+      visibleDaysNum: newNumVisibleDays,
       startRow: rowInfo.start,
       endRow: rowInfo.end,
       size: size
@@ -185,21 +187,20 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     );
   };
 
-  horizontalChange = newScrollLeft => {
+  onHorizontalScroll = newScrollLeft => {
     let newNowPosition = this.state.nowPosition;
     let newLeft = -1;
-    const headerData = this.state.headerData;
     let newStartRow = this.state.startRow;
     let newEndRow = this.state.endRow;
 
     // Calculating if we need to roll up the scroll
     if (newScrollLeft > this.pxToScroll) {
-      // ContenLegnth-viewportLengt
+      // Content Length - Viewport Length
       newNowPosition = this.state.nowPosition - this.pxToScroll;
       newLeft = 0;
     } else {
       if (newScrollLeft <= 0) {
-        //ContenLegnth-viewportLengt
+        //Content Length - Viewport Length
         newNowPosition = this.state.nowPosition + this.pxToScroll;
         newLeft = this.pxToScroll;
       } else {
@@ -223,7 +224,6 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     this.setState({
       currentDay: currentIndx,
       nowPosition: newNowPosition,
-      headerData: headerData,
       scrollLeft: newLeft,
       startRow: newStartRow,
       endRow: newEndRow
@@ -242,7 +242,6 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   /////////////////////
   //   MOUSE EVENTS  //
   /////////////////////
-
   doMouseDown = e => {
     this.dragging = true;
     this.draggingPosition = e.clientX;
@@ -254,7 +253,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
 
       if (delta !== 0) {
         this.draggingPosition = e.clientX;
-        this.horizontalChange(this.state.scrollLeft + delta);
+        this.onHorizontalScroll(this.state.scrollLeft + delta);
       }
     }
   };
@@ -284,7 +283,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
 
       if (delta !== 0) {
         this.draggingPosition = e.touches[0].clientX;
-        this.horizontalChange(this.state.scrollLeft + delta);
+        this.onHorizontalScroll(this.state.scrollLeft + delta);
       }
     }
   };
@@ -297,7 +296,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   onSiderResizing = delta => {
     this.setState(prevState => {
       const result = { ...prevState };
-      result.sideStyle = { width: result.sideStyle.width - delta };
+      result.siderStyle = { width: result.siderStyle.width - delta };
       return result;
     });
   };
@@ -305,7 +304,6 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   /////////////////////
   //   ITEMS EVENTS  //
   /////////////////////
-
   onSelectTask = item => {
     if (this.props.onSelectTask && item != this.props.selectedItem) this.props.onSelectTask(item);
   };
@@ -314,7 +312,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     console.log(`Start Link ${task}`);
     this.setState({
       interactiveMode: true,
-      taskToCreate: { task: task, position: position }
+      linkingTask: { task: task, position: position }
     });
   };
 
@@ -322,19 +320,19 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     console.log(`End Link ${task}`);
     if (this.props.onCreateLink && task) {
       this.props.onCreateLink({
-        start: this.state.taskToCreate,
+        start: this.state.linkingTask,
         end: { task: task, position: position }
       });
     }
     this.setState({
       interactiveMode: false,
-      taskToCreate: null
+      linkingTask: null
     });
   };
 
-  onTaskChanging = changingTask => {
+  onTaskChanging = editingTask => {
     this.setState({
-      changingTask: changingTask
+      editingTask: editingTask
     });
   };
 
@@ -354,7 +352,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
           this.setState(
             {
               dayWidth: newDayWidth,
-              numVisibleDays: this.calcNumVisibleDays(this.state.size)
+              visibleDaysNum: this.calcNumVisibleDays(this.state.size)
             },
             () => {
               //to recalculate the now position we have to see how mwny scroll has happen
@@ -422,7 +420,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     return (
       <Provider value={{ config: this.config }}>
         <div className="timeLine">
-          <div className="timeLine-side-main" style={this.state.sideStyle}>
+          <div className="timeLine-side-main" style={this.state.siderStyle}>
             <Sider
               ref="taskViewPort"
               itemHeight={this.props.itemHeight}
@@ -440,8 +438,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
           <div className="timeLine-main">
             <Header
               config={this.config}
-              headerData={this.state.headerData}
-              numVisibleDays={this.state.numVisibleDays}
+              visibleDaysNum={this.state.visibleDaysNum}
               currentDay={this.state.currentDay}
               nowPosition={this.state.nowPosition}
               dayWidth={this.state.dayWidth}
@@ -490,9 +487,9 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
                 nowPosition={this.state.nowPosition}
                 dayWidth={this.state.dayWidth}
                 interactiveMode={this.state.interactiveMode}
-                taskToCreate={this.state.taskToCreate}
+                linkingTask={this.state.linkingTask}
                 onFinishCreateLink={this.onFinishCreateLink}
-                changingTask={this.state.changingTask}
+                editingTask={this.state.editingTask}
                 selectedItem={this.props.selectedItem}
                 onSelectTask={this.onSelectTask}
                 itemHeight={this.props.itemHeight}

@@ -11,8 +11,8 @@ export default class AppSimple extends Component<any, any> {
   constructor(props) {
     super(props);
     let d1 = new Date();
-    let d2 = new Date();
 
+    let d2 = new Date();
     d2.setHours(d2.getHours() + 5);
 
     let d3 = new Date();

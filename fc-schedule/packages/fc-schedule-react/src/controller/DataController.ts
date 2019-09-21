@@ -1,4 +1,5 @@
 import { dateHelper } from './DateHelper';
+import { Task } from '../types/index';
 
 const HORIZON_BUFFER = 1000;
 const HORIZON_BUFFER_ALERT = 750;
@@ -6,7 +7,7 @@ const HORIZON_BUFFER_ALERT = 750;
 export class DataController {
   lowerLimit: number;
   upperLimit: number;
-  _dataToRender: any;
+  _dataToRender: Task[];
 
   newPosition: number;
   dayWidth: number;
@@ -22,6 +23,7 @@ export class DataController {
     this._dataToRender = [];
   }
 
+  /** 初始化数据控制器 */
   init = (start, end, newPosition, dayWidth) => {
     this.newPosition = newPosition;
     this.dayWidth = dayWidth;

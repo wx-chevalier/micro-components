@@ -16,15 +16,31 @@ import { HeaderItem } from './HeaderItem';
 import { getFormat } from '../../utils/datetime';
 import { getStartDate } from '../../utils/datetime';
 import { DATE_MODE_TYPE } from '../../const/index';
+import { UiConfig } from '../../types/index';
 
-export class Header extends PureComponent<any, any> {
+export interface IHeaderProps {
+  // 当前开始的天
+  currentDay: number;
+  dayWidth: number;
+  visibleDaysNum: number;
+  // 当前时间的位置
+  nowPosition: number;
+  scrollLeft: number;
+  dateMode: DATE_MODE_TYPE;
+
+  config: UiConfig;
+}
+
+export interface IHeaderState {}
+
+export class Header extends PureComponent<IHeaderProps, IHeaderState> {
   cache: any;
 
   // 具体的开始时间
   startDate: Moment;
   // 开始的日期下标，数字，开始的时间为 currentDay - BUFFER_DAYS
   startDay: number;
-  // 结束时间为 currentDay + numVisibleDays + BUFFER_DAYS
+  // 结束时间为 currentDay + visibleDaysNum + BUFFER_DAYS
   endDay: number;
 
   constructor(props) {
@@ -48,7 +64,7 @@ export class Header extends PureComponent<any, any> {
 
   setBoundaries = () => {
     this.startDay = this.props.currentDay - BUFFER_DAYS;
-    this.endDay = this.props.currentDay + this.props.numVisibleDays + BUFFER_DAYS;
+    this.endDay = this.props.currentDay + this.props.visibleDaysNum + BUFFER_DAYS;
   };
 
   renderTime = (left, width, dateMode, key, withYear) => {
@@ -109,7 +125,7 @@ export class Header extends PureComponent<any, any> {
     let box: any = null;
 
     this.startDay = this.props.currentDay - BUFFER_DAYS;
-    this.endDay = this.props.currentDay + this.props.numVisibleDays + BUFFER_DAYS;
+    this.endDay = this.props.currentDay + this.props.visibleDaysNum + BUFFER_DAYS;
 
     this.startDate = moment().add(this.startDay, 'days');
 
@@ -220,7 +236,7 @@ export class Header extends PureComponent<any, any> {
   needToRender = () => {
     return (
       this.props.currentDay < this.startDay ||
-      this.props.currentDay + this.props.numVisibleDays > this.endDay
+      this.props.currentDay + this.props.visibleDaysNum > this.endDay
     );
   };
 
