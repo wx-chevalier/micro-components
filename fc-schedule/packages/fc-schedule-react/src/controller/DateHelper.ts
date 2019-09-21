@@ -43,7 +43,8 @@ export class DateHelper {
     return new Date(year, month, 0).getDate();
   }
 
-  dayToPosition = (day, now, dayWidth) => {
+  /** 将 */
+  dayToPosition = (day: number, now: number, dayWidth: number) => {
     return day * dayWidth + now;
   };
 

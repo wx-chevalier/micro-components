@@ -13,7 +13,7 @@ import { dateHelper } from '../../controller';
 
 import './index.css';
 import { HeaderItem } from './HeaderItem';
-import { getFormat } from '../../utils/datetime';
+import { getFormat, getModeIncrement } from '../../utils/datetime';
 import { getStartDate } from '../../utils/datetime';
 import { DATE_MODE_TYPE } from '../../const/index';
 import { UiConfig } from '../../types/index';
@@ -48,20 +48,6 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
     this.setBoundaries();
   }
 
-  /** 获取某个模式的时间间隔 */
-  getModeIncrement(date: Moment, dateMode) {
-    switch (dateMode) {
-      case 'year':
-        return dateHelper.daysInYear(date.year());
-      case 'month':
-        return date.daysInMonth();
-      case 'week':
-        return 7;
-      default:
-        return 1;
-    }
-  }
-
   setBoundaries = () => {
     this.startDay = this.props.currentDay - BUFFER_DAYS;
     this.endDay = this.props.currentDay + this.props.visibleDaysNum + BUFFER_DAYS;
@@ -75,8 +61,9 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
     );
   };
 
+  /** 获取到 Box */
   getBox(date: Moment, dateMode: DATE_MODE_TYPE, lastLeft: number) {
-    const increment = this.getModeIncrement(date, dateMode) * this.props.dayWidth;
+    const increment = getModeIncrement(date, dateMode) * this.props.dayWidth;
     let newLastLeft = lastLeft;
 
     if (!lastLeft) {
@@ -94,7 +81,8 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
     return { left: newLastLeft, width: increment };
   }
 
-  renderTime = (left, width, dateMode, key, withYear) => {
+  /** 渲染时间 */
+  renderTime = (left, width, dateMode, key, height: number) => {
     const result: any[] = [];
     const hourWidth = width / 24;
     let iterLeft = 0;
@@ -106,24 +94,25 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
           left={iterLeft}
           width={hourWidth}
           label={dateMode == 'shorttime' ? i : `${i}:00`}
-          height={withYear ? 20 : 30}
+          height={height}
         />
       );
       iterLeft = iterLeft + hourWidth;
     }
     return (
-      <div
-        key={key}
-        style={{ position: 'absolute', height: withYear ? 20 : 30, left: left, width: width }}
-      >
+      <div key={key} style={{ position: 'absolute', height, left: left, width: width }}>
         {result}
       </div>
     );
   };
 
-  renderHeaderRows = (top, middle, bottom, withYear = true) => {
+  /**
+   * Render Header Rows
+   */
+  renderHeaderRows = (top, middle, bottom) => {
     const { config } = this.props;
 
+    const height = top ? 20 : 30;
     const result: any = { top: [], middle: [], bottom: [] };
     const lastLeft: any = {};
     let currentTop = '';
@@ -141,7 +130,7 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
       // The unit of iteration is day
       const currentDate = moment().add(i, 'days');
 
-      if (withYear && currentTop != currentDate.format(getFormat(top, 'top'))) {
+      if (top && currentTop != currentDate.format(getFormat(top, 'top'))) {
         currentTop = currentDate.format(getFormat(top, 'top'));
 
         box = this.getBox(currentDate, top, lastLeft.top);
@@ -170,7 +159,7 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
             left={box.left}
             width={box.width}
             label={currentMiddle}
-            height={withYear ? 20 : 30}
+            height={height}
           />
         );
       }
@@ -182,9 +171,9 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
 
         lastLeft.bottom = box.left + box.width;
 
-        if (bottom == 'shorttime' || bottom == 'fulltime') {
+        if (bottom === 'shorttime' || bottom === 'fulltime') {
           result.bottom.push(
-            this.renderTime(box.left, box.width, bottom, currentDate.valueOf(), withYear)
+            this.renderTime(box.left, box.width, bottom, currentDate.valueOf(), height)
           );
         } else {
           result.bottom.push(
@@ -193,7 +182,7 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
               left={box.left}
               width={box.width}
               label={currentBottom}
-              height={withYear ? 20 : 30}
+              height={height}
             />
           );
         }
@@ -205,21 +194,15 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
         className="timeLine-main-header-container"
         style={{ width: DATA_CONTAINER_WIDTH, maxWidth: DATA_CONTAINER_WIDTH }}
       >
-        {withYear && (
+        {top && (
           <div className="header-top" style={{ ...config.values.header.top.style }}>
             {result.top}
           </div>
         )}
-        <div
-          className="header-middle"
-          style={{ height: withYear ? 20 : 30, ...config.values.header.middle.style }}
-        >
+        <div className="header-middle" style={{ height, ...config.values.header.middle.style }}>
           {result.middle}
         </div>
-        <div
-          className="header-bottom"
-          style={{ height: withYear ? 20 : 30, ...config.values.header.bottom.style }}
-        >
+        <div className="header-bottom" style={{ height, ...config.values.header.bottom.style }}>
           {result.bottom}
         </div>
       </div>
@@ -229,7 +212,7 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
   renderHeader = () => {
     switch (this.props.dateMode) {
       case DATE_MODE_DAY:
-        return this.renderHeaderRows('week', 'dayweek', 'fulltime', false);
+        return this.renderHeaderRows(null, 'dayweek', 'fulltime');
       case DATE_MODE_WEEK:
         return this.renderHeaderRows('week', 'dayweek', 'shorttime');
       case DATE_MODE_MONTH:

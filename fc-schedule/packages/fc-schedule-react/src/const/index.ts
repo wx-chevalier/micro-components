@@ -5,6 +5,7 @@ export const MOVE_RESIZE_RIGHT = 3;
 
 export const BUFFER_DAYS = 5;
 
+// 数据视图总长度
 export const DATA_CONTAINER_WIDTH = 5000;
 
 export const DATE_MODE_DAY = 'day';

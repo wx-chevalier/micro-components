@@ -1,4 +1,6 @@
+import { dateHelper } from './../controller/DateHelper';
 import * as moment from 'moment';
+import { DATE_MODE_TYPE } from '../const/index';
 
 /** 根据不同的日期类型获取不同的格式 */
 export function getFormat(dateMode: string, position?: string) {
@@ -38,3 +40,17 @@ export const getStartDate = (date, dateMode) => {
       return date;
   }
 };
+
+/** 获取某个模式的时间间隔 */
+export function getModeIncrement(date: moment.Moment, dateMode: DATE_MODE_TYPE) {
+  switch (dateMode) {
+    case 'year':
+      return dateHelper.daysInYear(date.year());
+    case 'month':
+      return date.daysInMonth();
+    case 'week':
+      return 7;
+    default:
+      return 1;
+  }
+}

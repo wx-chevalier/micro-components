@@ -58,7 +58,6 @@ export default class AppSimple extends Component<any, any> {
       <div className="app-container">
         <div className="time-line-container">
           <GanttTimeLine
-            currentDay={-10}
             config={{
               taskList: {
                 title: {

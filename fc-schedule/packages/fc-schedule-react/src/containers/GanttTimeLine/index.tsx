@@ -23,7 +23,6 @@ interface IGanttTimeLineProps extends BaseProps {
   data: Task[];
   links?: LinkType[];
   selectedItem?: Task;
-  currentDay?: number;
 
   config?: UiConfig;
   dateMode?: DATE_MODE_TYPE;
@@ -56,7 +55,6 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   config: UiConfig;
 
   static defaultProps = {
-    currentDay: 0,
     itemHeight: 40,
     dayWidth: 24,
     disableEditableName: false,
@@ -81,7 +79,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     this.dc = new DataController();
     this.dc.onHorizonChange = this.onHorizonChange;
     this.isInitialized = false;
-    this.pxToScroll = 1900;
+    this.pxToScroll = 500;
     const dayWidth = getDayWidth(this.props.dateMode);
 
     this.config = new Config();
@@ -89,16 +87,16 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
 
     // Initialising state
     this.state = {
-      // Day that is in the 0px horizontal
-      currentDay: props.currentDay,
-      //nowPosition is the reference position, this variable support the infinit scrolling by accumulatning scroll times and redefining the 0 position. if we accumulat 2 scroll to the left nowPosition will be 2 * DATA_CONTAINER_WIDTH
+      // 当前界面上主要是处于哪天，用于判断是否到达了左右滚动边界
+      currentDay: 0,
+      // 随着滑动的时候，重新定义 0 位区间
       nowPosition: 0,
       startRow: 0,
       endRow: 10,
       siderStyle: { width: 200 },
       scrollLeft: 0,
       scrollTop: 0,
-      numVisibleRows: 40,
+      visibleRowsNum: 40,
       visibleDaysNum: 10,
       dayWidth: dayWidth,
       interactiveMode: false,
@@ -120,7 +118,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   ////////////////////
   onResizing = size => {
     //If size has changed
-    this.calculateVerticalScrollVariables(size);
+    this.calcVerticalScrollVariables(size);
 
     if (!this.isInitialized) {
       // 初始化数据控制器
@@ -137,14 +135,10 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
 
     const newNumVisibleRows = Math.ceil(size.height / this.props.itemHeight);
     const newNumVisibleDays = this.calcNumVisibleDays(size);
-    const rowInfo = this.calculateStartEndRows(
-      newNumVisibleRows,
-      this.props.data,
-      this.state.scrollTop
-    );
+    const rowInfo = this.calcStartEndRows(newNumVisibleRows, this.props.data, this.state.scrollTop);
 
     this.setState({
-      numVisibleRows: newNumVisibleRows,
+      visibleRowsNum: newNumVisibleRows,
       visibleDaysNum: newNumVisibleDays,
       startRow: rowInfo.start,
       endRow: rowInfo.end,
@@ -158,11 +152,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   verticalChange = scrollTop => {
     if (scrollTop == this.state.scrollTop) return;
     //Check if we have scrolling rows
-    const rowInfo = this.calculateStartEndRows(
-      this.state.numVisibleRows,
-      this.props.data,
-      scrollTop
-    );
+    const rowInfo = this.calcStartEndRows(this.state.visibleRowsNum, this.props.data, scrollTop);
     if (rowInfo.start !== this.state.start) {
       this.setState(
         (this.state = {
@@ -174,10 +164,10 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     }
   };
 
-  calculateStartEndRows = (numVisibleRows, data, scrollTop) => {
+  calcStartEndRows = (visibleRowsNum, data, scrollTop) => {
     const newStart = Math.trunc(scrollTop / this.props.itemHeight);
     const newEnd =
-      newStart + numVisibleRows >= data.length ? data.length : newStart + numVisibleRows;
+      newStart + visibleRowsNum >= data.length ? data.length : newStart + visibleRowsNum;
     return { start: newStart, end: newEnd };
   };
 
@@ -196,14 +186,15 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     let newStartRow = this.state.startRow;
     let newEndRow = this.state.endRow;
 
-    // Calculating if we need to roll up the scroll
+    // Calculating if we need to roll up the scroll，
+    // 当滚动距离超出了预设的滚动距离，则重置 nowPosition 与 currentDay
     if (newScrollLeft > this.pxToScroll) {
       // Content Length - Viewport Length
       newNowPosition = this.state.nowPosition - this.pxToScroll;
       newLeft = 0;
     } else {
       if (newScrollLeft <= 0) {
-        //Content Length - Viewport Length
+        // Content Length - Viewport Length
         newNowPosition = this.state.nowPosition + this.pxToScroll;
         newLeft = this.pxToScroll;
       } else {
@@ -211,15 +202,15 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
       }
     }
 
-    // Get the day of the left position
+    // Get the day of the left position，取整
     const currentDay = Math.trunc((newScrollLeft - this.state.nowPosition) / this.state.dayWidth);
 
     // Calculate rows to render
     newStartRow = Math.trunc(this.state.scrollTop / this.props.itemHeight);
     newEndRow =
-      newStartRow + this.state.numVisibleRows >= this.props.data.length
+      newStartRow + this.state.visibleRowsNum >= this.props.data.length
         ? this.props.data.length - 1
-        : newStartRow + this.state.numVisibleRows;
+        : newStartRow + this.state.visibleRowsNum;
 
     // If we need updates then change the state and the scroll position
 
@@ -233,9 +224,11 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     });
   };
 
-  calculateVerticalScrollVariables = size => {
-    //The pixel to scroll verically is equal to the pecentage of what the viewport represent in the context multiply by the context width
+  calcVerticalScrollVariables = size => {
+    // The pixel to scroll verically is equal to the pecentage of what the viewport represent in the context multiply by the context width
     this.pxToScroll = (1 - size.width / DATA_CONTAINER_WIDTH) * DATA_CONTAINER_WIDTH - 1;
+
+    console.log(this.pxToScroll);
   };
 
   onHorizonChange = (lowerLimit, upLimit) => {
@@ -356,13 +349,11 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
               visibleDaysNum: this.calcNumVisibleDays(this.state.size)
             },
             () => {
-              //to recalculate the now position we have to see how mwny scroll has happen
-              //to do so we calculate the diff of days between current day and now
-              //And we calculate how many times we have scroll
+              // to recalculate the now position we have to see how mwny scroll has happen to do so we calculate the diff of days between current day and now And we calculate how many times we have scroll
               const scrollTime = Math.ceil(
                 (-this.state.currentDay * this.state.dayWidth) / this.pxToScroll
               );
-              //We readjust now postion to the new number of scrolls
+              // We readjust now postion to the new number of scrolls
               const nowPosition = scrollTime * this.pxToScroll;
               const scrollLeft =
                 (this.state.currentDay * this.state.dayWidth + nowPosition) % this.pxToScroll;
@@ -387,8 +378,8 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
           data: nextProps.data
         },
         () => {
-          const rowInfo = this.calculateStartEndRows(
-            this.state.numVisibleRows,
+          const rowInfo = this.calcStartEndRows(
+            this.state.visibleRowsNum,
             nextProps.data,
             this.state.scrollTop
           );
@@ -475,7 +466,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
               onTaskChanging={this.onTaskChanging}
               onStartCreateLink={this.onStartCreateLink}
               onFinishCreateLink={this.onFinishCreateLink}
-              onResizing={this.onResizing}
+              onSize={this.onResizing}
             />
 
             {!disableLink && (
