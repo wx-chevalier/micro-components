@@ -39,7 +39,7 @@ export class LinkComp extends Component<any, any> {
   };
 
   onSelect = e => {
-    if (this.props.onSelectItem) this.props.onSelectItem(this.props.item);
+    if (this.props.onSelectTask) this.props.onSelectTask(this.props.item);
   };
 
   render() {

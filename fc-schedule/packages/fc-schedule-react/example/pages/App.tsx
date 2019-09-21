@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-
-import { GanttTimeLine } from '../../src/components/GanttTimeLine';
-import Generator, { getRandomColor } from './Generator';
+import { GanttTimeLine } from '../../src';
 
 import './App.css';
+import Generator, { getRandomColor } from './Generator';
 
 export const config = {
   header: {
@@ -91,7 +90,7 @@ class App extends Component<any, any> {
       selectedItem: null,
       timelineMode: 'month',
       links: result.links,
-      nonEditableName: false
+      disableEditableName: false
     };
   }
 
@@ -115,7 +114,7 @@ class App extends Component<any, any> {
     this.setState({ data: result });
   };
 
-  onSelectItem = item => {
+  onSelectTask = item => {
     console.log(`Select Item ${item}`);
     this.setState({ selectedItem: item });
   };
@@ -257,11 +256,11 @@ class App extends Component<any, any> {
               style={{ marginLeft: '20px' }}
               onClick={() => {
                 this.setState({
-                  nonEditableName: !this.state.nonEditableName
+                  disableEditableName: !this.state.disableEditableName
                 });
               }}
             >
-              {this.state.nonEditableName ? 'Enable' : 'Disable'} name edition
+              {this.state.disableEditableName ? 'Enable' : 'Disable'} name edition
             </div>
           </div>
         </div>
@@ -271,13 +270,13 @@ class App extends Component<any, any> {
             data={this.state.data}
             links={this.state.links}
             onHorizonChange={this.onHorizonChange}
-            onSelectItem={this.onSelectItem}
+            onSelectTask={this.onSelectTask}
             onUpdateTask={this.onUpdateTask}
             onCreateLink={this.onCreateLink}
             dateMode={this.state.timelineMode}
             itemHeight={this.state.itemHeight}
             selectedItem={this.state.selectedItem}
-            nonEditableName={this.state.nonEditableName}
+            disableEditableName={this.state.disableEditableName}
           />
         </div>
       </div>

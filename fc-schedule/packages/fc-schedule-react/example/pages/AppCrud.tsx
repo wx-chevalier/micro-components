@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { GanttTimeLine } from '../../src/components/GanttTimeLine';
+import { GanttTimeLine } from '../../src';
 import './App.css';
 import { getRandomColor } from './Generator';
 
@@ -84,7 +84,7 @@ export class AppCrud extends Component<any, any> {
     let newLink = this.createLink(item.start, item.end);
     this.setState({ links: [...this.state.links, newLink], selectedItem: newLink });
   };
-  onSelectItem = item => {
+  onSelectTask = item => {
     console.log(`Select Item ${item}`);
     this.setState({ selectedItem: item });
   };
@@ -146,7 +146,7 @@ export class AppCrud extends Component<any, any> {
             links={this.state.links}
             onUpdateTask={this.onUpdateTask}
             onCreateLink={this.onCreateLink}
-            onSelectItem={this.onSelectItem}
+            onSelectTask={this.onSelectTask}
             selectedItem={this.state.selectedItem}
           />
         </div>

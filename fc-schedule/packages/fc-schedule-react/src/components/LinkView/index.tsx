@@ -24,7 +24,7 @@ export class LinkView extends Component<any, any> {
         start={{ x: startPosition.x, y: startPosition.y }}
         end={{ x: endPosition.x, y: endPosition.y }}
         isSelected={this.props.selectedItem == link}
-        onSelectItem={this.props.onSelectItem}
+        onSelectTask={this.props.onSelectTask}
       />
     );
   }
@@ -118,7 +118,7 @@ export class LinkView extends Component<any, any> {
                 start={{ x: startPosition.x, y: startPosition.y }}
                 end={{ x: endPosition.x, y: endPosition.y }}
                 isSelected={this.props.selectedItem == item}
-                onSelectItem={this.props.onSelectItem}
+                onSelectTask={this.props.onSelectTask}
               />
             );
             this.cache = [...this.cache];

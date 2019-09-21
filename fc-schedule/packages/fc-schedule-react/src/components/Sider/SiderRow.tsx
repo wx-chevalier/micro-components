@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { EditableText } from '../EditableText';
 
-export class TaskRow extends Component<any, any> {
+export class SiderRow extends Component<any, any> {
   constructor(props) {
     super(props);
   }
@@ -24,7 +24,7 @@ export class TaskRow extends Component<any, any> {
           top: this.props.top,
           height: this.props.itemHeight
         }}
-        onClick={e => this.props.onSelectItem(this.props.item)}
+        onClick={e => this.props.onSelectTask(this.props.item)}
       >
         {this.props.nonEditable ? (
           <div tabIndex={this.props.index} style={{ width: '100%' }}>

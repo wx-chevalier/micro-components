@@ -4,11 +4,11 @@ import { UiConfig } from '../../types';
 import withContext from '../../utils/context';
 
 export interface IDataRowProps {
-  label: string;
+  itemHeight: number;
   left: number;
   top: number;
-  itemHeight: number;
 
+  label: string;
   config?: UiConfig;
 }
 

@@ -23,18 +23,33 @@ interface IGanttTimeLineProps extends BaseProps {
   data: Task[];
   links?: LinkType[];
   selectedItem?: Task;
-  nonEditableName?: boolean;
 
   config?: UiConfig;
   dateMode?: DATE_MODE_TYPE;
   viewMode?: 'task' | 'worker';
 
+  // 是否允许编辑名称
+  disableEditableName?: boolean;
+  // 是否使用 Link
+  disableLink?: boolean;
+
+  ////////////////////
+  //  Event Handler //
+  ////////////////////
+
+  // 点击某个数据行的响应，必然会传入当前行所属的 Worker
+  onDataRowClick?: (worker: Worker) => void;
+
+  onTaskDetailRender?: (task: Task) => React.ReactNode;
+  // 在左侧栏或者右侧栏中选择 Task 的回调
+  onSelectTask?: (task: Task) => void;
+  onUpdateTask?: (task: Task, newTask: Partial<Task>) => void;
+
   // 侧边栏头部渲染函数
-  onSiderHeaderRender?: Function;
-  onHorizonChange?: Function;
+  onSiderHeaderRender?: () => React.ReactNode;
+  onHorizonChange?: (lowerLimit: number, upLimit: number) => void;
+
   onCreateLink?: Function;
-  onSelectItem?: Function;
-  onUpdateTask?: Function;
 }
 
 export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
@@ -43,7 +58,8 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   static defaultProps = {
     itemHeight: 40,
     dayWidth: 24,
-    nonEditableName: false,
+    disableEditableName: false,
+    disableLink: false,
     dateMode: DATE_MODE_MONTH,
     viewMode: 'task'
   };
@@ -101,7 +117,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   ////////////////////
   //     ON SIZE    //
   ////////////////////
-  onSize = size => {
+  onResizing = size => {
     //If size has changed
     this.calculateVerticalScrollVariables(size);
     if (!this.isInitialized) {
@@ -176,9 +192,9 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     let newStartRow = this.state.startRow;
     let newEndRow = this.state.endRow;
 
-    //Calculating if we need to roll up the scroll
+    // Calculating if we need to roll up the scroll
     if (newScrollLeft > this.pxToScroll) {
-      //ContenLegnth-viewportLengt
+      // ContenLegnth-viewportLengt
       newNowPosition = this.state.nowPosition - this.pxToScroll;
       newLeft = 0;
     } else {
@@ -231,6 +247,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     this.dragging = true;
     this.draggingPosition = e.clientX;
   };
+
   doMouseMove = e => {
     if (this.dragging) {
       const delta = this.draggingPosition - e.clientX;
@@ -241,9 +258,11 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
       }
     }
   };
+
   doMouseUp = e => {
     this.dragging = false;
   };
+
   doMouseLeave = e => {
     // if (!e.relatedTarget.nodeName)
     //     this.dragging=false;
@@ -254,9 +273,11 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     this.dragging = true;
     this.draggingPosition = e.touches[0].clientX;
   };
+
   doTouchEnd = e => {
     this.dragging = false;
   };
+
   doTouchMove = e => {
     if (this.dragging) {
       const delta = this.draggingPosition - e.touches[0].clientX;
@@ -267,12 +288,13 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
       }
     }
   };
+
   doTouchCancel = e => {
     this.dragging = false;
   };
 
-  //Child communicating states
-  onSiderSizing = delta => {
+  // Child communicating states
+  onSiderResizing = delta => {
     this.setState(prevState => {
       const result = { ...prevState };
       result.sideStyle = { width: result.sideStyle.width - delta };
@@ -284,8 +306,8 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   //   ITEMS EVENTS  //
   /////////////////////
 
-  onSelectItem = item => {
-    if (this.props.onSelectItem && item != this.props.selectedItem) this.props.onSelectItem(item);
+  onSelectTask = item => {
+    if (this.props.onSelectTask && item != this.props.selectedItem) this.props.onSelectTask(item);
   };
 
   onStartCreateLink = (task, position) => {
@@ -396,6 +418,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   };
 
   render() {
+    const { disableLink } = this.props;
     return (
       <Provider value={{ config: this.config }}>
         <div className="timeLine">
@@ -407,12 +430,12 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
               endRow={this.state.endRow}
               data={this.props.data}
               selectedItem={this.props.selectedItem}
-              nonEditable={this.props.nonEditableName}
-              onSelectItem={this.onSelectItem}
+              nonEditable={this.props.disableEditableName}
+              onSelectTask={this.onSelectTask}
               onUpdateTask={this.props.onUpdateTask}
               onScroll={this.verticalChange}
             />
-            <VerticalSpliter config={this.config} onSizing={this.onSiderSizing} />
+            <VerticalSpliter config={this.config} onResizing={this.onSiderResizing} />
           </div>
           <div className="timeLine-main">
             <Header
@@ -425,6 +448,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
               dateMode={this.state.dateMode}
               scrollLeft={this.state.scrollLeft}
             />
+
             <DataView
               scrollLeft={this.state.scrollLeft}
               scrollTop={this.state.scrollTop}
@@ -435,6 +459,11 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
               data={this.props.data}
               selectedItem={this.props.selectedItem}
               dayWidth={this.state.dayWidth}
+              boundaries={{
+                lower: this.state.scrollLeft,
+                upper: this.state.scrollLeft + this.state.size.width
+              }}
+              disableLink={disableLink}
               onMouseDown={this.doMouseDown}
               onMouseMove={this.doMouseMove}
               onMouseUp={this.doMouseUp}
@@ -443,34 +472,33 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
               onTouchMove={this.doTouchMove}
               onTouchEnd={this.doTouchEnd}
               onTouchCancel={this.doTouchCancel}
-              onSelectItem={this.onSelectItem}
+              onSelectTask={this.onSelectTask}
               onUpdateTask={this.props.onUpdateTask}
               onTaskChanging={this.onTaskChanging}
               onStartCreateLink={this.onStartCreateLink}
               onFinishCreateLink={this.onFinishCreateLink}
-              boundaries={{
-                lower: this.state.scrollLeft,
-                upper: this.state.scrollLeft + this.state.size.width
-              }}
-              onSize={this.onSize}
+              onResizing={this.onResizing}
             />
-            <LinkView
-              scrollLeft={this.state.scrollLeft}
-              scrollTop={this.state.scrollTop}
-              startRow={this.state.startRow}
-              endRow={this.state.endRow}
-              data={this.props.data}
-              nowPosition={this.state.nowPosition}
-              dayWidth={this.state.dayWidth}
-              interactiveMode={this.state.interactiveMode}
-              taskToCreate={this.state.taskToCreate}
-              onFinishCreateLink={this.onFinishCreateLink}
-              changingTask={this.state.changingTask}
-              selectedItem={this.props.selectedItem}
-              onSelectItem={this.onSelectItem}
-              itemHeight={this.props.itemHeight}
-              links={this.props.links}
-            />
+
+            {!disableLink && (
+              <LinkView
+                scrollLeft={this.state.scrollLeft}
+                scrollTop={this.state.scrollTop}
+                startRow={this.state.startRow}
+                endRow={this.state.endRow}
+                data={this.props.data}
+                nowPosition={this.state.nowPosition}
+                dayWidth={this.state.dayWidth}
+                interactiveMode={this.state.interactiveMode}
+                taskToCreate={this.state.taskToCreate}
+                onFinishCreateLink={this.onFinishCreateLink}
+                changingTask={this.state.changingTask}
+                selectedItem={this.props.selectedItem}
+                onSelectTask={this.onSelectTask}
+                itemHeight={this.props.itemHeight}
+                links={this.props.links}
+              />
+            )}
           </div>
         </div>
       </Provider>

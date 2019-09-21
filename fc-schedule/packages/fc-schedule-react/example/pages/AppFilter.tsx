@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { GanttTimeLine } from '../../src/components/GanttTimeLine';
+import { GanttTimeLine } from '../../src';
 import Generator from './Generator';
 import './App.css';
 

@@ -10,37 +10,39 @@ import {
   LINK_POS_RIGHT
 } from '../../const';
 import withContext from '../../utils/context';
-import { UiConfig } from '../../types/index';
+import { UiConfig, Task } from '../../types/index';
 
-interface IProps {
-  label: string;
+interface ITaskClipProps {
+  item: Task;
+
   left: number;
   width: number;
   height: number;
-  item: any;
   nowPosition: number;
   dayWidth: number;
-  isSelected: boolean;
+
+  config: UiConfig;
+  label: string;
   color: string;
+  isSelected: boolean;
+  disableLink: boolean;
 
   onTaskChanging: Function;
   onChildDrag: Function;
-  onSelectItem: Function;
+  onSelectTask: Function;
   onUpdateTask: Function;
   onStartCreateLink: Function;
   onFinishCreateLink: Function;
-
-  config: UiConfig;
 }
 
-interface IState {
+interface ITaskClipState {
   dragging: boolean;
   left: number;
   width: number;
   dateMode: number;
 }
 
-export class DataTaskComp extends Component<IProps, IState> {
+export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
   draggingPosition: number;
 
   constructor(props) {
@@ -191,7 +193,7 @@ export class DataTaskComp extends Component<IProps, IState> {
 
     const backgroundColor = this.props.color ? this.props.color : configStyle.backgroundColor;
 
-    const finalHeight = this.props.height > 25 ? 20 : this.props.height - 5;
+    const finalHeight = this.props.height > 25 ? 16 : this.props.height - 5;
     const top = (this.props.height - finalHeight) / 2;
 
     // 这里根据是否拖拽有不同的样式设置
@@ -217,7 +219,7 @@ export class DataTaskComp extends Component<IProps, IState> {
   }
 
   render() {
-    const { config } = this.props;
+    const { config, disableLink } = this.props;
     const style = this.calculateStyle();
 
     return (
@@ -225,40 +227,46 @@ export class DataTaskComp extends Component<IProps, IState> {
         onMouseDown={e => this.doMouseDown(e, MODE_MOVE)}
         onTouchStart={e => this.doTouchStart(e, MODE_MOVE)}
         onClick={e => {
-          this.props.onSelectItem(this.props.item);
+          this.props.onSelectTask(this.props.item);
         }}
         style={style}
       >
-        <div
-          className="timeLine-main-data-task-side"
-          style={{ top: 0, left: -4, height: style.height }}
-          onMouseDown={e => this.doMouseDown(e, MOVE_RESIZE_LEFT)}
-          onTouchStart={e => this.doTouchStart(e, MOVE_RESIZE_LEFT)}
-        >
+        {!disableLink && (
           <div
-            className="timeLine-main-data-task-side-linker"
-            onMouseUp={e => this.onCreateLinkMouseUp(e, LINK_POS_LEFT)}
-            onTouchEnd={e => this.onCreateLinkTouchEnd(e, LINK_POS_LEFT)}
-          />
-        </div>
+            className="timeLine-main-data-task-side"
+            style={{ top: 0, left: -4, height: style.height }}
+            onMouseDown={e => this.doMouseDown(e, MOVE_RESIZE_LEFT)}
+            onTouchStart={e => this.doTouchStart(e, MOVE_RESIZE_LEFT)}
+          >
+            <div
+              className="timeLine-main-data-task-side-linker"
+              onMouseUp={e => this.onCreateLinkMouseUp(e, LINK_POS_LEFT)}
+              onTouchEnd={e => this.onCreateLinkTouchEnd(e, LINK_POS_LEFT)}
+            />
+          </div>
+        )}
+
         <div style={{ overflow: 'hidden' }}>
           {config.values.dataViewPort.task.showLabel ? this.props.item.name : ''}
         </div>
-        <div
-          className="timeLine-main-data-task-side"
-          style={{ top: 0, left: style.width - 3, height: style.height }}
-          onMouseDown={e => this.doMouseDown(e, MOVE_RESIZE_RIGHT)}
-          onTouchStart={e => this.doTouchStart(e, MOVE_RESIZE_RIGHT)}
-        >
+
+        {!disableLink && (
           <div
-            className="timeLine-main-data-task-side-linker"
-            onMouseDown={e => this.onCreateLinkMouseDown(e, LINK_POS_RIGHT)}
-            onTouchStart={e => this.onCreateLinkTouchStart(e, LINK_POS_RIGHT)}
-          />
-        </div>
+            className="timeLine-main-data-task-side"
+            style={{ top: 0, left: style.width - 3, height: style.height }}
+            onMouseDown={e => this.doMouseDown(e, MOVE_RESIZE_RIGHT)}
+            onTouchStart={e => this.doTouchStart(e, MOVE_RESIZE_RIGHT)}
+          >
+            <div
+              className="timeLine-main-data-task-side-linker"
+              onMouseDown={e => this.onCreateLinkMouseDown(e, LINK_POS_RIGHT)}
+              onTouchStart={e => this.onCreateLinkTouchStart(e, LINK_POS_RIGHT)}
+            />
+          </div>
+        )}
       </div>
     );
   }
 }
 
-export const DataTask = withContext(DataTaskComp);
+export const TaskClip = withContext(TaskClipComp);

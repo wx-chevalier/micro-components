@@ -5,7 +5,7 @@ import { UiConfig } from '../../types/index';
 
 export interface VerticalSpliterProps {
   config: UiConfig;
-  onSizing: (delat: number) => void;
+  onResizing: (delat: number) => void;
 }
 
 export class VerticalSpliter extends Component<VerticalSpliterProps, any> {
@@ -37,7 +37,7 @@ export class VerticalSpliter extends Component<VerticalSpliterProps, any> {
   }
 
   doMouseMove(e) {
-    const { onSizing } = this.props;
+    const { onResizing } = this.props;
 
     if (this.state.dragging) {
       e.stopPropagation();
@@ -46,8 +46,8 @@ export class VerticalSpliter extends Component<VerticalSpliterProps, any> {
 
       this.draggingPosition = e.clientX;
 
-      if (onSizing) {
-        onSizing(delta);
+      if (onResizing) {
+        onResizing(delta);
       }
     }
   }

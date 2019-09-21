@@ -235,7 +235,7 @@ export class Header extends PureComponent<any, any> {
     }
 
     return (
-      <div id="timeline-header" ref="headerRef" className="timeLine-main-header-viewPort">
+      <div id="timelineHeader" ref="headerRef" className="timeLine-main-header-viewPort">
         {this.renderHeader()}
       </div>
     );

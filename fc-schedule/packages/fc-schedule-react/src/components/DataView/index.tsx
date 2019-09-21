@@ -4,17 +4,21 @@ import { withSize } from 'react-sizeme';
 import { DATA_CONTAINER_WIDTH } from '../../const';
 import { dateHelper } from '../../controller';
 
-import { DataTask } from './TaskClip';
+import { TaskClip } from './TaskClip';
 import { IDataRowProps, DataRow } from './DataRow';
+import { Task } from '../../types/index';
 
-interface IDataViewPortCompProps extends IDataRowProps {
+interface IDataViewCompProps extends IDataRowProps {
+  data: Task[];
   startRow: number;
   endRow: number;
-  data: any;
+
   nowPosition: number;
   scrollLeft: number;
   scrollTop: number;
   dayWidth: number;
+
+  disableLink?: boolean;
   selectedItem: any;
 
   onMouseDown: any;
@@ -28,13 +32,13 @@ interface IDataViewPortCompProps extends IDataRowProps {
 
   onTaskChanging: Function;
   onChildDrag: Function;
-  onSelectItem: Function;
+  onSelectTask: Function;
   onUpdateTask: Function;
   onStartCreateLink: Function;
   onFinishCreateLink: Function;
 }
 
-export class DataViewPortComp extends Component<IDataViewPortCompProps> {
+export class DataViewComp extends Component<IDataViewCompProps> {
   childDragging: boolean;
 
   constructor(props) {
@@ -50,6 +54,8 @@ export class DataViewPortComp extends Component<IDataViewPortCompProps> {
   };
 
   renderRows = () => {
+    const { disableLink } = this.props;
+
     const result: any[] = [];
     for (let i = this.props.startRow; i < this.props.endRow + 1; i++) {
       const item = this.props.data[i];
@@ -72,7 +78,7 @@ export class DataViewPortComp extends Component<IDataViewPortCompProps> {
           left={20}
           itemHeight={this.props.itemHeight}
         >
-          <DataTask
+          <TaskClip
             item={item}
             label={item.name}
             nowPosition={this.props.nowPosition}
@@ -82,8 +88,9 @@ export class DataViewPortComp extends Component<IDataViewPortCompProps> {
             width={newWidth}
             height={this.props.itemHeight}
             onChildDrag={this.onChildDrag}
+            disableLink={disableLink}
             isSelected={this.props.selectedItem == item}
-            onSelectItem={this.props.onSelectItem}
+            onSelectTask={this.props.onSelectTask}
             onStartCreateLink={this.props.onStartCreateLink}
             onFinishCreateLink={this.props.onFinishCreateLink}
             onTaskChanging={this.props.onTaskChanging}
@@ -101,7 +108,7 @@ export class DataViewPortComp extends Component<IDataViewPortCompProps> {
     }
   };
   doMouseMove = e => {
-    this.props.onMouseMove(e, this.refs.dataViewPort);
+    this.props.onMouseMove(e, this.refs.DataView);
   };
 
   doTouchStart = e => {
@@ -110,24 +117,24 @@ export class DataViewPortComp extends Component<IDataViewPortCompProps> {
     }
   };
   doTouchMove = e => {
-    this.props.onTouchMove(e, this.refs.dataViewPort);
+    this.props.onTouchMove(e, this.refs.DataView);
   };
 
   componentDidMount() {
-    (this.refs.dataViewPort as any).scrollLeft = 0;
+    (this.refs.DataView as any).scrollLeft = 0;
   }
 
   render() {
-    if (this.refs.dataViewPort) {
-      (this.refs.dataViewPort as any).scrollLeft = this.props.scrollLeft;
-      (this.refs.dataViewPort as any).scrollTop = this.props.scrollTop;
+    if (this.refs.DataView) {
+      (this.refs.DataView as any).scrollLeft = this.props.scrollLeft;
+      (this.refs.DataView as any).scrollTop = this.props.scrollTop;
     }
 
     const height = this.getContainerHeight(this.props.data.length);
     return (
       <div
-        ref="dataViewPort"
-        id="timeLinedataViewPort"
+        ref="DataView"
+        id="timeLineDataView"
         className="timeLine-main-data-viewPort"
         onMouseDown={this.doMouseDown}
         onMouseMove={this.doMouseMove}
@@ -149,4 +156,4 @@ export class DataViewPortComp extends Component<IDataViewPortCompProps> {
   }
 }
 
-export const DataView = withSize({ monitorWidth: true, monitorHeight: true })(DataViewPortComp);
+export const DataView = withSize({ monitorWidth: true, monitorHeight: true })(DataViewComp);

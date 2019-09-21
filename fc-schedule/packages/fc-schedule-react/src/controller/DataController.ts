@@ -29,7 +29,7 @@ export class DataController {
     this.loadDataHorizon();
   };
 
-  //OnScroll
+  // onScroll
   setStartEnd = (start, end, newPosition, dayWidth) => {
     this.newPosition = newPosition;
     this.dayWidth = dayWidth;
@@ -50,7 +50,7 @@ export class DataController {
     this.upperDataLimit = end + HORIZON_BUFFER_ALERT;
   };
 
-  //OnScroll
+  // onScroll
   loadDataHorizon = () => {
     const lowerLimit = dateHelper.pixelToDate(this.lowerLimit, this.newPosition, this.dayWidth);
     const upLimit = dateHelper.pixelToDate(this.upperLimit, this.newPosition, this.dayWidth);

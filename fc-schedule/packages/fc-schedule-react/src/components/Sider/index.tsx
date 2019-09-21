@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import withContext from '../../utils/context';
 
 import './index.less';
-import { TaskRow } from './TaskRow';
+import { SiderRow } from './SiderRow';
 
 export class SiderComp extends Component<any, any> {
   containerStyle: any;
@@ -17,7 +17,7 @@ export class SiderComp extends Component<any, any> {
     return { height: newHeight };
   }
 
-  renderTaskRow(data) {
+  renderSiderRow(data) {
     const result: any = [];
 
     for (let i = this.props.startRow; i < this.props.endRow + 1; i++) {
@@ -26,7 +26,7 @@ export class SiderComp extends Component<any, any> {
       if (!item) break;
 
       result.push(
-        <TaskRow
+        <SiderRow
           key={i}
           config={this.props.config}
           index={i}
@@ -36,7 +36,7 @@ export class SiderComp extends Component<any, any> {
           itemHeight={this.props.itemHeight}
           isSelected={this.props.selectedItem == item}
           onUpdateTask={this.props.onUpdateTask}
-          onSelectItem={this.props.onSelectItem}
+          onSelectTask={this.props.onSelectTask}
           nonEditable={this.props.nonEditable}
         />
       );
@@ -62,7 +62,7 @@ export class SiderComp extends Component<any, any> {
         </div>
         <div ref="taskViewPort" className="timeLine-side-task-viewPort" onScroll={this.doScroll}>
           <div className="timeLine-side-task-container" style={this.containerStyle}>
-            {this.renderTaskRow(data)}
+            {this.renderSiderRow(data)}
           </div>
         </div>
       </div>

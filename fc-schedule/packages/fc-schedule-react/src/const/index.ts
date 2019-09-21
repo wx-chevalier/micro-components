@@ -26,6 +26,7 @@ export const HOUR_DAY_WEEK = 20;
 export const DAY_DAY_MODE = 1440; //each hour 60 px
 export const HOUR_DAY_DAY = 60;
 
+/** 获取某天的宽度 */
 export function getDayWidth(dateMode: DATE_MODE_TYPE = DATE_MODE_MONTH) {
   switch (dateMode) {
     case DATE_MODE_DAY:

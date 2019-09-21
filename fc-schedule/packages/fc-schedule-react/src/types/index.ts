@@ -12,6 +12,8 @@ export interface BaseProps {
 }
 
 export interface Worker extends Base {
+  id: string;
+  name: string;
   tasks?: Task[];
 }
 
