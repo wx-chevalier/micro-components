@@ -1,7 +1,17 @@
 import React, { Component } from 'react';
 import { Link } from './Link';
 
-export class DraftLink extends Component<any, any> {
+export interface IDraftLinkProps {
+  start: { x: number; y: number };
+  onFinishCreateLink: () => void;
+}
+
+export interface IDraftLinkState {
+  x: number;
+  y: number;
+}
+
+export class DraftLink extends Component<IDraftLinkProps, IDraftLinkState> {
   init: boolean;
   lastX: number;
   lastY: number;
@@ -36,7 +46,7 @@ export class DraftLink extends Component<any, any> {
     this.setState({ x: newX, y: newY });
   };
 
-  doMouseUp = e => {
+  doMouseUp = () => {
     this.props.onFinishCreateLink();
   };
 

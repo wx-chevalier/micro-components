@@ -8,9 +8,9 @@ export const { Consumer, Provider } = Context;
 
 // This is a HOC function.
 // It takes a component...
-export default function withContext(Component) {
+export default function withContext<T>(Component) {
   // ...and returns another component...
-  return props => {
+  return (props: T) => {
     // ... and renders the wrapped component with the context theme!
     // Notice that we pass through any additional props as well
     return <Consumer>{value => <Component {...props} config={value.config} />}</Consumer>;

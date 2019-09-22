@@ -31,7 +31,7 @@ export class AppCrud extends Component<any, any> {
       }
     ];
 
-    this.state = { data: data, links: [], selectedItem: null };
+    this.state = { data: data, links: [], selectedTask: null };
   }
   genID() {
     function S4() {
@@ -82,11 +82,11 @@ export class AppCrud extends Component<any, any> {
   };
   onCreateLink = item => {
     let newLink = this.createLink(item.start, item.end);
-    this.setState({ links: [...this.state.links, newLink], selectedItem: newLink });
+    this.setState({ links: [...this.state.links, newLink], selectedTask: newLink });
   };
   onSelectTask = item => {
     console.log(`Select Item ${item}`);
-    this.setState({ selectedItem: item });
+    this.setState({ selectedTask: item });
   };
 
   addTask = () => {
@@ -102,13 +102,13 @@ export class AppCrud extends Component<any, any> {
 
   delete = () => {
     console.log('On delete');
-    if (this.state.selectedItem) {
-      let index = this.state.links.indexOf(this.state.selectedItem);
+    if (this.state.selectedTask) {
+      let index = this.state.links.indexOf(this.state.selectedTask);
       if (index > -1) {
         this.state.links.splice(index, 1);
         this.setState({ links: [...this.state.links] });
       }
-      index = this.state.data.indexOf(this.state.selectedItem);
+      index = this.state.data.indexOf(this.state.selectedTask);
       if (index > -1) {
         this.state.data.splice(index, 1);
         this.setState({ data: [...this.state.data] });
@@ -147,7 +147,7 @@ export class AppCrud extends Component<any, any> {
             onUpdateTask={this.onUpdateTask}
             onCreateLink={this.onCreateLink}
             onSelectTask={this.onSelectTask}
-            selectedItem={this.state.selectedItem}
+            selectedTask={this.state.selectedTask}
           />
         </div>
       </div>

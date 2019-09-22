@@ -95,7 +95,7 @@ const config = {
         keepClosingSlash: true,
         removeRedundantAttributes: true,
         removeEmptyAttributes: true,
-        removeStyleLinkTypeAttributes: true
+        removeStyleTaskLinkAttributes: true
       },
       mobile: true,
       scripts: ['./static.js']

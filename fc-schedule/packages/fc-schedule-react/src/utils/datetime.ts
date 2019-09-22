@@ -2,6 +2,12 @@ import { dateHelper } from './../controller/DateHelper';
 import * as moment from 'moment';
 import { DATE_MODE_TYPE } from '../const/index';
 
+export function getToday() {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
 /** 根据不同的日期类型获取不同的格式 */
 export function getFormat(dateMode: string, position?: string) {
   switch (dateMode) {

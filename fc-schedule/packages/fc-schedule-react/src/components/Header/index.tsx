@@ -68,6 +68,7 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
     // 当没有 lastLeft 存在时候，则以 now 为起始坐标进行计算
     if (!lastLeft) {
       const startDate = getStartDate(date, dateMode).startOf('day');
+      // 实际上这里的 now 取当天，指定了默认将当天作为 0 天，即时间轴起点，其他时间都是相对于该天进行计算偏移
       const now = moment().startOf('day');
       const daysInBetween = startDate.diff(now, 'days');
 

@@ -1,11 +1,25 @@
 import React, { Component } from 'react';
 
-import withContext from '../../utils/context';
-
 import './index.less';
+import withContext from '../../utils/context';
+import { TaskGroup, UiConfig } from '../../types';
 import { SiderRow } from './SiderRow';
 
-export class SiderComp extends Component<any, any> {
+export interface ISiderProps {
+  config?: UiConfig;
+  endRow: number;
+  itemHeight: number;
+  nonEditable?: boolean;
+  startRow: number;
+  taskGroups: TaskGroup[];
+  selectedTaskGroup?: TaskGroup;
+
+  onScroll: Function;
+  onSelectTaskGroup?: (task: TaskGroup) => void;
+  onUpdateTaskGroup?: (task: TaskGroup, newTask: Partial<TaskGroup>) => void;
+}
+
+export class SiderComp extends Component<ISiderProps, any> {
   containerStyle: any;
 
   constructor(props) {
@@ -18,6 +32,10 @@ export class SiderComp extends Component<any, any> {
   }
 
   renderSiderRow(data) {
+    const { config } = this.props;
+    if (!config) {
+      return;
+    }
     const result: any = [];
 
     for (let i = this.props.startRow; i < this.props.endRow + 1; i++) {
@@ -29,15 +47,15 @@ export class SiderComp extends Component<any, any> {
         <SiderRow
           key={i}
           index={i}
-          config={this.props.config}
-          item={item}
+          config={config}
+          taskGroup={item}
           label={item.name}
           top={i * this.props.itemHeight}
           itemHeight={this.props.itemHeight}
           nonEditable={this.props.nonEditable}
-          isSelected={this.props.selectedItem == item}
-          onUpdateTask={this.props.onUpdateTask}
-          onSelectTask={this.props.onSelectTask}
+          isSelected={this.props.selectedTaskGroup == item}
+          onUpdateTaskGroup={this.props.onUpdateTaskGroup}
+          onSelectTaskGroup={this.props.onSelectTaskGroup}
         />
       );
     }
@@ -49,11 +67,13 @@ export class SiderComp extends Component<any, any> {
   };
 
   render() {
-    const { config } = this.props;
+    const { config, taskGroups } = this.props;
 
-    const data = this.props.data ? this.props.data : [];
+    if (!config) {
+      return;
+    }
 
-    this.containerStyle = this.getContainerStyle(data.length);
+    this.containerStyle = this.getContainerStyle(taskGroups.length);
 
     return (
       <div className="timeLine-side">
@@ -62,7 +82,7 @@ export class SiderComp extends Component<any, any> {
         </div>
         <div ref="taskViewPort" className="timeLine-side-task-viewPort" onScroll={this.doScroll}>
           <div className="timeLine-side-task-container" style={this.containerStyle}>
-            {this.renderSiderRow(data)}
+            {this.renderSiderRow(taskGroups)}
           </div>
         </div>
       </div>
@@ -70,4 +90,4 @@ export class SiderComp extends Component<any, any> {
   }
 }
 
-export const Sider = withContext(SiderComp);
+export const Sider = withContext<ISiderProps>(SiderComp);

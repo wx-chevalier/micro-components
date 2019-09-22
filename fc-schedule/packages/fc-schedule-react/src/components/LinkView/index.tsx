@@ -1,124 +1,193 @@
 import React, { Component } from 'react';
 
-import { registry, dateHelper } from '../../controller';
+import { dataRegistry, dateHelper } from '../../controller';
 
 import { Link } from './Link';
 import { DraftLink } from './DraftLink';
+import { TaskLink, Task, LinkPos } from '../../types';
+import { TaskGroup, UiConfig, EditingTask } from '../../types/index';
 
-export class LinkView extends Component<any, any> {
-  cache: any;
+export interface ILinkViewProps {
+  complementalLeft: number;
+  config?: UiConfig;
+  dayWidth: number;
+  editingTask?: { task: Task; position: { start: number; end: number } };
+  editingLink?: { task: Task; position: LinkPos };
+  interactiveMode: boolean;
+  itemHeight: number;
+  links: TaskLink[];
+  selectedLink?: TaskLink;
+  scrollLeft: number;
+  scrollTop: number;
+  startRow: number;
+  endRow: number;
+  taskGroups: TaskGroup[];
+
+  onSelectLink?: (link: TaskLink) => void;
+  onFinishCreateLink: (task: Task, pos: LinkPos) => void;
+}
+
+export interface ILinkViewState {
+  dayWidth: number;
+  editingTask?: EditingTask;
+  links: TaskLink[];
+  taskGroups: TaskGroup[];
+  selectedLink?: TaskLink;
+}
+
+export class LinkView extends Component<ILinkViewProps, ILinkViewState> {
+  cache: React.ReactNode[];
 
   constructor(props) {
     super(props);
     this.cache = [];
-    this.state = { links: [], data: [], selectedItem: null };
+    this.state = { dayWidth: props.dayWidth, links: [], taskGroups: [], selectedLink: undefined };
   }
 
-  renderLink(startItem, endItem, link, key) {
-    const startPosition = this.getItemPosition(startItem.index, startItem.item.end);
-    const endPosition = this.getItemPosition(endItem.index, endItem.item.start);
+  getItemPosition = (rowNum: number, date) => {
+    const x = dateHelper.dateToPixel(date, 0, this.props.dayWidth);
+    const y = rowNum * this.props.itemHeight + this.props.itemHeight / 2;
+    return { x: x, y: y };
+  };
+
+  renderLink(
+    startTask: { item: Task; rowNum: number },
+    endTask: { item: Task; rowNum: number },
+    link: TaskLink,
+    key: number
+  ) {
+    const startPosition = this.getItemPosition(startTask.rowNum, startTask.item.end);
+    const endPosition = this.getItemPosition(endTask.rowNum, endTask.item.start);
+
     return (
       <Link
         key={key}
-        item={link}
+        link={link}
         start={{ x: startPosition.x, y: startPosition.y }}
         end={{ x: endPosition.x, y: endPosition.y }}
-        isSelected={this.props.selectedItem == link}
-        onSelectTask={this.props.onSelectTask}
+        isSelected={this.props.selectedLink == link}
+        onSelectLink={this.props.onSelectLink}
       />
     );
   }
 
-  getItemPosition = (index, date) => {
-    const x = dateHelper.dateToPixel(date, 0, this.props.dayWidth);
-    const y = index * this.props.itemHeight + this.props.itemHeight / 2;
-    return { x: x, y: y };
-  };
-
   renderLinks() {
     this.cache = [];
-    const renderLinks = {};
-    let startItem,
-      endItem = {};
-    if (this.state.data.length == 0) return;
+    const renderedLinks = {};
+
+    if (this.state.taskGroups.length == 0) return;
     for (let i = 0; i < this.state.links.length; i++) {
-      const link = this.state.links[i];
-      if (!link) if (renderLinks[link.id]) continue;
-      startItem = registry.getTask(link.start);
+      const link: TaskLink = this.state.links[i];
+
+      if (!link || renderedLinks[link.id]) {
+        continue;
+      }
+
+      const startItem = dataRegistry.getTask(link.start);
       if (!startItem) {
         this.cache.push(null);
         continue;
       }
-      endItem = registry.getTask(link.end);
+
+      const endItem = dataRegistry.getTask(link.end);
       if (!endItem) {
         this.cache.push(null);
         continue;
       }
 
       this.cache.push(this.renderLink(startItem, endItem, link, i));
-      renderLinks[link.id] = '';
+      renderedLinks[link.id] = '';
     }
   }
 
   refreshData() {
     if (
       this.props.links != this.state.links ||
-      this.props.data != this.state.data ||
+      this.props.taskGroups != this.state.taskGroups ||
       this.props.dayWidth != this.state.dayWidth ||
-      this.props.selectedItem != this.state.selectedItem
+      this.props.selectedLink != this.state.selectedLink
     ) {
-      const { selectedItem, dayWidth, links, data } = this.props;
-      this.setState({ selectedItem, dayWidth, links, data }, () => {
-        if (this.state.links && this.state.data) this.renderLinks();
+      const { selectedLink, dayWidth, links, taskGroups } = this.props;
+
+      this.setState({ selectedLink, dayWidth, links, taskGroups }, () => {
+        if (this.state.links && this.state.taskGroups) {
+          this.renderLinks();
+        }
       });
     }
   }
 
   renderCreateLink = () => {
-    if (this.props.interactiveMode) {
-      const record = registry.getTask(this.props.linkingTask.task.id);
-      const position = this.getItemPosition(record.index, record.item.end);
-      return <DraftLink start={position} onFinishCreateLink={this.props.onFinishCreateLink} />;
+    const { interactiveMode, editingLink } = this.props;
+
+    if (interactiveMode && editingLink) {
+      const record = dataRegistry.getTask(editingLink.task.id);
+
+      const position = this.getItemPosition(record.rowNum, record.item.end);
+
+      return (
+        <DraftLink
+          start={position}
+          onFinishCreateLink={() => {
+            this.props.onFinishCreateLink(editingLink.task, editingLink.position);
+          }}
+        />
+      );
     }
     return null;
   };
 
   renderChangingTaskLinks = () => {
-    if (this.props.editingTask != this.state.editingTask) {
+    if (this.state.editingTask && this.props.editingTask !== this.state.editingTask) {
       this.setState(
         {
           editingTask: this.props.editingTask
         },
         () => {
-          //Get Links from task
-          const links = registry.getLinks(this.state.editingTask.item.id);
-          if (!links) return;
+          const { editingTask } = this.state;
+          if (!editingTask) {
+            return;
+          }
+
+          // Get Links from task
+          const links = dataRegistry.getLinks(editingTask!.task.id);
+          if (!links) {
+            return;
+          }
+
           let item: any = null;
           let startItem: any = null;
           let endItem: any = null;
           let startPosition: any = {};
           let endPosition: any = {};
+
           for (let i = 0; i < links.length; i++) {
             item = links[i];
-            startItem = registry.getTask(item.link.start);
+
+            startItem = dataRegistry.getTask(item.link.start);
             if (!startItem) continue;
-            endItem = registry.getTask(item.link.end);
+
+            endItem = dataRegistry.getTask(item.link.end);
             if (!endItem) continue;
+
             startPosition = this.getItemPosition(startItem.index, startItem.item.end);
-            if (this.state.editingTask.item.id == item.link.start)
-              startPosition.x = this.state.editingTask.position.end;
+            if (editingTask.task.id == item.link.start) {
+              startPosition.x = editingTask.position.end;
+            }
+
             endPosition = this.getItemPosition(endItem.index, endItem.item.start);
-            if (this.state.editingTask.item.id == item.link.end)
-              endPosition.x = this.state.editingTask.position.start;
+            if (editingTask.task.id == item.link.end) {
+              endPosition.x = editingTask.position.start;
+            }
 
             this.cache[item.index] = (
               <Link
                 key={-i - 1}
-                item={item}
+                link={item}
                 start={{ x: startPosition.x, y: startPosition.y }}
                 end={{ x: endPosition.x, y: endPosition.y }}
-                isSelected={this.props.selectedItem == item}
-                onSelectTask={this.props.onSelectTask}
+                isSelected={this.props.selectedLink == item}
+                onSelectLink={this.props.onSelectLink}
               />
             );
             this.cache = [...this.cache];
@@ -131,6 +200,7 @@ export class LinkView extends Component<any, any> {
   render() {
     this.refreshData();
     this.renderChangingTaskLinks();
+
     return (
       <svg
         x={0}

@@ -1,7 +1,9 @@
 /** 原子任务的定义 */
+export type Id = string | number;
+
 interface Base {
-  id: string;
-  name: string;
+  id: Id;
+  name?: string;
   desc?: string;
 
   extra?: any;
@@ -11,16 +13,11 @@ export interface BaseProps {
   itemHeight: number;
 }
 
-export interface Worker extends Base {
-  id: string;
-  name: string;
-  tasks?: Task[];
+export interface TaskGroup extends Base {
+  tasks: Task[];
 }
 
 export interface Task extends Base {
-  // 关联的处理人的信息
-  worker?: Worker;
-
   // 开始与结束的时间，时间戳
   start: number | Date;
   end: number | Date;
@@ -29,15 +26,23 @@ export interface Task extends Base {
   color?: string;
 }
 
-export interface LinkType extends Base {
-  start: {
-    x: number;
-    y: number;
-  };
-  end: {
-    x: number;
-    y: number;
-  };
+export interface EditingTask {
+  task: Task;
+  position: { start: number; end: number };
+}
+
+export type LinkPos = 'LINK_POS_LEFT' | 'LINK_POS_RIGHT';
+
+export interface EditingLink {
+  task: Task;
+  position: LinkPos;
+}
+
+export interface TaskLink extends Base {
+  start: Id;
+  startPosition?: number;
+  end: Id;
+  endPosition?: number;
 }
 
 export interface UiConfig {

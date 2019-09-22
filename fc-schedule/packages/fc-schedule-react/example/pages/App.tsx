@@ -87,7 +87,7 @@ class App extends Component<any, any> {
     this.state = {
       itemHeight: 20,
       data: [],
-      selectedItem: null,
+      selectedTask: null,
       timelineMode: 'month',
       links: result.links,
       disableEditableName: false
@@ -116,7 +116,7 @@ class App extends Component<any, any> {
 
   onSelectTask = item => {
     console.log(`Select Item ${item}`);
-    this.setState({ selectedItem: item });
+    this.setState({ selectedTask: item });
   };
 
   onUpdateTask = (item, props) => {
@@ -183,13 +183,13 @@ class App extends Component<any, any> {
 
   delete = () => {
     console.log('On delete');
-    if (this.state.selectedItem) {
-      let index = this.state.links.indexOf(this.state.selectedItem);
+    if (this.state.selectedTask) {
+      let index = this.state.links.indexOf(this.state.selectedTask);
       if (index > -1) {
         this.state.links.splice(index, 1);
         this.setState({ links: [...this.state.links] });
       }
-      index = this.state.data.indexOf(this.state.selectedItem);
+      index = this.state.data.indexOf(this.state.selectedTask);
       if (index > -1) {
         this.state.data.splice(index, 1);
         this.setState({ data: [...this.state.data] });
@@ -267,7 +267,7 @@ class App extends Component<any, any> {
         <div className="time-line-container">
           <GanttTimeLine
             config={config}
-            data={this.state.data}
+            taskGroups={this.state.data as any}
             links={this.state.links}
             onHorizonChange={this.onHorizonChange}
             onSelectTask={this.onSelectTask}
@@ -275,7 +275,7 @@ class App extends Component<any, any> {
             onCreateLink={this.onCreateLink}
             dateMode={this.state.timelineMode}
             itemHeight={this.state.itemHeight}
-            selectedItem={this.state.selectedItem}
+            selectedTask={this.state.selectedTask}
             disableEditableName={this.state.disableEditableName}
           />
         </div>

@@ -1,15 +1,29 @@
 import React, { Component } from 'react';
 
 import { EditableText } from '../EditableText';
+import { TaskGroup, UiConfig } from '../../types/index';
 
-export class SiderRow extends Component<any, any> {
+export interface ISiderRowProps {
+  config: UiConfig;
+  label: string;
+  index: number;
+  isSelected: boolean;
+  itemHeight: number;
+  nonEditable?: boolean;
+  taskGroup: TaskGroup;
+  top: number;
+  onSelectTaskGroup?: (task: TaskGroup) => void;
+  onUpdateTaskGroup?: (task: TaskGroup, newTask: Partial<TaskGroup>) => void;
+}
+
+export class SiderRow extends Component<ISiderRowProps, any> {
   constructor(props) {
     super(props);
   }
 
   onChange = value => {
-    if (this.props.onUpdateTask) {
-      this.props.onUpdateTask(this.props.item, { name: value });
+    if (this.props.onUpdateTaskGroup) {
+      this.props.onUpdateTaskGroup(this.props.taskGroup, { name: value });
     }
   };
 
@@ -24,7 +38,9 @@ export class SiderRow extends Component<any, any> {
           top: this.props.top,
           height: this.props.itemHeight
         }}
-        onClick={e => this.props.onSelectTask(this.props.item)}
+        onClick={e =>
+          this.props.onSelectTaskGroup && this.props.onSelectTaskGroup(this.props.taskGroup)
+        }
       >
         {this.props.nonEditable ? (
           <div tabIndex={this.props.index} style={{ width: '100%' }}>

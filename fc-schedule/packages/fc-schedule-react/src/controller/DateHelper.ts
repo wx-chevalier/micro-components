@@ -1,12 +1,15 @@
+import { getToday } from '../utils/datetime';
+
 const MIL_IN_HOUR = 1000 * 3600;
 
 /** 数据辅助 */
 export class DateHelper {
+  /** 以当前天 0 点为时间轴起点，计算相对的偏移 */
   dateToPixel(input, complementalLeft, dayWidth) {
-    const nowDate = this.getToday(); //
+    const nowDate = getToday();
     const inputTime = new Date(input);
 
-    //Day light saving patch
+    // Day light saving patch
     const lightSavingDiff =
       (inputTime.getTimezoneOffset() - nowDate.getTimezoneOffset()) * 60 * 1000;
     const timeDiff = inputTime.getTime() - nowDate.getTime() - lightSavingDiff;
@@ -17,7 +20,7 @@ export class DateHelper {
   pixelToDate(position, complementalLeft, dayWidth) {
     const hoursInPixel = 24 / dayWidth;
     const pixelsFromNow = position - complementalLeft;
-    const today = this.getToday();
+    const today = getToday();
     const milisecondsFromNow = today.getTime() + pixelsFromNow * hoursInPixel * MIL_IN_HOUR;
     const result = new Date(milisecondsFromNow);
     const lightSavingDiff = (result.getTimezoneOffset() - today.getTimezoneOffset()) * 60 * 1000;
@@ -25,12 +28,6 @@ export class DateHelper {
     result.setTime(result.getTime() + lightSavingDiff);
 
     return result;
-  }
-
-  getToday() {
-    const date = new Date();
-    date.setHours(0, 0, 0, 0);
-    return date;
   }
 
   monthDiff(start, end) {
@@ -43,7 +40,7 @@ export class DateHelper {
     return new Date(year, month, 0).getDate();
   }
 
-  /** 将 */
+  /** 将日期转化为坐标轴 */
   dayToPosition = (day: number, now: number, dayWidth: number) => {
     return day * dayWidth + now;
   };

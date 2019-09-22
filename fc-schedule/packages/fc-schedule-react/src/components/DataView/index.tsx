@@ -6,20 +6,20 @@ import { dateHelper } from '../../controller';
 
 import { TaskClip } from './TaskClip';
 import { IDataRowProps, DataRow } from './DataRow';
-import { Task } from '../../types/index';
+import { Task, TaskGroup, EditingTask } from '../../types';
+import { LinkPos } from '../../types/index';
 
 interface IDataViewCompProps extends IDataRowProps {
-  data: Task[];
-  startRow: number;
-  endRow: number;
-
   complementalLeft: number;
+  taskGroups: TaskGroup[];
+  dayWidth: number;
+  disableLink?: boolean;
   scrollLeft: number;
   scrollTop: number;
-  dayWidth: number;
-
-  disableLink?: boolean;
-  selectedItem: any;
+  selectedTask: any;
+  // 竖直可视的行数范围
+  startRow: number;
+  endRow: number;
 
   onMouseDown: any;
   onMouseUp: any;
@@ -30,12 +30,12 @@ interface IDataViewCompProps extends IDataRowProps {
   onTouchCancel: any;
   onTouchEnd: any;
 
-  onTaskChanging: Function;
-  onChildDrag: Function;
-  onSelectTask: Function;
-  onUpdateTask: Function;
-  onStartCreateLink: Function;
-  onFinishCreateLink: Function;
+  onTaskChanging: (et: EditingTask) => void;
+  onChildDrag: (v: boolean) => void;
+  onSelectTask: (task: Task) => void;
+  onUpdateTask: (task: Task, { start, end }: { start: Date; end: Date }) => void;
+  onStartCreateLink: (task: Task, pos: LinkPos) => void;
+  onFinishCreateLink: (task: Task, pos: LinkPos) => void;
 }
 
 export class DataViewComp extends Component<IDataViewCompProps> {
@@ -54,49 +54,56 @@ export class DataViewComp extends Component<IDataViewCompProps> {
   };
 
   renderRows = () => {
-    const { disableLink } = this.props;
+    const { disableLink, taskGroups } = this.props;
 
     const result: any[] = [];
-    for (let i = this.props.startRow; i < this.props.endRow + 1; i++) {
-      const item = this.props.data[i];
-      if (!item) break;
-      //FIXME PAINT IN BOUNDARIES
 
-      const newPosition = dateHelper.dateToPixel(
-        item.start,
-        this.props.complementalLeft,
-        this.props.dayWidth
-      );
-      const newWidth =
-        dateHelper.dateToPixel(item.end, this.props.complementalLeft, this.props.dayWidth) -
-        newPosition;
+    for (let i = this.props.startRow; i < this.props.endRow + 1; i++) {
+      const taskGroup = taskGroups[i];
+
+      if (!taskGroup) break;
+      // FIXME PAINT IN BOUNDARIES
 
       result.push(
         <DataRow
           key={i}
-          label={item.name}
+          label={taskGroup.name || ''}
           top={i * this.props.itemHeight}
           left={20}
           itemHeight={this.props.itemHeight}
         >
-          <TaskClip
-            item={item}
-            label={item.name}
-            complementalLeft={this.props.complementalLeft}
-            dayWidth={this.props.dayWidth}
-            color={item.color}
-            left={newPosition}
-            width={newWidth}
-            height={this.props.itemHeight}
-            onChildDrag={this.onChildDrag}
-            disableLink={disableLink}
-            isSelected={this.props.selectedItem == item}
-            onSelectTask={this.props.onSelectTask}
-            onStartCreateLink={this.props.onStartCreateLink}
-            onFinishCreateLink={this.props.onFinishCreateLink}
-            onTaskChanging={this.props.onTaskChanging}
-            onUpdateTask={this.props.onUpdateTask}
-          />
+          {taskGroup.tasks.map((task: Task) => {
+            const newPosition = dateHelper.dateToPixel(
+              task.start,
+              this.props.complementalLeft,
+              this.props.dayWidth
+            );
+
+            const newWidth =
+              dateHelper.dateToPixel(task.end, this.props.complementalLeft, this.props.dayWidth) -
+              newPosition;
+
+            return (
+              <TaskClip
+                task={task}
+                label={task.name || ''}
+                complementalLeft={this.props.complementalLeft}
+                color={task.color || ''}
+                dayWidth={this.props.dayWidth}
+                disableLink={disableLink}
+                left={newPosition}
+                width={newWidth}
+                height={this.props.itemHeight}
+                isSelected={this.props.selectedTask === task}
+                onChildDrag={this.onChildDrag}
+                onSelectTask={this.props.onSelectTask}
+                onStartCreateLink={this.props.onStartCreateLink}
+                onFinishCreateLink={this.props.onFinishCreateLink}
+                onTaskChanging={this.props.onTaskChanging}
+                onUpdateTask={this.props.onUpdateTask}
+              />
+            );
+          })}
         </DataRow>
       );
     }
@@ -131,7 +138,8 @@ export class DataViewComp extends Component<IDataViewCompProps> {
       (this.refs.DataView as any).scrollTop = this.props.scrollTop;
     }
 
-    const height = this.getContainerHeight(this.props.data.length);
+    const height = this.getContainerHeight(this.props.taskGroups.length);
+
     return (
       <div
         ref="DataView"

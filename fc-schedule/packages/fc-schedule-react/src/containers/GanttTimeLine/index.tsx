@@ -9,8 +9,8 @@ import {
   getDayWidth
 } from '../../const';
 
-import { registry, DataController, Config } from '../../controller';
-import { UiConfig, BaseProps, Task, LinkType } from '../../types';
+import { dataRegistry, DataController, Config } from '../../controller';
+import { UiConfig, BaseProps, Task, TaskLink, TaskGroup } from '../../types';
 
 import './index.css';
 import { Sider } from '../../components/Sider';
@@ -19,11 +19,14 @@ import { Header } from '../../components/Header';
 import { LinkView } from '../../components/LinkView';
 import { DataView } from '../../components/DataView';
 import { Provider } from '../../utils/context';
+import { LinkPos, EditingLink, EditingTask } from '../../types/index';
 
 interface IGanttTimeLineProps extends BaseProps {
-  data: Task[];
-  links?: LinkType[];
-  selectedItem?: Task;
+  taskGroups: TaskGroup[];
+  links?: TaskLink[];
+  selectedTask?: Task;
+  selectedLink?: TaskLink;
+  selectedTaskGroup?: TaskGroup;
 
   config?: UiConfig;
   dateMode?: DATE_MODE_TYPE;
@@ -44,16 +47,38 @@ interface IGanttTimeLineProps extends BaseProps {
   onTaskDetailRender?: (task: Task) => React.ReactNode;
   // 在左侧栏或者右侧栏中选择 Task 的回调
   onSelectTask?: (task: Task) => void;
+  onSelectTaskGroup?: (task: TaskGroup) => void;
+  onSelectLink?: (link: TaskLink) => void;
   onUpdateTask?: (task: Task, newTask: Partial<Task>) => void;
+  onUpdateTaskGroup?: (task: TaskGroup, newTaskGroup: Partial<TaskGroup>) => void;
 
   // 侧边栏头部渲染函数
   onSiderHeaderRender?: () => React.ReactNode;
   onHorizonChange?: (lowerLimit: number, upLimit: number) => void;
 
-  onCreateLink?: Function;
+  onCreateLink?: ({ start, end }: { start: EditingLink; end: EditingLink }) => void;
 }
 
-export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
+interface IGanttTimeLineState {
+  currentDay: number;
+  complementalLeft: number;
+  dayWidth: number;
+  dateMode: DATE_MODE_TYPE;
+  editingTask?: EditingTask;
+  editingLink?: EditingLink;
+  interactiveMode: boolean;
+  links: TaskLink[];
+  siderStyle: Record<string, number>;
+  scrollLeft: number;
+  scrollTop: number;
+  size: { width: number; height: number };
+  startRow: number;
+  endRow: number;
+  visibleRowsNum: number;
+  visibleDaysNum: number;
+}
+
+export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLineState> {
   config: UiConfig;
 
   static defaultProps = {
@@ -93,20 +118,20 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
       currentDay: 0,
       // 随着滑动的时候，如果已经滑动的距离大于预设的宽度，则用该值计算倍数；譬如预设的宽度为 5000，可视宽度为 1200，那么滑动距离超出 5000 后，scrollLeft 值实际上会归零；此时就需要依靠 complementalLeft 来计算逻辑上的滑动距离
       complementalLeft: 0,
-      startRow: 0,
-      endRow: 10,
+      dayWidth: dayWidth,
+      dateMode: this.props.dateMode ? this.props.dateMode : DATE_MODE_MONTH,
+      editingTask: undefined,
+      interactiveMode: false,
+      editingLink: undefined,
+      links: [],
       siderStyle: { width: 200 },
       scrollLeft: 0,
       scrollTop: 0,
-      visibleRowsNum: 40,
-      visibleDaysNum: 10,
-      dayWidth: dayWidth,
-      interactiveMode: false,
-      linkingTask: null,
-      links: [],
-      dateMode: this.props.dateMode ? this.props.dateMode : DATE_MODE_MONTH,
       size: { width: 1, height: 1 },
-      editingTask: null
+      startRow: 0,
+      endRow: 10,
+      visibleRowsNum: 40,
+      visibleDaysNum: 10
     };
   }
 
@@ -137,7 +162,11 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
 
     const newNumVisibleRows = Math.ceil(size.height / this.props.itemHeight);
     const newNumVisibleDays = this.calcNumVisibleDays(size);
-    const rowInfo = this.calcStartEndRows(newNumVisibleRows, this.props.data, this.state.scrollTop);
+    const rowInfo = this.calcStartEndRows(
+      newNumVisibleRows,
+      this.props.taskGroups.length,
+      this.state.scrollTop
+    );
 
     this.setState({
       visibleRowsNum: newNumVisibleRows,
@@ -153,23 +182,26 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
   /////////////////////////
   verticalChange = scrollTop => {
     if (scrollTop == this.state.scrollTop) return;
-    //Check if we have scrolling rows
-    const rowInfo = this.calcStartEndRows(this.state.visibleRowsNum, this.props.data, scrollTop);
-    if (rowInfo.start !== this.state.start) {
-      this.setState(
-        (this.state = {
-          scrollTop: scrollTop,
-          startRow: rowInfo.start,
-          endRow: rowInfo.end
-        })
-      );
+    // Check if we have scrolling rows
+    const rowInfo = this.calcStartEndRows(
+      this.state.visibleRowsNum,
+      this.props.taskGroups.length,
+      scrollTop
+    );
+
+    if (rowInfo.start !== this.state.startRow) {
+      this.setState({
+        scrollTop: scrollTop,
+        startRow: rowInfo.start,
+        endRow: rowInfo.end
+      });
     }
   };
 
-  calcStartEndRows = (visibleRowsNum, data, scrollTop) => {
+  calcStartEndRows = (visibleRowsNum: number, totalRowsNum: number, scrollTop: number) => {
     const newStart = Math.trunc(scrollTop / this.props.itemHeight);
     const newEnd =
-      newStart + visibleRowsNum >= data.length ? data.length : newStart + visibleRowsNum;
+      newStart + visibleRowsNum >= totalRowsNum ? totalRowsNum : newStart + visibleRowsNum;
     return { start: newStart, end: newEnd };
   };
 
@@ -213,8 +245,8 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     // Calculate rows to render
     newStartRow = Math.trunc(this.state.scrollTop / this.props.itemHeight);
     newEndRow =
-      newStartRow + this.state.visibleRowsNum >= this.props.data.length
-        ? this.props.data.length - 1
+      newStartRow + this.state.visibleRowsNum >= this.props.taskGroups.length
+        ? this.props.taskGroups.length - 1
         : newStartRow + this.state.visibleRowsNum;
 
     // If we need updates then change the state and the scroll position
@@ -291,43 +323,41 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
 
   // Child communicating states
   onSiderResizing = delta => {
-    this.setState(prevState => {
-      const result = { ...prevState };
-      result.siderStyle = { width: result.siderStyle.width - delta };
-      return result;
+    this.setState({
+      siderStyle: {
+        width: this.state.siderStyle.width - delta
+      }
     });
   };
 
   /////////////////////
   //   ITEMS EVENTS  //
   /////////////////////
-  onSelectTask = item => {
-    if (this.props.onSelectTask && item != this.props.selectedItem) this.props.onSelectTask(item);
-  };
 
-  onStartCreateLink = (task, position) => {
+  onStartCreateLink = (task: Task, position: LinkPos) => {
     console.log(`Start Link ${task}`);
     this.setState({
       interactiveMode: true,
-      linkingTask: { task: task, position: position }
+      editingLink: { task: task, position: position }
     });
   };
 
-  onFinishCreateLink = (task, position) => {
+  onFinishCreateLink = (task: Task, position: LinkPos) => {
     console.log(`End Link ${task}`);
-    if (this.props.onCreateLink && task) {
+    if (this.props.onCreateLink && task && this.state.editingLink) {
       this.props.onCreateLink({
-        start: this.state.linkingTask,
-        end: { task: task, position: position }
+        start: this.state.editingLink,
+        end: { task: task, position }
       });
     }
+
     this.setState({
       interactiveMode: false,
-      linkingTask: null
+      editingLink: undefined
     });
   };
 
-  onTaskChanging = editingTask => {
+  onTaskChanging = (editingTask: { task: Task; position: { start: number; end: number } }) => {
     this.setState({
       editingTask: editingTask
     });
@@ -374,37 +404,32 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
     }
   }
 
-  checkNeedData = nextProps => {
-    if (nextProps.data != this.state.data) {
+  checkNeedData = (nextProps: IGanttTimeLineProps) => {
+    if (nextProps.taskGroups !== this.props.taskGroups) {
+      const rowInfo = this.calcStartEndRows(
+        this.state.visibleRowsNum,
+        nextProps.taskGroups.length,
+        this.state.scrollTop
+      );
+
       this.setState(
         {
-          data: nextProps.data
+          startRow: rowInfo.start,
+          endRow: rowInfo.end
         },
         () => {
-          const rowInfo = this.calcStartEndRows(
-            this.state.visibleRowsNum,
-            nextProps.data,
-            this.state.scrollTop
-          );
-          this.setState(
-            {
-              startRow: rowInfo.start,
-              endRow: rowInfo.end
-            },
-            () => {
-              registry.registerData(this.state.data);
-            }
-          );
+          dataRegistry.registerTaskGroups(nextProps.taskGroups);
         }
       );
     }
+
     if (nextProps.links != this.state.links) {
       this.setState(
         {
-          links: nextProps.links
+          links: nextProps.links || []
         },
         () => {
-          registry.registerLinks(nextProps.links);
+          dataRegistry.registerLinks(nextProps.links);
         }
       );
     }
@@ -417,15 +442,14 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
         <div className="timeLine">
           <div className="timeLine-side-main" style={this.state.siderStyle}>
             <Sider
-              ref="taskViewPort"
               itemHeight={this.props.itemHeight}
               startRow={this.state.startRow}
               endRow={this.state.endRow}
-              data={this.props.data}
-              selectedItem={this.props.selectedItem}
+              taskGroups={this.props.taskGroups}
+              selectedTaskGroup={this.props.selectedTaskGroup}
               nonEditable={this.props.disableEditableName}
-              onSelectTask={this.onSelectTask}
-              onUpdateTask={this.props.onUpdateTask}
+              onSelectTaskGroup={this.props.onSelectTaskGroup}
+              onUpdateTaskGroup={this.props.onUpdateTaskGroup}
               onScroll={this.verticalChange}
             />
             <VerticalSpliter config={this.config} onResizing={this.onSiderResizing} />
@@ -448,8 +472,8 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
               complementalLeft={this.state.complementalLeft}
               startRow={this.state.startRow}
               endRow={this.state.endRow}
-              data={this.props.data}
-              selectedItem={this.props.selectedItem}
+              taskGroups={this.props.taskGroups}
+              selectedTask={this.props.selectedTask}
               dayWidth={this.state.dayWidth}
               boundaries={{
                 lower: this.state.scrollLeft,
@@ -464,7 +488,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
               onTouchMove={this.doTouchMove}
               onTouchEnd={this.doTouchEnd}
               onTouchCancel={this.doTouchCancel}
-              onSelectTask={this.onSelectTask}
+              onSelectTask={this.props.onSelectTask}
               onUpdateTask={this.props.onUpdateTask}
               onTaskChanging={this.onTaskChanging}
               onStartCreateLink={this.onStartCreateLink}
@@ -474,21 +498,21 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, any> {
 
             {!disableLink && (
               <LinkView
-                scrollLeft={this.state.scrollLeft}
-                scrollTop={this.state.scrollTop}
-                startRow={this.state.startRow}
-                endRow={this.state.endRow}
-                data={this.props.data}
                 complementalLeft={this.state.complementalLeft}
                 dayWidth={this.state.dayWidth}
-                interactiveMode={this.state.interactiveMode}
-                linkingTask={this.state.linkingTask}
-                onFinishCreateLink={this.onFinishCreateLink}
+                editingLink={this.state.editingLink}
                 editingTask={this.state.editingTask}
-                selectedItem={this.props.selectedItem}
-                onSelectTask={this.onSelectTask}
+                interactiveMode={this.state.interactiveMode}
                 itemHeight={this.props.itemHeight}
-                links={this.props.links}
+                links={this.props.links || []}
+                scrollLeft={this.state.scrollLeft}
+                scrollTop={this.state.scrollTop}
+                selectedLink={this.props.selectedLink}
+                startRow={this.state.startRow}
+                endRow={this.state.endRow}
+                taskGroups={this.props.taskGroups}
+                onSelectLink={this.props.onSelectLink}
+                onFinishCreateLink={this.onFinishCreateLink}
               />
             )}
           </div>

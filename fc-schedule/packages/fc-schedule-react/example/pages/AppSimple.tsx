@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import { GanttTimeLine, Task } from '../../src';
+import { GanttTimeLine, TaskGroup, TaskLink } from '../../src';
 
 import './App.css';
-import { Worker } from '../../src/types';
+
 import moment from 'moment';
 
 export default class AppSimple extends Component<any, any> {
-  data: Task[];
-  links: any;
+  data: TaskGroup[];
+  links: TaskLink[];
 
   constructor(props) {
     super(props);
@@ -28,30 +28,35 @@ export default class AppSimple extends Component<any, any> {
     let d6 = new Date();
     d6.setHours(d4.getHours() + 60);
 
-    const worker1: Worker = { id: '1', name: 'work1' };
-    const worker2: Worker = { id: '2', name: 'work2' };
-
     this.data = [
-      { id: '1', start: d1, end: d2, name: 'Demo Task 1', worker: worker1, color: '#6874E2' },
       {
-        id: '2',
-        start: d3,
-        end: d4,
-        name: 'Demo Task 2',
-        worker: worker2,
-        color: '#6874E2'
+        id: '1',
+        name: 'Task Group 1',
+        tasks: [{ id: '1', start: d1, end: d2, name: 'Demo Task 1', color: '#6874E2' }]
       },
       {
         id: '2',
-        start: d5,
-        end: d6,
-        name: 'Demo Task 3',
-        worker: worker2,
-        color: '#64C5BC'
+        name: 'Task Group 2',
+        tasks: [
+          {
+            id: '2',
+            start: d3,
+            end: d4,
+            name: 'Demo Task 2',
+            color: '#6874E2'
+          },
+          {
+            id: '3',
+            start: d5,
+            end: d6,
+            name: 'Demo Task 3',
+            color: '#64C5BC'
+          }
+        ]
       }
     ];
 
-    this.links = [{ id: 1, start: '1', end: '2' }];
+    this.links = [{ id: '1', start: 1, end: 2 }];
   }
 
   render() {
@@ -75,8 +80,8 @@ export default class AppSimple extends Component<any, any> {
             }}
             dateMode="day"
             disableLink={true}
-            data={this.data}
             links={this.links}
+            taskGroups={this.data}
             visuallyStartDate={moment().subtract(2, 'day')}
           />
         </div>

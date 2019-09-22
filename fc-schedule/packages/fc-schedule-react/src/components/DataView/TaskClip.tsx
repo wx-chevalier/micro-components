@@ -10,10 +10,10 @@ import {
   LINK_POS_RIGHT
 } from '../../const';
 import withContext from '../../utils/context';
-import { UiConfig, Task } from '../../types/index';
+import { UiConfig, Task, EditingTask, LinkPos } from '../../types/index';
 
 interface ITaskClipProps {
-  item: Task;
+  task: Task;
 
   left: number;
   width: number;
@@ -21,18 +21,18 @@ interface ITaskClipProps {
   complementalLeft: number;
   dayWidth: number;
 
-  config: UiConfig;
+  config?: UiConfig;
   label: string;
   color: string;
   isSelected: boolean;
-  disableLink: boolean;
+  disableLink?: boolean;
 
-  onTaskChanging: Function;
-  onChildDrag: Function;
-  onSelectTask: Function;
-  onUpdateTask: Function;
-  onStartCreateLink: Function;
-  onFinishCreateLink: Function;
+  onTaskChanging: (et: EditingTask) => void;
+  onChildDrag: (v: boolean) => void;
+  onSelectTask: (task: Task) => void;
+  onUpdateTask: (task: Task, { start, end }: { start: Date; end: Date }) => void;
+  onStartCreateLink: (task: Task, pos: LinkPos) => void;
+  onFinishCreateLink: (task: Task, pos: LinkPos) => void;
 }
 
 interface ITaskClipState {
@@ -59,20 +59,23 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
   onCreateLinkMouseDown = (e, position) => {
     if (e.button === 0) {
       e.stopPropagation();
-      this.props.onStartCreateLink(this.props.item, position);
+      this.props.onStartCreateLink(this.props.task, position);
     }
   };
+
   onCreateLinkMouseUp = (e, position) => {
     e.stopPropagation();
-    this.props.onFinishCreateLink(this.props.item, position);
+    this.props.onFinishCreateLink(this.props.task, position);
   };
+
   onCreateLinkTouchStart = (e, position) => {
     e.stopPropagation();
-    this.props.onStartCreateLink(this.props.item, position);
+    this.props.onStartCreateLink(this.props.task, position);
   };
+
   onCreateLinkTouchEnd = (e, position) => {
     e.stopPropagation();
-    this.props.onFinishCreateLink(this.props.item, position);
+    this.props.onFinishCreateLink(this.props.task, position);
   };
 
   componentDidUpdate(props, state) {
@@ -117,14 +120,16 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
         newWidth = this.state.width - delta;
         break;
     }
-    //the coordinates need to be global
+
+    // the coordinates need to be global
     const changeObj = {
-      item: this.props.item,
+      task: this.props.task,
       position: {
         start: newLeft - this.props.complementalLeft,
         end: newLeft + newWidth - this.props.complementalLeft
       }
     };
+
     this.props.onTaskChanging(changeObj);
     this.setState({ left: newLeft, width: newWidth });
     this.draggingPosition = x;
@@ -142,7 +147,8 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
       this.props.complementalLeft,
       this.props.dayWidth
     );
-    this.props.onUpdateTask(this.props.item, { start: newStartDate, end: newEndDate });
+
+    this.props.onUpdateTask(this.props.task, { start: newStartDate, end: newEndDate });
     this.setState({ dragging: false, dateMode: MODE_NONE });
   }
 
@@ -187,6 +193,10 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
   calculateStyle() {
     const { config } = this.props;
 
+    if (!config) {
+      return;
+    }
+
     const configStyle = this.props.isSelected
       ? config.values.dataViewPort.task.selectedStyle
       : config.values.dataViewPort.task.style;
@@ -220,6 +230,11 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
 
   render() {
     const { config, disableLink } = this.props;
+
+    if (!config) {
+      return;
+    }
+
     const style = this.calculateStyle();
 
     return (
@@ -227,7 +242,7 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
         onMouseDown={e => this.doMouseDown(e, MODE_MOVE)}
         onTouchStart={e => this.doTouchStart(e, MODE_MOVE)}
         onClick={e => {
-          this.props.onSelectTask(this.props.item);
+          this.props.onSelectTask(this.props.task);
         }}
         style={style}
       >
@@ -247,7 +262,7 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
         )}
 
         <div style={{ overflow: 'hidden' }}>
-          {config.values.dataViewPort.task.showLabel ? this.props.item.name : ''}
+          {config.values.dataViewPort.task.showLabel ? this.props.task.name : ''}
         </div>
 
         {!disableLink && (
@@ -269,4 +284,4 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
   }
 }
 
-export const TaskClip = withContext(TaskClipComp);
+export const TaskClip = withContext<ITaskClipProps>(TaskClipComp);

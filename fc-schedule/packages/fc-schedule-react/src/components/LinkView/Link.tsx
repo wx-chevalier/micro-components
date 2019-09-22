@@ -1,9 +1,19 @@
 import React, { Component } from 'react';
 import withContext from '../../utils/context';
+import { TaskLink, UiConfig } from '../../types/index';
 
 const SSHAPE_SIDE_WIDTH = 20;
 
-export class LinkComp extends Component<any, any> {
+export interface ILinkProps {
+  config?: UiConfig;
+  link?: TaskLink;
+  isSelected?: boolean;
+  start: { x: number; y: number };
+  end: { x: number; y: number };
+  onSelectLink?: (link: TaskLink) => void;
+}
+
+export class LinkComp extends Component<ILinkProps, any> {
   constructor(props) {
     super(props);
   }
@@ -39,15 +49,22 @@ export class LinkComp extends Component<any, any> {
   };
 
   onSelect = e => {
-    if (this.props.onSelectTask) this.props.onSelectTask(this.props.item);
+    if (this.props.onSelectLink && this.props.link) {
+      this.props.onSelectLink(this.props.link);
+    }
   };
 
   render() {
     const { config } = this.props;
 
+    if (!config) {
+      return;
+    }
+
     const pathColor = this.props.isSelected
       ? config.values.links.selectedColor
       : config.values.links.color;
+
     return (
       <g className="timeline-link">
         <path
@@ -81,4 +98,4 @@ export class LinkComp extends Component<any, any> {
   }
 }
 
-export const Link = withContext(LinkComp);
+export const Link = withContext<ILinkProps>(LinkComp);

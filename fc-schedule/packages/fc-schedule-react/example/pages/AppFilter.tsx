@@ -13,7 +13,7 @@ export class AppFilter extends Component<any, any> {
     this.state = {
       itemHeight: 20,
       timeLineData: [],
-      selectedItem: null,
+      selectedTask: null,
       timelineMode: 'month',
       links: result.links
     };
@@ -44,7 +44,7 @@ export class AppFilter extends Component<any, any> {
             data={this.state.timeLineData}
             links={this.state.links}
             onHorizonChange={this.onHorizonChange}
-            selectedItem={this.state.selectedItem}
+            selectedTask={this.state.selectedTask}
           />
         </div>
       </div>

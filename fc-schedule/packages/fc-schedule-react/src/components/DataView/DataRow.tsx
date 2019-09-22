@@ -4,6 +4,7 @@ import { UiConfig } from '../../types';
 import withContext from '../../utils/context';
 
 export interface IDataRowProps {
+  children: React.ReactNode;
   itemHeight: number;
   left: number;
   top: number;
@@ -34,4 +35,4 @@ export class DataRowComp extends Component<IDataRowProps> {
   }
 }
 
-export const DataRow = withContext(DataRowComp);
+export const DataRow = withContext<IDataRowProps>(DataRowComp);
