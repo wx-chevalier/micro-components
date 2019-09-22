@@ -3,8 +3,6 @@ import { GanttTimeLine, TaskGroup, TaskLink } from '../../src';
 
 import './App.css';
 
-import moment from 'moment';
-
 export default class AppSimple extends Component<any, any> {
   data: TaskGroup[];
   links: TaskLink[];
@@ -82,7 +80,6 @@ export default class AppSimple extends Component<any, any> {
             disableLink={false}
             links={this.links}
             taskGroups={this.data}
-            visuallyStartDate={moment().subtract(2, 'day')}
             onCreateLink={(...args) => {
               console.log(args);
             }}

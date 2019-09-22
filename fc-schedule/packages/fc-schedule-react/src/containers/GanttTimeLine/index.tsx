@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import moment from 'moment';
 
 import {
   BUFFER_DAYS,
@@ -31,7 +30,6 @@ interface IGanttTimeLineProps extends BaseProps {
   config?: UiConfig;
   dateMode?: DATE_MODE_TYPE;
   viewMode?: 'task' | 'worker';
-  visuallyStartDate?: moment.Moment;
 
   // 是否允许编辑名称
   disableEditableName?: boolean;
