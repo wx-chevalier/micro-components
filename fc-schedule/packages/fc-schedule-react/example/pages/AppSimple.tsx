@@ -79,10 +79,13 @@ export default class AppSimple extends Component<any, any> {
               }
             }}
             dateMode="day"
-            disableLink={true}
+            disableLink={false}
             links={this.links}
             taskGroups={this.data}
             visuallyStartDate={moment().subtract(2, 'day')}
+            onCreateLink={(...args) => {
+              console.log(args);
+            }}
           />
         </div>
       </div>

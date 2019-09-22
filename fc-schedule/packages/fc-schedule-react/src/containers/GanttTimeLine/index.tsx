@@ -112,6 +112,8 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
     this.config = new Config();
     this.config.load(this.props.config);
 
+    dataRegistry.registerTaskGroups(props.taskGroups);
+
     // Initialising state
     this.state = {
       // 当前界面上主要是处于哪天，用于判断是否到达了左右滚动边界
@@ -480,20 +482,20 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
                 upper: this.state.scrollLeft + this.state.size.width
               }}
               disableLink={disableLink}
+              onFinishCreateLink={this.onFinishCreateLink}
               onMouseDown={this.doMouseDown}
               onMouseMove={this.doMouseMove}
               onMouseUp={this.doMouseUp}
               onMouseLeave={this.doMouseLeave}
+              onSelectTask={this.props.onSelectTask}
+              onStartCreateLink={this.onStartCreateLink}
+              onSize={this.onResizing}
               onTouchStart={this.doTouchStart}
               onTouchMove={this.doTouchMove}
               onTouchEnd={this.doTouchEnd}
               onTouchCancel={this.doTouchCancel}
-              onSelectTask={this.props.onSelectTask}
-              onUpdateTask={this.props.onUpdateTask}
               onTaskChanging={this.onTaskChanging}
-              onStartCreateLink={this.onStartCreateLink}
-              onFinishCreateLink={this.onFinishCreateLink}
-              onSize={this.onResizing}
+              onUpdateTask={this.props.onUpdateTask}
             />
 
             {!disableLink && (

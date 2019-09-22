@@ -1,14 +1,7 @@
 import React, { Component } from 'react';
 
 import { dateHelper } from '../../controller';
-import {
-  MODE_NONE,
-  MODE_MOVE,
-  MOVE_RESIZE_LEFT,
-  MOVE_RESIZE_RIGHT,
-  LINK_POS_LEFT,
-  LINK_POS_RIGHT
-} from '../../const';
+import { MODE_NONE, MODE_MOVE, MOVE_RESIZE_LEFT, MOVE_RESIZE_RIGHT } from '../../const';
 import withContext from '../../utils/context';
 import { UiConfig, Task, EditingTask, LinkPos } from '../../types/index';
 
@@ -255,8 +248,8 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
           >
             <div
               className="timeLine-main-data-task-side-linker"
-              onMouseUp={e => this.onCreateLinkMouseUp(e, LINK_POS_LEFT)}
-              onTouchEnd={e => this.onCreateLinkTouchEnd(e, LINK_POS_LEFT)}
+              onMouseUp={e => this.onCreateLinkMouseUp(e, 'LINK_POS_LEFT')}
+              onTouchEnd={e => this.onCreateLinkTouchEnd(e, 'LINK_POS_LEFT')}
             />
           </div>
         )}
@@ -274,8 +267,8 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
           >
             <div
               className="timeLine-main-data-task-side-linker"
-              onMouseDown={e => this.onCreateLinkMouseDown(e, LINK_POS_RIGHT)}
-              onTouchStart={e => this.onCreateLinkTouchStart(e, LINK_POS_RIGHT)}
+              onMouseDown={e => this.onCreateLinkMouseDown(e, 'LINK_POS_RIGHT')}
+              onTouchStart={e => this.onCreateLinkTouchStart(e, 'LINK_POS_RIGHT')}
             />
           </div>
         )}

@@ -85,6 +85,7 @@ export class DataViewComp extends Component<IDataViewCompProps> {
 
             return (
               <TaskClip
+                key={task.id}
                 task={task}
                 label={task.name || ''}
                 complementalLeft={this.props.complementalLeft}
