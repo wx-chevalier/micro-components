@@ -86,6 +86,9 @@ export default class AppSimple extends Component<any, any> {
             onCreateLink={(...args) => {
               console.log(args);
             }}
+            onSelectTask={(...args) => {
+              console.log(args);
+            }}
           />
         </div>
       </div>

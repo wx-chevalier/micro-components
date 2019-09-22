@@ -46,7 +46,7 @@ interface IGanttTimeLineProps extends BaseProps {
 
   onTaskDetailRender?: (task: Task) => React.ReactNode;
   // 在左侧栏或者右侧栏中选择 Task 的回调
-  onSelectTask?: (task: Task) => void;
+  onSelectTask?: (task: Task, ref: HTMLDivElement | null) => void;
   onSelectTaskGroup?: (task: TaskGroup) => void;
   onSelectLink?: (link: TaskLink) => void;
   onUpdateTask?: (task: Task, newTask: Partial<Task>) => void;

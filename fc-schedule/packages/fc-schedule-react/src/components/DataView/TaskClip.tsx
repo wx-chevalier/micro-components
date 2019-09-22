@@ -22,7 +22,7 @@ interface ITaskClipProps {
 
   onTaskChanging: (et: EditingTask) => void;
   onChildDrag: (v: boolean) => void;
-  onSelectTask: (task: Task) => void;
+  onSelectTask: (task: Task, ref: HTMLDivElement | null) => void;
   onUpdateTask: (task: Task, { start, end }: { start: Date; end: Date }) => void;
   onStartCreateLink: (task: Task, pos: LinkPos) => void;
   onFinishCreateLink: (task: Task, pos: LinkPos) => void;
@@ -37,6 +37,7 @@ interface ITaskClipState {
 
 export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
   draggingPosition: number;
+  $ref: HTMLDivElement | null;
 
   constructor(props) {
     super(props);
@@ -207,7 +208,8 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
         left: this.state.left,
         width: this.state.width,
         height: finalHeight,
-        top
+        top,
+        cursor: 'pointer'
       };
     } else {
       return {
@@ -216,7 +218,8 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
         left: this.props.left,
         width: this.props.width,
         height: finalHeight,
-        top
+        top,
+        cursor: 'pointer'
       };
     }
   }
@@ -232,12 +235,13 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
 
     return (
       <div
+        ref={ref => (this.$ref = ref)}
+        style={style}
         onMouseDown={e => this.doMouseDown(e, MODE_MOVE)}
         onTouchStart={e => this.doTouchStart(e, MODE_MOVE)}
-        onClick={e => {
-          this.props.onSelectTask(this.props.task);
+        onClick={() => {
+          this.props.onSelectTask(this.props.task, this.$ref);
         }}
-        style={style}
       >
         {!disableLink && (
           <div
