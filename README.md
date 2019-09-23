@@ -19,6 +19,7 @@ fractal-components 中包含了可复用的组件，还有很多纯界面化展�
 | Name / 名称    | Description / 描述                                  | Links / 链接                                                                                          |
 | -------------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | web-whiteboard | Electronic Whiteboard for screen sharing / 电子白板 | [Demo](https://3q1z35q53p.codesandbox.io/) / [Source](https://github.com/wx-chevalier/web-whiteboard) |
+| fc-schedule | React Components for APS / 调度与排程组件 | [Demo](https://3q1z35q53p.codesandbox.io/) / [Source](https://github.com/wx-chevalier/fc-schedule) |
 
 # Home & More | 延伸阅读
 
