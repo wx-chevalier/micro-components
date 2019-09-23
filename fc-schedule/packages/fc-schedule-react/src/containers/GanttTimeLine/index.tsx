@@ -20,6 +20,8 @@ import { DataView } from '../../components/DataView';
 import { Provider } from '../../utils/context';
 import { LinkPos, EditingLink, EditingTask } from '../../types/index';
 
+const prefixCls = 'fc-schedule-GanttTimeLine';
+
 interface IGanttTimeLineProps extends BaseProps {
   taskGroups: TaskGroup[];
   links?: TaskLink[];
@@ -42,8 +44,8 @@ interface IGanttTimeLineProps extends BaseProps {
   // 点击某个数据行的响应，必然会传入当前行所属的 Worker
   onDataRowClick?: (worker: Worker) => void;
 
-  onTaskDetailRender?: (task: Task) => React.ReactNode;
-  // 在左侧栏或者右侧栏中选择 Task 的回调
+  // 如果传入了该参数，则在悬浮时显示
+  onTaskPopoverRender?: (task: Task) => React.ReactNode;
   onSelectTask?: (task: Task, ref: HTMLDivElement | null) => void;
   onSelectTaskGroup?: (task: TaskGroup) => void;
   onSelectLink?: (link: TaskLink) => void;
@@ -439,7 +441,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
     const { disableLink } = this.props;
     return (
       <Provider value={{ config: this.config }}>
-        <div className="timeLine">
+        <div className={prefixCls}>
           <div className="timeLine-side-main" style={this.state.siderStyle}>
             <Sider
               itemHeight={this.props.itemHeight}
@@ -488,6 +490,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
               onSelectTask={this.props.onSelectTask}
               onStartCreateLink={this.onStartCreateLink}
               onSize={this.onResizing}
+              onTaskPopoverRender={this.props.onTaskPopoverRender}
               onTouchStart={this.doTouchStart}
               onTouchMove={this.doTouchMove}
               onTouchEnd={this.doTouchEnd}

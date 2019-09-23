@@ -7,6 +7,7 @@ interface Base {
   desc?: string;
 
   extra?: any;
+  trigger?: 'click' | 'hover';
 }
 
 export interface BaseProps {
@@ -46,6 +47,12 @@ export interface TaskLink extends Base {
 }
 
 export interface UiConfig {
-  header?: any;
+  header?: {
+    showController?: boolean;
+    top?: any;
+    middle?: any;
+    bottom?: any;
+  };
+
   [key: string]: any;
 }

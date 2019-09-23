@@ -31,6 +31,7 @@ interface IDataViewCompProps extends IDataRowProps {
   onTouchEnd: any;
 
   onTaskChanging: (et: EditingTask) => void;
+  onTaskPopoverRender?: (task: Task) => React.ReactNode;
   onChildDrag: (v: boolean) => void;
   onSelectTask: (task: Task) => void;
   onUpdateTask: (task: Task, { start, end }: { start: Date; end: Date }) => void;
@@ -101,6 +102,7 @@ export class DataViewComp extends Component<IDataViewCompProps> {
                 onStartCreateLink={this.props.onStartCreateLink}
                 onFinishCreateLink={this.props.onFinishCreateLink}
                 onTaskChanging={this.props.onTaskChanging}
+                onTaskPopoverRender={this.props.onTaskPopoverRender}
                 onUpdateTask={this.props.onUpdateTask}
               />
             );

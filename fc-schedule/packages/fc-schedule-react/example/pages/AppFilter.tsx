@@ -41,7 +41,7 @@ export class AppFilter extends Component<any, any> {
         </div>
         <div className="time-line-container">
           <GanttTimeLine
-            data={this.state.timeLineData}
+            taskGroups={this.state.timeLineData}
             links={this.state.links}
             onHorizonChange={this.onHorizonChange}
             selectedTask={this.state.selectedTask}

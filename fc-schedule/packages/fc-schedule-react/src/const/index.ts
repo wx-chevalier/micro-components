@@ -42,3 +42,5 @@ export function getDayWidth(dateMode: DATE_MODE_TYPE = DATE_MODE_MONTH) {
       return DAY_MONTH_MODE;
   }
 }
+
+export const prefixCls = 'fc-schedule';

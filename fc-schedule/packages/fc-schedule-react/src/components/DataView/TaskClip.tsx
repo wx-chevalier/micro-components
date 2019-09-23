@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
 
 import { dateHelper } from '../../controller';
-import { MODE_NONE, MODE_MOVE, MOVE_RESIZE_LEFT, MOVE_RESIZE_RIGHT } from '../../const';
+import { MODE_NONE, MODE_MOVE, MOVE_RESIZE_LEFT, MOVE_RESIZE_RIGHT, prefixCls } from '../../const';
 import withContext from '../../utils/context';
 import { UiConfig, Task, EditingTask, LinkPos } from '../../types/index';
+
+import './TaskClip.less';
+
+const prefix = `${prefixCls}-taskClip`;
 
 interface ITaskClipProps {
   task: Task;
@@ -21,6 +25,7 @@ interface ITaskClipProps {
   disableLink?: boolean;
 
   onTaskChanging: (et: EditingTask) => void;
+  onTaskPopoverRender?: (task: Task) => React.ReactNode;
   onChildDrag: (v: boolean) => void;
   onSelectTask: (task: Task, ref: HTMLDivElement | null) => void;
   onUpdateTask: (task: Task, { start, end }: { start: Date; end: Date }) => void;
@@ -30,6 +35,7 @@ interface ITaskClipProps {
 
 interface ITaskClipState {
   dragging: boolean;
+  isHover: boolean;
   left: number;
   width: number;
   dateMode: number;
@@ -44,6 +50,7 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
     this.calculateStyle = this.calculateStyle.bind(this);
     this.state = {
       dragging: false,
+      isHover: true,
       left: this.props.left,
       width: this.props.width,
       dateMode: MODE_NONE
@@ -51,25 +58,33 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
   }
 
   onCreateLinkMouseDown = (e, position) => {
+    const { task, onStartCreateLink } = this.props;
+
     if (e.button === 0) {
       e.stopPropagation();
-      this.props.onStartCreateLink(this.props.task, position);
+      onStartCreateLink(task, position);
     }
   };
 
   onCreateLinkMouseUp = (e, position) => {
+    const { task } = this.props;
+
     e.stopPropagation();
-    this.props.onFinishCreateLink(this.props.task, position);
+    this.props.onFinishCreateLink(task, position);
   };
 
   onCreateLinkTouchStart = (e, position) => {
+    const { task, onStartCreateLink } = this.props;
+
     e.stopPropagation();
-    this.props.onStartCreateLink(this.props.task, position);
+    onStartCreateLink(task, position);
   };
 
   onCreateLinkTouchEnd = (e, position) => {
+    const { task, onFinishCreateLink } = this.props;
+
     e.stopPropagation();
-    this.props.onFinishCreateLink(this.props.task, position);
+    onFinishCreateLink(task, position);
   };
 
   componentDidUpdate(props, state) {
@@ -86,6 +101,14 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
     }
   }
 
+  onMouseEnter = () => {
+    this.setState({ isHover: true });
+  };
+
+  onMouseLeave = () => {
+    this.setState({ isHover: false });
+  };
+
   dragStart(x, dateMode) {
     this.props.onChildDrag(true);
     this.draggingPosition = x;
@@ -98,6 +121,8 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
   }
 
   dragProcess(x) {
+    const { task, complementalLeft } = this.props;
+
     const delta = this.draggingPosition - x;
     let newLeft = this.state.left;
     let newWidth = this.state.width;
@@ -117,10 +142,10 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
 
     // the coordinates need to be global
     const changeObj = {
-      task: this.props.task,
+      task: task,
       position: {
-        start: newLeft - this.props.complementalLeft,
-        end: newLeft + newWidth - this.props.complementalLeft
+        start: newLeft - complementalLeft,
+        end: newLeft + newWidth - complementalLeft
       }
     };
 
@@ -130,19 +155,17 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
   }
 
   dragEnd() {
-    this.props.onChildDrag(false);
-    const newStartDate = dateHelper.pixelToDate(
-      this.state.left,
-      this.props.complementalLeft,
-      this.props.dayWidth
-    );
+    const { complementalLeft, dayWidth, task, onChildDrag } = this.props;
+
+    onChildDrag(false);
+    const newStartDate = dateHelper.pixelToDate(this.state.left, complementalLeft, dayWidth);
     const newEndDate = dateHelper.pixelToDate(
       this.state.left + this.state.width,
       this.props.complementalLeft,
       this.props.dayWidth
     );
 
-    this.props.onUpdateTask(this.props.task, { start: newStartDate, end: newEndDate });
+    this.props.onUpdateTask(task, { start: newStartDate, end: newEndDate });
     this.setState({ dragging: false, dateMode: MODE_NONE });
   }
 
@@ -225,24 +248,35 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
   }
 
   render() {
-    const { config, disableLink } = this.props;
+    const { config, disableLink, task, onTaskPopoverRender } = this.props;
 
     if (!config) {
       return;
     }
 
+    const { isHover } = this.state;
+
     const style = this.calculateStyle();
 
     return (
       <div
+        className={`${prefix}-container`}
         ref={ref => (this.$ref = ref)}
         style={style}
-        onMouseDown={e => this.doMouseDown(e, MODE_MOVE)}
-        onTouchStart={e => this.doTouchStart(e, MODE_MOVE)}
         onClick={() => {
-          this.props.onSelectTask(this.props.task, this.$ref);
+          this.props.onSelectTask(task, this.$ref);
         }}
+        onMouseEnter={this.onMouseEnter}
+        onMouseDown={e => this.doMouseDown(e, MODE_MOVE)}
+        onMouseLeave={this.onMouseLeave}
+        onTouchStart={e => this.doTouchStart(e, MODE_MOVE)}
       >
+        {isHover && onTaskPopoverRender && (
+          <div className={`${prefix}-popover`}>
+            <div className={`${prefix}-popover-arrow`}></div>
+            <div className={`${prefix}-popover-content`}>{onTaskPopoverRender(task)}</div>
+          </div>
+        )}
         {!disableLink && (
           <div
             className="timeLine-main-data-task-side"
@@ -259,7 +293,7 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
         )}
 
         <div style={{ overflow: 'hidden' }}>
-          {config.values.dataViewPort.task.showLabel ? this.props.task.name : ''}
+          {config.values.dataViewPort.task.showLabel ? task.name : ''}
         </div>
 
         {!disableLink && (

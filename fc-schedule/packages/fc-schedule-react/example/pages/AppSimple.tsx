@@ -62,20 +62,6 @@ export default class AppSimple extends Component<any, any> {
       <div className="app-container">
         <div className="time-line-container">
           <GanttTimeLine
-            config={{
-              taskList: {
-                title: {
-                  style: {
-                    opacity: 0
-                  }
-                },
-                task: {
-                  style: {
-                    backgroundColor: 'white'
-                  }
-                }
-              }
-            }}
             dateMode="day"
             disableLink={false}
             links={this.links}
@@ -83,6 +69,9 @@ export default class AppSimple extends Component<any, any> {
             onCreateLink={(...args) => {
               console.log(args);
             }}
+            onTaskPopoverRender={() => (
+              <div style={{ backgroundColor: 'black', width: 50, height: 50 }}>Popover</div>
+            )}
             onSelectTask={(...args) => {
               console.log(args);
             }}

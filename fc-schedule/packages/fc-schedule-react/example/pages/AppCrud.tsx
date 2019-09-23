@@ -142,7 +142,7 @@ export class AppCrud extends Component<any, any> {
         </div>
         <div className="time-line-container">
           <GanttTimeLine
-            data={this.state.data}
+            taskGroups={this.state.data}
             links={this.state.links}
             onUpdateTask={this.onUpdateTask}
             onCreateLink={this.onCreateLink}
