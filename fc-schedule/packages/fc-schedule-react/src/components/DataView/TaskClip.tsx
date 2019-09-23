@@ -53,7 +53,7 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
       dragging: false,
       isHover: false,
       left: this.props.left,
-      width: this.props.width,
+      width: this.props.width || 0,
       dateMode: MODE_NONE
     };
   }
