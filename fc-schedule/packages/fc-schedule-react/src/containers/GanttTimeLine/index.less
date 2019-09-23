@@ -13,20 +13,21 @@
   &-controller {
     position: absolute;
     width: 100%;
-    height: 60px;
+    height: 30px;
     top: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 9;
+    padding: 0 16px;
 
     &-prev {
       cursor: pointer;
       width: 0;
       height: 0;
       border-style: solid;
-      border-width: 10px 20px 10px 0;
-      border-color: transparent #007bff transparent transparent;
+      border-width: 8px 16px 8px 0;
+      border-color: transparent white transparent transparent;
     }
 
     &-next {
@@ -34,8 +35,8 @@
       width: 0;
       height: 0;
       border-style: solid;
-      border-width: 10px 0 10px 20px;
-      border-color: transparent transparent transparent #007bff;
+      border-width: 8px 0 8px 16px;
+      border-color: transparent transparent transparent white;
     }
   }
 }
@@ -47,6 +48,14 @@
   display: flex;
   flex-direction: column;
   overflow-y: hidden;
+}
+
+.timeLine-side-main {
+  flex: 0 0 auto;
+  width: 108px;
+  min-width: 108px;
+  display: flex;
+  flex-direction: row;
 }
 
 /* Main Area Header*/

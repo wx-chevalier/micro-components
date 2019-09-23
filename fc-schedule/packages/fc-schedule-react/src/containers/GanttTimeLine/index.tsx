@@ -32,11 +32,6 @@ interface IGanttTimeLineProps extends BaseProps {
   config?: Partial<UiConfigProps>;
   dateMode?: DATE_MODE_TYPE;
 
-  // 是否允许编辑名称
-  disableEditableName?: boolean;
-  // 是否使用 Link
-  disableLink?: boolean;
-
   ////////////////////
   //  Event Handler //
   ////////////////////
@@ -83,8 +78,6 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
   static defaultProps = {
     itemHeight: 40,
     dayWidth: 24,
-    disableEditableName: false,
-    disableLink: false,
     dateMode: DATE_MODE_MONTH,
     viewMode: 'task'
   };
@@ -437,8 +430,6 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
   };
 
   render() {
-    const { disableLink } = this.props;
-
     return (
       <Provider value={{ config: this.config }}>
         <div className={prefix}>
@@ -449,7 +440,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
               endRow={this.state.endRow}
               taskGroups={this.props.taskGroups}
               selectedTaskGroup={this.props.selectedTaskGroup}
-              nonEditable={this.props.disableEditableName}
+              nonEditable={this.config.values.disableEditableName}
               onSelectTaskGroup={this.props.onSelectTaskGroup}
               onUpdateTaskGroup={this.props.onUpdateTaskGroup}
               onScroll={this.verticalChange}
@@ -499,7 +490,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
                 lower: this.state.scrollLeft,
                 upper: this.state.scrollLeft + this.state.size.width
               }}
-              disableLink={disableLink}
+              disableLink={this.config.values.disableLink}
               onFinishCreateLink={this.onFinishCreateLink}
               onMouseDown={this.doMouseDown}
               onMouseMove={(e: MouseEvent) => {
@@ -519,7 +510,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
               onUpdateTask={this.props.onUpdateTask}
             />
 
-            {!disableLink && (
+            {!this.config.values.disableLink && (
               <LinkView
                 complementalLeft={this.state.complementalLeft}
                 dayWidth={this.state.dayWidth}

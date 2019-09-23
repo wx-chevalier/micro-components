@@ -2,6 +2,8 @@ import { UiConfigProps } from './../controller/UiConfig';
 
 export const defaultConfig: UiConfigProps = {
   showController: true,
+  disableEditableName: false,
+  disableLink: false,
 
   header: {
     top: {

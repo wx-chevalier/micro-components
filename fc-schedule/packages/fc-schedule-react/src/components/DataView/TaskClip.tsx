@@ -51,7 +51,7 @@ export class TaskClipComp extends Component<ITaskClipProps, ITaskClipState> {
     this.calculateStyle = this.calculateStyle.bind(this);
     this.state = {
       dragging: false,
-      isHover: true,
+      isHover: false,
       left: this.props.left,
       width: this.props.width,
       dateMode: MODE_NONE

@@ -62,8 +62,8 @@ export default class AppSimple extends Component<any, any> {
       <div className="app-container">
         <div className="time-line-container">
           <GanttTimeLine
+            config={{ disableEditableName: true, disableLink: true }}
             dateMode="day"
-            disableLink={false}
             links={this.links}
             taskGroups={this.data}
             onCreateLink={(...args) => {

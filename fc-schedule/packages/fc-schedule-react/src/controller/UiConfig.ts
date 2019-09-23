@@ -1,7 +1,11 @@
 import { defaultConfig } from '../const/defaultConfig';
 
 export interface UiConfigProps {
+  disableEditableName: boolean;
+  // 是否使用 Link
+  disableLink: boolean;
   showController: boolean;
+
   header: {
     top?: any;
     middle?: any;
