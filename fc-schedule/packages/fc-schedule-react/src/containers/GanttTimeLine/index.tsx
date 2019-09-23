@@ -8,10 +8,10 @@ import {
   getDayWidth
 } from '../../const';
 
-import { dataRegistry, DataController, Config } from '../../controller';
-import { UiConfig, BaseProps, Task, TaskLink, TaskGroup } from '../../types';
+import { dataRegistry, DataController, UiConfig, UiConfigProps } from '../../controller';
+import { BaseProps, Task, TaskLink, TaskGroup } from '../../types';
 
-import './index.css';
+import './index.less';
 import { Sider } from '../../components/Sider';
 import { VerticalSpliter } from '../../components/VerticalSpliter';
 import { Header } from '../../components/Header';
@@ -20,7 +20,7 @@ import { DataView } from '../../components/DataView';
 import { Provider } from '../../utils/context';
 import { LinkPos, EditingLink, EditingTask } from '../../types/index';
 
-const prefixCls = 'fc-schedule-GanttTimeLine';
+const prefix = 'fc-schedule-GanttTimeLine';
 
 interface IGanttTimeLineProps extends BaseProps {
   taskGroups: TaskGroup[];
@@ -29,9 +29,8 @@ interface IGanttTimeLineProps extends BaseProps {
   selectedLink?: TaskLink;
   selectedTaskGroup?: TaskGroup;
 
-  config?: UiConfig;
+  config?: Partial<UiConfigProps>;
   dateMode?: DATE_MODE_TYPE;
-  viewMode?: 'task' | 'worker';
 
   // 是否允许编辑名称
   disableEditableName?: boolean;
@@ -109,7 +108,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
     this.pxToScroll = 2000;
     const dayWidth = getDayWidth(this.props.dateMode);
 
-    this.config = new Config();
+    this.config = new UiConfig();
     this.config.load(this.props.config);
 
     dataRegistry.registerTaskGroups(props.taskGroups);
@@ -280,18 +279,18 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
     this.draggingPosition = e.clientX;
   };
 
-  doMouseMove = (e: MouseEvent) => {
+  onMouseMove = (clientX: number) => {
     if (this.dragging) {
-      const delta = this.draggingPosition - e.clientX;
+      const delta = this.draggingPosition - clientX;
 
       if (delta !== 0) {
-        this.draggingPosition = e.clientX;
+        this.draggingPosition = clientX;
         this.onHorizontalScroll(this.state.scrollLeft + delta);
       }
     }
   };
 
-  doMouseUp = () => {
+  onMouseUp = () => {
     this.dragging = false;
   };
 
@@ -439,9 +438,10 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
 
   render() {
     const { disableLink } = this.props;
+
     return (
       <Provider value={{ config: this.config }}>
-        <div className={prefixCls}>
+        <div className={prefix}>
           <div className="timeLine-side-main" style={this.state.siderStyle}>
             <Sider
               itemHeight={this.props.itemHeight}
@@ -456,7 +456,25 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
             />
             <VerticalSpliter config={this.config} onResizing={this.onSiderResizing} />
           </div>
+
           <div className="timeLine-main">
+            {this.config.values.showController && (
+              <div className={`${prefix}-controller`}>
+                <div
+                  className={`${prefix}-controller-prev`}
+                  onClick={() => {
+                    this.onHorizontalScroll(this.state.scrollLeft - 200);
+                  }}
+                ></div>
+                <div
+                  className={`${prefix}-controller-next`}
+                  onClick={() => {
+                    this.onHorizontalScroll(this.state.scrollLeft + 200);
+                  }}
+                ></div>
+              </div>
+            )}
+
             <Header
               config={this.config}
               visibleDaysNum={this.state.visibleDaysNum}
@@ -484,8 +502,10 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
               disableLink={disableLink}
               onFinishCreateLink={this.onFinishCreateLink}
               onMouseDown={this.doMouseDown}
-              onMouseMove={this.doMouseMove}
-              onMouseUp={this.doMouseUp}
+              onMouseMove={(e: MouseEvent) => {
+                this.onMouseMove(e.clientX);
+              }}
+              onMouseUp={this.onMouseUp}
               onMouseLeave={this.doMouseLeave}
               onSelectTask={this.props.onSelectTask}
               onStartCreateLink={this.onStartCreateLink}

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { UiConfig } from '../../types';
 
 import withContext from '../../utils/context';
+import { UiConfig } from '../../controller/UiConfig';
 
 export interface IDataRowProps {
   children: React.ReactNode;
@@ -18,7 +18,11 @@ export class DataRowComp extends Component<IDataRowProps> {
     super(props);
   }
   render() {
-    const { config = {} } = this.props;
+    const { config } = this.props;
+
+    if (!config) {
+      return;
+    }
 
     return (
       <div

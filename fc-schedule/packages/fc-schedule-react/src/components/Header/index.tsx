@@ -1,22 +1,19 @@
 import React, { PureComponent } from 'react';
 import moment, { Moment } from 'moment';
+
+import './index.less';
+import { HeaderItem } from './HeaderItem';
+import { getFormat, getModeIncrement, getStartDate } from '../../utils/datetime';
+import { dateHelper, UiConfig } from '../../controller';
 import {
   BUFFER_DAYS,
   DATA_CONTAINER_WIDTH,
   DATE_MODE_DAY,
   DATE_MODE_WEEK,
   DATE_MODE_MONTH,
-  DATE_MODE_YEAR
+  DATE_MODE_YEAR,
+  DATE_MODE_TYPE
 } from '../../const';
-
-import { dateHelper } from '../../controller';
-
-import './index.css';
-import { HeaderItem } from './HeaderItem';
-import { getFormat, getModeIncrement } from '../../utils/datetime';
-import { getStartDate } from '../../utils/datetime';
-import { DATE_MODE_TYPE } from '../../const/index';
-import { UiConfig } from '../../types/index';
 
 export interface IHeaderProps {
   config: UiConfig;

@@ -4,8 +4,8 @@ import { dataRegistry, dateHelper } from '../../controller';
 
 import { Link } from './Link';
 import { DraftLink } from './DraftLink';
-import { TaskLink, Task, LinkPos } from '../../types';
-import { TaskGroup, UiConfig, EditingTask } from '../../types/index';
+import { UiConfig } from '../../controller/UiConfig';
+import { TaskLink, Task, LinkPos, TaskGroup, EditingTask } from '../../types';
 
 export interface ILinkViewProps {
   complementalLeft: number;

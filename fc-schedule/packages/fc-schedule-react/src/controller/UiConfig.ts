@@ -1,18 +1,30 @@
-import { defaultConfig } from './../const/defaultConfig';
-import { UiConfig } from './../types/index';
+import { defaultConfig } from '../const/defaultConfig';
+
+export interface UiConfigProps {
+  showController: boolean;
+  header: {
+    top?: any;
+    middle?: any;
+    bottom?: any;
+  };
+
+  [key: string]: any;
+}
 
 /** 配置中心 */
-export class Config {
-  data: UiConfig;
+export class UiConfig {
+  config: UiConfigProps;
 
   constructor() {
-    this.data = defaultConfig;
+    this.config = defaultConfig;
   }
 
   load = (values: any) => {
-    this.data = {};
-    if (values) this.populate(values, defaultConfig, this.data);
-    else this.data = defaultConfig;
+    if (values) {
+      this.populate(values, defaultConfig, this.config);
+    } else {
+      this.config = defaultConfig;
+    }
   };
 
   populate(values, defaultConfig, final) {
@@ -36,6 +48,6 @@ export class Config {
   }
 
   get values() {
-    return this.data;
+    return this.config;
   }
 }

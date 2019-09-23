@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import './index.less';
-import { UiConfig } from '../../types/index';
+import { UiConfig } from '../../controller/UiConfig';
 
 export interface VerticalSpliterProps {
   config: UiConfig;

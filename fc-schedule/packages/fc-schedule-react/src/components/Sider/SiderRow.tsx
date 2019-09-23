@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 
 import { EditableText } from '../EditableText';
-import { TaskGroup, UiConfig } from '../../types/index';
+import { TaskGroup } from '../../types/index';
+import { UiConfig } from '../../controller/UiConfig';
 
 export interface ISiderRowProps {
   config: UiConfig;

@@ -45,14 +45,3 @@ export interface TaskLink extends Base {
   end: Id;
   endPosition?: number;
 }
-
-export interface UiConfig {
-  header?: {
-    showController?: boolean;
-    top?: any;
-    middle?: any;
-    bottom?: any;
-  };
-
-  [key: string]: any;
-}

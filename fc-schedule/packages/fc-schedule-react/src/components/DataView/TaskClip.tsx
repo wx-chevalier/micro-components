@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 
 import { dateHelper } from '../../controller';
-import { MODE_NONE, MODE_MOVE, MOVE_RESIZE_LEFT, MOVE_RESIZE_RIGHT, prefixCls } from '../../const';
+import { MODE_NONE, MODE_MOVE, MOVE_RESIZE_LEFT, MOVE_RESIZE_RIGHT } from '../../const';
 import withContext from '../../utils/context';
-import { UiConfig, Task, EditingTask, LinkPos } from '../../types/index';
+import { Task, EditingTask, LinkPos } from '../../types/index';
+import { UiConfig } from '../../controller/UiConfig';
 
 import './TaskClip.less';
 
-const prefix = `${prefixCls}-taskClip`;
+const prefix = `fc-schedule-taskClip`;
 
 interface ITaskClipProps {
   task: Task;

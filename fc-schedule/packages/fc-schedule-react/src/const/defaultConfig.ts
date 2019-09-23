@@ -1,6 +1,8 @@
-import { UiConfig } from './../types/index';
+import { UiConfigProps } from './../controller/UiConfig';
 
-export const defaultConfig: UiConfig = {
+export const defaultConfig: UiConfigProps = {
+  showController: true,
+
   header: {
     top: {
       style: {

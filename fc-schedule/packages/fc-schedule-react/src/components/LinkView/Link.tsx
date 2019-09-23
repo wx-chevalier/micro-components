@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+
 import withContext from '../../utils/context';
-import { TaskLink, UiConfig } from '../../types/index';
+import { TaskLink } from '../../types/index';
+import { UiConfig } from '../../controller/UiConfig';
 
 const SSHAPE_SIDE_WIDTH = 20;
 

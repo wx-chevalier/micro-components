@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 
 import './index.less';
-import withContext from '../../utils/context';
-import { TaskGroup, UiConfig } from '../../types';
 import { SiderRow } from './SiderRow';
+import withContext from '../../utils/context';
+import { TaskGroup } from '../../types';
+import { UiConfig } from '../../controller/UiConfig';
 
 export interface ISiderProps {
   config?: UiConfig;

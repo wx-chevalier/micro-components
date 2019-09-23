@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import { defaultConfig } from '../const/defaultConfig';
+import { UiConfig } from '../controller/UiConfig';
 
-const Context = React.createContext({ config: defaultConfig });
+const Context = React.createContext({ config: new UiConfig() });
 
 export const { Consumer, Provider } = Context;
 
