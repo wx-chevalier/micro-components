@@ -35,6 +35,9 @@ export const defaultConfig: UiConfigProps = {
       }
     }
   },
+
+  sider: { width: 200 },
+
   taskList: {
     title: {
       label: 'Projects',

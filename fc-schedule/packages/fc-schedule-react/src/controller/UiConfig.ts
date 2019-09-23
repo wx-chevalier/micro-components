@@ -12,6 +12,10 @@ export interface UiConfigProps {
     bottom?: any;
   };
 
+  sider: {
+    width: number;
+  };
+
   [key: string]: any;
 }
 

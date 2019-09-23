@@ -62,7 +62,7 @@ interface IGanttTimeLineState {
   editingLink?: EditingLink;
   interactiveMode: boolean;
   links: TaskLink[];
-  siderStyle: Record<string, number>;
+  siderWidth: number;
   scrollLeft: number;
   scrollTop: number;
   size: { width: number; height: number };
@@ -118,7 +118,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
       interactiveMode: false,
       editingLink: undefined,
       links: [],
-      siderStyle: { width: 200 },
+      siderWidth: this.config.values.sider.width,
       scrollLeft: 0,
       scrollTop: 0,
       size: { width: 1, height: 1 },
@@ -318,9 +318,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
   // Child communicating states
   onSiderResizing = delta => {
     this.setState({
-      siderStyle: {
-        width: this.state.siderStyle.width - delta
-      }
+      siderWidth: this.state.siderWidth - delta
     });
   };
 
@@ -399,7 +397,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
   }
 
   checkNeedData = (nextProps: IGanttTimeLineProps) => {
-    if (nextProps.taskGroups !== this.props.taskGroups) {
+    if (nextProps.taskGroups && nextProps.taskGroups !== this.props.taskGroups) {
       const rowInfo = this.calcStartEndRows(
         this.state.visibleRowsNum,
         nextProps.taskGroups.length,
@@ -417,7 +415,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
       );
     }
 
-    if (nextProps.links != this.state.links) {
+    if (nextProps.links && nextProps.links !== this.state.links) {
       this.setState(
         {
           links: nextProps.links || []
@@ -433,7 +431,7 @@ export class GanttTimeLine extends Component<IGanttTimeLineProps, IGanttTimeLine
     return (
       <Provider value={{ config: this.config }}>
         <div className={prefix}>
-          <div className="timeLine-side-main" style={this.state.siderStyle}>
+          <div className="timeLine-side-main" style={{ width: this.state.siderWidth }}>
             <Sider
               itemHeight={this.props.itemHeight}
               startRow={this.state.startRow}

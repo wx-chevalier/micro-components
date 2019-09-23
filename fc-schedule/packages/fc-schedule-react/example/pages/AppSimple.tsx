@@ -2,31 +2,41 @@ import React, { Component } from 'react';
 import { GanttTimeLine, TaskGroup, TaskLink } from '../../src';
 
 import './App.css';
-
-export default class AppSimple extends Component<any, any> {
+interface IState {
   data: TaskGroup[];
   links: TaskLink[];
+}
 
-  constructor(props) {
-    super(props);
-    let d1 = new Date();
+export default class AppSimple extends Component<{}, IState> {
+  state = { data: [], links: [] };
 
-    let d2 = new Date();
+  componentDidMount() {
+    this.loadData();
+
+    setTimeout(() => {
+      this.loadData();
+    }, 500);
+  }
+
+  loadData() {
+    const d1 = new Date();
+
+    const d2 = new Date();
     d2.setHours(d2.getHours() + 5);
 
-    let d3 = new Date();
+    const d3 = new Date();
     d3.setHours(d3.getHours() + 8);
 
-    let d4 = new Date();
+    const d4 = new Date();
     d4.setHours(d4.getHours() + 20);
 
-    let d5 = new Date();
+    const d5 = new Date();
     d5.setHours(d4.getHours() + 30);
 
-    let d6 = new Date();
+    const d6 = new Date();
     d6.setHours(d4.getHours() + 60);
 
-    this.data = [
+    const data = [
       {
         id: '1',
         name: 'Task Group 1',
@@ -54,18 +64,26 @@ export default class AppSimple extends Component<any, any> {
       }
     ];
 
-    this.links = [{ id: '1', start: 1, end: 2 }];
+    const links = [{ id: '1', start: 1, end: 2 }];
+
+    this.setState({ data, links });
+  }
+
+  constructor(props) {
+    super(props);
   }
 
   render() {
+    const { data, links } = this.state;
+
     return (
       <div className="app-container">
         <div className="time-line-container">
           <GanttTimeLine
             config={{ disableEditableName: true, disableLink: true }}
             dateMode="day"
-            links={this.links}
-            taskGroups={this.data}
+            links={links}
+            taskGroups={data}
             onCreateLink={(...args) => {
               console.log(args);
             }}
