@@ -1,5 +1,5 @@
 import { dateHelper } from './../controller/DateHelper';
-import * as moment from 'moment';
+import dayjs, { Dayjs } from 'dayjs';
 import { DATE_MODE_TYPE } from '../const/index';
 
 export function getToday() {
@@ -30,25 +30,31 @@ export function getFormat(dateMode: string, position?: string) {
 
 /** 获取某个开始的时间 */
 export const getStartDate = (date, dateMode) => {
-  let year = null;
+  let year;
 
   switch (dateMode) {
     case 'year':
-      year = date.year() as any;
-      return moment([year, 0, 1] as any);
+      year = date.year();
+      return dayjs()
+        .set('year', year)
+        .set('month', 0)
+        .set('day', 1);
     case 'month':
       year = date.year();
       const month = date.month();
-      return moment([year, month, 1]);
+      return dayjs()
+        .set('year', year)
+        .set('month', month)
+        .set('day', 1);
     case 'week':
-      return moment(date).subtract(date.day(), 'days');
+      return dayjs(date).subtract(date.day(), 'day');
     default:
       return date;
   }
 };
 
 /** 获取某个模式的时间间隔 */
-export function getModeIncrement(date: moment.Moment, dateMode: DATE_MODE_TYPE) {
+export function getModeIncrement(date: Dayjs, dateMode: DATE_MODE_TYPE) {
   switch (dateMode) {
     case 'year':
       return dateHelper.daysInYear(date.year());

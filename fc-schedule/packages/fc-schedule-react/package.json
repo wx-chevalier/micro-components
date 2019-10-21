@@ -38,7 +38,7 @@
     "test:cov": "npm run cleanCov && npm test -- --coverage"
   },
   "dependencies": {
-    "moment": "^2.24.0",
+    "dayjs": "^1.8.16",
     "rc-tooltip": "^3.7.3",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
@@ -46,7 +46,6 @@
     "react-tabs": "^3.0.0"
   },
   "devDependencies": {
-    "@types/moment": "^2.13.0",
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
     "copyfiles": "^2.1.1",

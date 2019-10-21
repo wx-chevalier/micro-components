@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import moment, { Moment } from 'moment';
+import dayjs, { Dayjs } from 'dayjs';
 
 import './index.less';
 import { HeaderItem } from './HeaderItem';
@@ -33,7 +33,7 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
   cache: any;
 
   // 具体的开始时间
-  startDate: Moment;
+  startDate: Dayjs;
   // 开始的日期下标，数字，开始的时间为 currentDay - BUFFER_DAYS
   startDay: number;
   // 结束时间为 currentDay + visibleDaysNum + BUFFER_DAYS
@@ -58,7 +58,7 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
   };
 
   /** 获取到 Box */
-  getBox(date: Moment, dateMode: DATE_MODE_TYPE, lastLeft: number) {
+  getBox(date: Dayjs, dateMode: DATE_MODE_TYPE, lastLeft: number) {
     const increment = getModeIncrement(date, dateMode) * this.props.dayWidth;
     let newLastLeft = lastLeft;
 
@@ -66,7 +66,7 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
     if (!lastLeft) {
       const startDate = getStartDate(date, dateMode).startOf('day');
       // 实际上这里的 now 取当天，指定了默认将当天作为 0 天，即时间轴起点，其他时间都是相对于该天进行计算偏移
-      const now = moment().startOf('day');
+      const now = dayjs().startOf('day');
       const daysInBetween = startDate.diff(now, 'days');
 
       newLastLeft = dateHelper.dayToPosition(
@@ -122,11 +122,11 @@ export class Header extends PureComponent<IHeaderProps, IHeaderState> {
     this.startDay = this.props.currentDay - BUFFER_DAYS;
     this.endDay = this.props.currentDay + this.props.visibleDaysNum + BUFFER_DAYS;
 
-    this.startDate = moment().add(this.startDay, 'days');
+    this.startDate = dayjs().add(this.startDay, 'day');
 
     for (let i = this.startDay; i < this.endDay; i++) {
       // The unit of iteration is day
-      const currentDate = moment().add(i, 'days');
+      const currentDate = dayjs().add(i, 'day');
 
       if (top && currentTop != currentDate.format(getFormat(top, 'top'))) {
         currentTop = currentDate.format(getFormat(top, 'top'));
