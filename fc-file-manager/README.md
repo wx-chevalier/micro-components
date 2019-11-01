@@ -1,5 +1,11 @@
 # fc-file-manager
 
+## Feature
+
+- 能提供列表、网格等多种视图。
+- 提供拖拽放入、排序等功能。
+- 提供扩展接口：视图渲染回调、右击工具菜单渲染回调。
+
 # About
 
 ## Motivation & Credits
