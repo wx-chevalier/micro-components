@@ -58,6 +58,18 @@ export class App extends React.Component<any, any> {
         originalClass: 'featured-slide',
         thumbnailClass: 'featured-thumb',
         description: 'Custom class for slides & thumbnails'
+      },
+      {
+        original:
+          'https://unionfab-dev.oss-cn-hangzhou.aliyuncs.com/1/201911/9538f330-4c51-46b9-9ed6-43a9eab64af6',
+        thumbnail:
+          'https://unionfab-dev.oss-cn-hangzhou.aliyuncs.com/1/201911/9538f330-4c51-46b9-9ed6-43a9eab64af6'
+      },
+      {
+        origin:
+          'https://unionfab-dev.oss-cn-hangzhou.aliyuncs.com/1/201911/db486340-f820-426b-a1b4-084f7c63dcce',
+        thumbnail:
+          'https://unionfab-dev.oss-cn-hangzhou.aliyuncs.com/1/201911/db486340-f820-426b-a1b4-084f7c63dcce'
       }
     ].concat(this._getStaticImages());
   }
@@ -116,7 +128,7 @@ export class App extends React.Component<any, any> {
   }
 
   _getStaticImages() {
-    let images: any[] = [];
+    const images: any[] = [];
     for (let i = 2; i < 12; i++) {
       images.push({
         original: `${PREFIX_URL}${i}.jpg`,
@@ -194,7 +206,8 @@ export class App extends React.Component<any, any> {
         <Carousel
           ref={i => (this._imageGallery = i)}
           items={this.images}
-          thumbnailWidth={100}
+          thumbnailWidth={200}
+          thumbnailHeight={150}
           showSlider={false}
           lazyLoad={false}
           infinite={this.state.infinite}

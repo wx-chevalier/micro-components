@@ -3,6 +3,8 @@ import { Swipeable } from 'react-swipeable';
 import throttle from 'lodash.throttle';
 import debounce from 'lodash.debounce';
 import ResizeObserver from 'resize-observer-polyfill';
+import Lightbox from 'react-image-lightbox';
+import 'react-image-lightbox/style.css';
 
 import './index.less';
 import X from '../../assets/X.svg';
@@ -18,7 +20,13 @@ const screenChangeEvents = [
 export interface ICarouselProps {
   flickThreshold: number;
   items: Image[];
+
   thumbnailWidth: number;
+  thumbnailHeight: number;
+  thumbnailPosition: string;
+  disableThumbnailScroll: boolean;
+  slideOnThumbnailOver: boolean;
+  thumbnailWithLightbox: boolean;
 
   showNav: boolean;
   autoPlay: boolean;
@@ -30,18 +38,15 @@ export interface ICarouselProps {
   showThumbnails: boolean;
   showPlayButton: boolean;
   showFullscreenButton: boolean;
-  disableThumbnailScroll: boolean;
   disableArrowKeys: boolean;
   disableSwipe: boolean;
   useBrowserFullscreen: boolean;
   preventDefaultTouchmoveEvent: boolean;
   defaultImage: string;
   indexSeparator: string;
-  thumbnailPosition: string;
   startIndex: number;
   slideDuration: number;
   slideInterval: number;
-  slideOnThumbnailOver: boolean;
   swipeThreshold: number;
   swipingTransitionDuration: number;
 
@@ -81,7 +86,9 @@ export interface ICarouselState {
   offsetPercentage: number;
   galleryWidth: number;
   thumbsTranslate: number;
+  // 水平状态下缩略图的总外部容器的宽度
   thumbnailsWrapperWidth: number;
+  // 垂直状态下缩略图的总外部容器的高度
   thumbnailsWrapperHeight: number;
 
   style?: any;
@@ -94,7 +101,14 @@ export interface ICarouselState {
 export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
   static defaultProps = {
     items: [],
+
+    showThumbnails: true,
     thumbnailWidth: 200,
+    thumbnailHeight: 150,
+    thumbnailWithLightbox: true,
+    thumbnailPosition: 'bottom',
+    disableThumbnailScroll: false,
+
     showNav: true,
     autoPlay: false,
     lazyLoad: false,
@@ -102,10 +116,8 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
     showSlider: true,
     showIndex: false,
     showBullets: false,
-    showThumbnails: true,
     showPlayButton: true,
     showFullscreenButton: true,
-    disableThumbnailScroll: false,
     disableArrowKeys: false,
     disableSwipe: false,
     useTranslate3D: true,
@@ -115,12 +127,12 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
     flickThreshold: 0.4,
     stopPropagation: false,
     indexSeparator: ' / ',
-    thumbnailPosition: 'bottom',
     startIndex: 0,
     slideDuration: 450,
     swipingTransitionDuration: 0,
     slideInterval: 3000,
     swipeThreshold: 30,
+
     renderLeftNav: (onClick, disabled) => {
       return (
         <button
@@ -132,6 +144,7 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
         />
       );
     },
+
     renderRightNav: (onClick, disabled) => {
       return (
         <button
@@ -143,6 +156,7 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
         />
       );
     },
+
     renderPlayPauseButton: (onClick, isPlaying) => {
       return (
         <button
@@ -153,6 +167,7 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
         />
       );
     },
+
     renderFullscreenButton: (onClick, isFullscreen) => {
       return (
         <button
@@ -182,13 +197,16 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
     super(props);
     this.state = {
       currentIndex: props.startIndex,
-      thumbsTranslate: 0,
       offsetPercentage: 0,
       galleryWidth: 0,
+      isFullscreen: false,
+      isPlaying: false,
+
+      thumbsTranslate: 0,
       thumbnailsWrapperWidth: 0,
       thumbnailsWrapperHeight: 0,
-      isFullscreen: false,
-      isPlaying: false
+      showLightbox: false,
+      thumbnialImageIndex: 0
     };
 
     // Used to update the throttle if slideDuration changes
@@ -985,12 +1003,22 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
 
     return (
       <div className="fc-gallery-carousel-thumbnail-inner">
-        <img src={item.thumbnail} alt={item.alt} title={item.title} onError={_onThumbnailError} />
+        <img
+          src={item.thumbnail}
+          alt={item.alt}
+          title={item.title}
+          onError={_onThumbnailError}
+          onDoubleClick={() => {
+            this.setState({
+              showLightbox: true
+            });
+          }}
+        />
         {item.thumbnailLabel && (
           <div className="fc-gallery-carousel-thumbnail-label">{item.thumbnailLabel}</div>
         )}
         {onThumbnailDelete && (
-          <div className="fc-gallery-carousel-thumbnail-delete-icon">
+          <div className="fc-gallery-carousel-thumbnail-icons">
             <X
               onClick={() => {
                 onThumbnailDelete(item);
@@ -1100,6 +1128,11 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
               (currentIndex === index ? ' active' : '') +
               thumbnailClass
             }
+            style={{
+              flex: `0 0 ${this.props.thumbnailWidth}px`,
+              width: this.props.thumbnailWidth,
+              height: this.props.thumbnailHeight
+            }}
             onMouseLeave={slideOnThumbnailOver ? this._onThumbnailMouseLeave : undefined}
             onMouseOver={event =>
               slideOnThumbnailOver ? this._onThumbnailMouseOver(event, index) : undefined
@@ -1111,6 +1144,7 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
         );
       }
 
+      // 是否展示底层的圆点
       if (this.props.showBullets) {
         const bulletOnClick = event => {
           if (this.props.onBulletClick) {
@@ -1174,6 +1208,7 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
             ) : (
               <div className="fc-gallery-carousel-slides">{slides}</div>
             )}
+
             {this.props.showBullets && (
               <div className="fc-gallery-carousel-bullets">
                 <div
@@ -1185,6 +1220,7 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
                 </div>
               </div>
             )}
+
             {this.props.showIndex && (
               <div className="fc-gallery-carousel-index">
                 <span className="fc-gallery-carousel-index-current">
@@ -1209,6 +1245,9 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
       .filter(name => typeof name === 'string')
       .join(' ');
 
+    const { items = [] } = this.props;
+    const { thumbnialImageIndex } = this.state;
+
     return (
       <div ref={i => (this._imageGallery = i)} className={classNames} aria-live="polite">
         <div className={`fc-gallery-carousel-content${isFullscreen ? ' fullscreen' : ''}`}>
@@ -1228,7 +1267,7 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
                 <div
                   ref={t => (this._thumbnails = t)}
                   className="fc-gallery-carousel-thumbnails-container"
-                  style={thumbnailStyle}
+                  style={{ height: (this.props.thumbnailHeight || 0) + 8, ...thumbnailStyle }}
                   aria-label="Thumbnail Navigation"
                 >
                   {thumbnails}
@@ -1239,6 +1278,35 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
 
           {(thumbnailPosition === 'top' || thumbnailPosition === 'left') && slideWrapper}
         </div>
+
+        {this.state.showLightbox && this.props.thumbnailWithLightbox && (
+          <Lightbox
+            mainSrc={items[thumbnialImageIndex].src || items[thumbnialImageIndex].thumbnail || ''}
+            nextSrc={
+              items[(thumbnialImageIndex + 1) % items.length].src ||
+              items[(thumbnialImageIndex + 1) % items.length].thumbnail
+            }
+            prevSrc={
+              items[(thumbnialImageIndex + items.length - 1) % items.length].src ||
+              items[(thumbnialImageIndex + items.length - 1) % items.length].thumbnail
+            }
+            onCloseRequest={() => {
+              this.setState({
+                showLightbox: false
+              });
+            }}
+            onMovePrevRequest={() =>
+              this.setState({
+                thumbnialImageIndex: (thumbnialImageIndex + items.length - 1) % items.length
+              })
+            }
+            onMoveNextRequest={() =>
+              this.setState({
+                thumbnialImageIndex: (thumbnialImageIndex + items.length + 1) % items.length
+              })
+            }
+          />
+        )}
       </div>
     );
   }

@@ -28,6 +28,7 @@
 }
 
 .fc-gallery-carousel-content {
+  height: 100%;
   position: relative;
   line-height: 0;
   top: 0;
@@ -201,6 +202,7 @@
 
 .fc-gallery-carousel-thumbnails-wrapper {
   position: relative;
+  height: 100%;
 
   &.thumbnails-wrapper-rtl {
     direction: rtl;
@@ -222,6 +224,7 @@
       padding: 0;
       position: absolute;
       top: 0;
+      box-sizing: border-box;
 
       .fc-gallery-carousel-thumbnail {
         display: block;
@@ -254,17 +257,18 @@
 
 .fc-gallery-carousel-thumbnails {
   overflow: hidden;
-  padding: 5px 0;
 
   @media (max-width: @fc-screen-sm-min) {
     padding: 3px 0;
   }
 
-  .fc-gallery-carousel-thumbnails-container {
+  &-container {
     cursor: pointer;
     text-align: center;
     transition: transform 0.45s ease-out;
     white-space: nowrap;
+    height: 100%;
+    display: flex;
   }
 }
 
@@ -273,6 +277,20 @@
   border: 4px solid transparent;
   transition: border 0.3s ease-out;
   width: 200px;
+  box-sizing: border-box;
+
+  &-icons {
+    // display: none;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+  }
+
+  &-inner:hover {
+    .fc-gallery-carousel-thumbnail-icons {
+      display: block;
+    }
+  }
 
   @media (max-width: @fc-screen-sm-min) {
     border: 3px solid transparent;
@@ -285,11 +303,17 @@
 
   .fc-gallery-carousel-thumbnail-inner {
     position: relative;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   img {
     vertical-align: middle;
-    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
   }
 
   &.active {
@@ -334,20 +358,5 @@
   @media (max-width: @fc-screen-sm-min) {
     font-size: 0.8em;
     padding: 5px 10px;
-  }
-}
-
-.fc-gallery-carousel-thumbnail {
-  &-delete-icon {
-    display: none;
-    position: absolute;
-    right: -5px;
-    top: -5px;
-  }
-
-  &-inner:hover {
-    .fc-gallery-carousel-thumbnail-delete-icon {
-      display: block;
-    }
   }
 }

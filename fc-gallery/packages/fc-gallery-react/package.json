@@ -1,6 +1,6 @@
 {
   "name": "fc-gallery-react",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "fc-gallery-react",
   "repository": {
     "type": "git",
@@ -43,6 +43,7 @@
     "moment": "^2.24.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
+    "react-image-lightbox": "^5.1.1",
     "react-sizeme": "^2.6.7",
     "react-swipeable": "^5.4.0",
     "react-tabs": "^3.0.0",
