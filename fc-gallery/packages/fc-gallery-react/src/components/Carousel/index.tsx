@@ -996,7 +996,7 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
   };
 
   /** 渲染缩略图 */
-  _renderThumbInner = (item: Image) => {
+  _renderThumbInner = (item: Image, index: number) => {
     const { onThumbnailError, onThumbnailDelete } = this.props;
 
     const _onThumbnailError = onThumbnailError || this._handleImageError;
@@ -1010,7 +1010,8 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
           onError={_onThumbnailError}
           onDoubleClick={() => {
             this.setState({
-              showLightbox: true
+              showLightbox: true,
+              thumbnialImageIndex: index
             });
           }}
         />
@@ -1139,7 +1140,7 @@ export class Carousel extends React.Component<Partial<ICarouselProps>, any> {
             }
             onClick={event => this._onThumbnailClick(event, index)}
           >
-            {renderThumbInner(item)}
+            {renderThumbInner(item, index)}
           </a>
         );
       }
