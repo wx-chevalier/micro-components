@@ -1,6 +1,3 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { renderMindMap } from '../src';
 
-import Simple from './Simple';
-
-ReactDOM.render(<Simple />, document.getElementById('root'));
+renderMindMap(document.getElementById('root'));

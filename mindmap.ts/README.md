@@ -7,28 +7,36 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/https://github.com/ng-tech-edu/sg-flowchart-detect-and-generate">
+  <a href="https://github.com/wx-chevalier/mindmap.ts">
     <img src="header.svg" alt="Logo" style="width: 100vw;height: 400px" />
   </a>
 
   <p align="center">
-    <a href="https://github.com/https://github.com/ng-tech-edu/sg-flowchart-detect-and-generate">View Demo</a>
+    <a href="https://github.com/wx-chevalier/mindmap.ts">View Demo</a>
     ·
-    <a href="https://github.com/https://github.com/ng-tech-edu/sg-flowchart-detect-and-generate/issues">Report Bug</a>
+    <a href="https://github.com/wx-chevalier/mindmap.ts/issues">Report Bug</a>
     ·
-    <a href="https://github.com/https://github.com/ng-tech-edu/sg-flowchart-detect-and-generate/issues">Request Feature</a>
+    <a href="https://github.com/wx-chevalier/mindmap.ts/issues">Request Feature</a>
   </p>
 </p>
 
 <!-- ABOUT THE PROJECT -->
 
-# Introduction
+# mindmap.ts
 
-在 []() 中
+在 [Awesome-MindMaps](https://github.com/wx-chevalier/Awesome-MindMaps) 中笔者存放了数十张跨领域思维脑图（从编程语言到服务架构），为了更方便编辑与分享这些思维脑图，笔者创建了该项目，其目标包括：
+
+- 方便地在 VSCode 中编辑思维脑图
+- 与其他项目一致能够便捷地共享
 
 > 该项目最初修改自 [blink-mind](https://github.com/awehook/blink-mind)。
 
 ## Nav | 导航
+
+- mm-core: 核心模型定义与各种转化、适配器定义
+- mm-react-comp: 基于 React 的界面组件
+- mm-app: 独立的思维脑图编辑器
+- mm-vscode: 以 VSCode 插件形式呈现的思维脑图编辑器
 
 # Getting Started
 
@@ -44,21 +52,37 @@ This is an example of how to list things you need to use the software and how to
 npm install npm@latest -g
 ```
 
-## Installation
-
 1. Clone the repo
 
 ```sh
-git clone https://github.com/https://github.com/ng-tech-edu/sg-flowchart-detect-and-generate.git
+git clone https://github.com/wx-chevalier/mindmap.ts.git
 ```
 
 2. Install NPM packages
 
 ```sh
-npm install
+yarn install
 ```
 
-<!-- USAGE EXAMPLES -->
+## mm-app
+
+```sh
+$ npm run dev
+$ npm run build:umd
+```
+
+注意，这里 App 是以 UMD 格式打包发布，在使用的地方需要先引入 React 与 React DOM 的 CDN：
+
+```sh
+https://cdn.bootcdn.net/ajax/libs/react/17.0.1/umd/react.production.min.js
+https://cdn.bootcdn.net/ajax/libs/react-dom/17.0.1/umd/react-dom.production.min.js
+```
+
+然后使用暴露出的渲染方法：
+
+```js
+window.mmts.renderMindMap($ele, jsonData);
+```
 
 ## Usage
 
@@ -72,7 +96,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 ## Roadmap
 
-See the [open issues](https://github.com/https://github.com/ng-tech-edu/sg-flowchart-detect-and-generate/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/wx-chevalier/mindmap.ts/issues) for a list of proposed features (and known issues).
 
 <!-- CONTRIBUTING -->
 
@@ -119,13 +143,13 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[contributors-shield]: https://img.shields.io/github/contributors/https://github.com/ng-tech-edu/sg-flowchart-detect-and-generate.svg?style=flat-square
-[contributors-url]: https://github.com/https://github.com/ng-tech-edu/sg-flowchart-detect-and-generate/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/https://github.com/ng-tech-edu/sg-flowchart-detect-and-generate.svg?style=flat-square
-[forks-url]: https://github.com/https://github.com/ng-tech-edu/sg-flowchart-detect-and-generate/network/members
-[stars-shield]: https://img.shields.io/github/stars/https://github.com/ng-tech-edu/sg-flowchart-detect-and-generate.svg?style=flat-square
-[stars-url]: https://github.com/https://github.com/ng-tech-edu/sg-flowchart-detect-and-generate/stargazers
-[issues-shield]: https://img.shields.io/github/issues/https://github.com/ng-tech-edu/sg-flowchart-detect-and-generate.svg?style=flat-square
-[issues-url]: https://github.com/https://github.com/ng-tech-edu/sg-flowchart-detect-and-generate/issues
-[license-shield]: https://img.shields.io/github/license/https://github.com/ng-tech-edu/sg-flowchart-detect-and-generate.svg?style=flat-square
-[license-url]: https://github.com/https://github.com/ng-tech-edu/sg-flowchart-detect-and-generate/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/https://github.com/wx-chevalier/mindmap.ts.svg?style=flat-square
+[contributors-url]: https://github.com/wx-chevalier/mindmap.ts/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/https://github.com/wx-chevalier/mindmap.ts.svg?style=flat-square
+[forks-url]: https://github.com/wx-chevalier/mindmap.ts/network/members
+[stars-shield]: https://img.shields.io/github/stars/https://github.com/wx-chevalier/mindmap.ts.svg?style=flat-square
+[stars-url]: https://github.com/wx-chevalier/mindmap.ts/stargazers
+[issues-shield]: https://img.shields.io/github/issues/https://github.com/wx-chevalier/mindmap.ts.svg?style=flat-square
+[issues-url]: https://github.com/wx-chevalier/mindmap.ts/issues
+[license-shield]: https://img.shields.io/github/license/https://github.com/wx-chevalier/mindmap.ts.svg?style=flat-square
+[license-url]: https://github.com/wx-chevalier/mindmap.ts/blob/master/LICENSE.txt

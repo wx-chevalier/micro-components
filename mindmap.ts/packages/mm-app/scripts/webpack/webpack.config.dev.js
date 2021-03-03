@@ -5,9 +5,9 @@ const devConfig = require('../../../../scripts/webpack/webpack.config').devConfi
 
 module.exports = merge(devConfig, {
   entry: {
-    index: path.resolve(__dirname, '../../example')
+    index: path.resolve(__dirname, '../../example'),
   },
   devServer: {
-    contentBase: path.resolve(__dirname, '../../public')
-  }
+    contentBase: path.resolve(__dirname, '../../public'),
+  },
 });
